@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+
 @section('title', 'Add Category')
 @section('content')
 <div class="min-h-screen bg-gray-300 dark:bg-[#181f31] p-8">

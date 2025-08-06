@@ -1,0 +1,42 @@
+<div x-data="{ open: false }" class="relative">
+    <button @click="open = !open"
+        class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-300 dark:hover:bg-[#2e1065] transition-colors focus:outline-none">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <?php
+        $unreadCount = auth()->check() ? auth()->user()->unreadNotifications->count() : 0;
+        ?>
+        <?php if($unreadCount > 0): ?>
+        <span
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold leading-none">
+            <?php echo e($unreadCount); ?>
+
+        </span>
+        <?php endif; ?>
+    </button>
+    <!-- Dropdown content -->
+    <div x-show="open" x-cloak @click.away="open = false"
+        class="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white dark:bg-[#181b23] ring-1 ring-black ring-opacity-5 z-50"
+        x-cloak>
+        <div class="py-2 px-4 max-h-96 overflow-y-auto">
+            <?php if(auth()->check()): ?>
+            <?php $__empty_1 = true; $__currentLoopData = auth()->user()->unreadNotifications->take(10); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <form action="<?php echo e(route('notifications.markAsRead', $notification->id)); ?>" method="POST" class="mb-2">
+                <?php echo csrf_field(); ?>
+                <button type="submit" class="w-full text-left bg-transparent px-2 py-1 rounded cursor-pointer">
+                    <?php echo e($notification->data['message']); ?>
+
+                </button>
+            </form>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+            <div class="text-gray-500 py-4 text-center">No new notifications</div>
+            <?php endif; ?>
+            <?php else: ?>
+            <div class="text-gray-500 py-4 text-center">Please log in to see your notifications.</div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+<?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/layouts/partials/nav-notification.blade.php ENDPATH**/ ?>

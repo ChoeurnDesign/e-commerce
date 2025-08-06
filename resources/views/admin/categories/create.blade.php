@@ -1,0 +1,110 @@
+@extends('layouts.admin')
+@section('title', 'Add Category')
+@section('content')
+<div class="min-h-screen bg-gray-300 dark:bg-[#181f31] p-8">
+    <div class="max-w-xl mx-auto">
+        <div class="bg-white dark:bg-[#23263a] rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-[#23263a]">
+            <div class="flex items-center mb-8">
+                <div class="bg-indigo-100 dark:bg-indigo-900 rounded-full p-2 mr-3">
+                    <svg class="w-7 h-7 text-indigo-500 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12M6 12h12" />
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Add Category</h1>
+            </div>
+            <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+                @csrf
+
+                <!-- Parent Category -->
+                <div>
+                    <label for="parent_id" class="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-semibold mb-1">
+                        Parent Category
+                    </label>
+                    <select name="parent_id" id="parent_id" class="w-full border dark:border-[#23263a] dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-100 dark:focus:ring-indigo-900">
+                        <option value="">None</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('parent_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('parent_id') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Name & Slug -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="name" class="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-semibold mb-1">
+                            Name
+                        </label>
+                        <input type="text" name="name" id="name" class="w-full border dark:border-[#23263a] dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-100 dark:focus:ring-indigo-900" value="{{ old('name') }}">
+                        @error('name') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label for="slug" class="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-semibold mb-1">
+                            Slug
+                        </label>
+                        <input type="text" name="slug" id="slug" class="w-full border dark:border-[#23263a] dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-100 dark:focus:ring-indigo-900" value="{{ old('slug') }}">
+                        @error('slug') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="text-gray-700 dark:text-gray-200 font-semibold mb-1 block">Description</label>
+                    <textarea name="description" id="description" rows="3" class="w-full border dark:border-[#23263a] dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-100 dark:focus:ring-indigo-900">{{ old('description') }}</textarea>
+                    @error('description') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Image -->
+                <div>
+                    <label for="image" class="text-gray-700 dark:text-gray-200 font-semibold mb-1 block">Image</label>
+                    <input type="file" name="image" id="image" class="w-full border dark:border-[#23263a] dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-100 dark:focus:ring-indigo-900" accept="image/*" onchange="showCategoryPreview(event)">
+                    <div id="categoryImagePreview" class="mt-2"></div>
+                    @error('image') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Sort Order & Active -->
+                <div class="grid grid-cols-2 gap-5">
+                    <div>
+                        <label for="sort_order" class="text-gray-700 dark:text-gray-200 font-semibold mb-1 block">Sort Order</label>
+                        <input type="number" name="sort_order" id="sort_order" class="w-full border dark:border-[#23263a] dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-100 dark:focus:ring-indigo-900" value="{{ old('sort_order', 0) }}">
+                        @error('sort_order') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="flex items-center mt-7">
+                        <label class="inline-flex items-center font-semibold">
+                            <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
+                            <span class="ml-2 text-gray-700 dark:text-gray-200">Active</span>
+                        </label>
+                        @error('is_active') <span class="text-red-500 dark:text-red-400 text-sm">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end">
+                    <button type="submit" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg shadow transition-all duration-150">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/>
+                        </svg>
+                        Create Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@push('scripts')
+<script>
+function showCategoryPreview(event) {
+    const preview = document.getElementById('categoryImagePreview');
+    preview.innerHTML = '';
+    if (event.target.files.length > 0) {
+        const src = URL.createObjectURL(event.target.files[0]);
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'mt-2 rounded shadow h-24';
+        preview.appendChild(img);
+    }
+}
+</script>
+@endpush
+@endsection

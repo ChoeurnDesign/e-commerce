@@ -1,0 +1,172 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\DashboardRedirectController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\HelpController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\ReportController as UserReportController;
+use App\Http\Controllers\Admin\ReportDashController;
+
+// Admin Controllers
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\OnsaleController;
+use App\Http\Controllers\Admin\SettingController;
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
+// Home & Static Pages
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::view('/about', 'about')->name('about');
+Route::view('/contact', 'contact')->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+Route::get('/faq', [FaqController::class, 'index'])->name('faq');
+Route::get('/help', [HelpController::class, 'index'])->name('help');
+
+// Language & Currency
+Route::get('locale/{locale}', function ($locale) {
+    if (array_key_exists($locale, config('app.available_locales'))) {
+        app()->setLocale($locale);
+        session(['locale' => $locale]);
+    }
+    return back();
+})->name('locale.switch');
+Route::get('currency/{currency}', function ($currency) {
+    $available = app('currencyService')->getAvailableCurrencies();
+    if (isset($available[$currency])) {
+        session(['currency' => $currency]);
+    }
+    return back();
+})->name('currency.switch');
+
+// Categories & Products
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/product/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/shops-on-sale', [ProductController::class, 'shopsOnSale'])->name('products.shops_on_sale');
+
+/*
+|--------------------------------------------------------------------------
+| Report (User)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('report')->name('report.')->group(function () {
+    Route::post('/', [UserReportController::class, 'store'])->name('store');
+    Route::get('/{id}', [UserReportController::class, 'show'])->name('show');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated User Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardRedirectController::class, 'redirectToDashboard'])
+        ->middleware(['verified'])
+        ->name('dashboard');
+
+    Route::resource('reviews', ReviewController::class)->only(['store', 'edit', 'update']);
+    Route::delete('reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    Route::post('/cart', [CartController::class, 'store'])->name('cart.ajax.add');
+    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+    Route::prefix('cart')->name('cart.')->group(function () {
+        Route::get('/', [CartController::class, 'index'])->name('index');
+        Route::post('/add/{product}', [CartController::class, 'add'])->name('add');
+        Route::put('/update', [CartController::class, 'update'])->name('update');
+        Route::delete('/remove/{product}', [CartController::class, 'remove'])->name('remove');
+        Route::delete('/clear', [CartController::class, 'clear'])->name('clear');
+        Route::get('/count', [CartController::class, 'count'])->name('count');
+    });
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('/wishlist', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    Route::get('/my-orders', [OrderController::class, 'userOrders'])->name('orders.history');
+    Route::get('/orders/{orderNumber}', [OrderController::class, 'show'])->name('orders.show');
+
+    Route::prefix('checkout')->name('checkout.')->group(function () {
+        Route::get('/', [CheckoutController::class, 'index'])->name('index');
+        Route::post('/', [CheckoutController::class, 'placeOrder'])->name('placeOrder');
+        Route::get('/confirmation/{orderNumber}', [CheckoutController::class, 'confirmation'])->name('confirmation');
+        Route::post('/paypal-capture', [CheckoutController::class, 'paypalCapture'])->name('paypal.capture');
+    });
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Social Auth & Verification (No Auth Middleware)
+|--------------------------------------------------------------------------
+*/
+Route::get('auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.login');
+Route::get('auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+Route::get('/social/confirm', [SocialAuthController::class, 'confirm'])->name('social.confirm');
+Route::post('/social/confirm/proceed', [SocialAuthController::class, 'confirmProceed'])->name('social.confirm.proceed');
+Route::post('/social/confirm/cancel', [SocialAuthController::class, 'confirmCancel'])->name('social.confirm.cancel');
+
+Route::get('/verify', [VerificationController::class, 'showForm'])->name('code.verify.form');
+Route::post('/verify', [VerificationController::class, 'verifyCode'])->name('code.verify');
+Route::get('/send-verification-code', [VerificationController::class, 'sendVerificationCode'])->name('code.send');
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes (auth + admin middleware)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')
+    ->middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('reports-dash', [ReportDashController::class, 'index'])->name('reports-dash.index');
+        Route::resource('products', AdminProductController::class);
+        Route::resource('categories', AdminCategoryController::class);
+        Route::resource('orders', AdminOrderController::class);
+        Route::resource('customers', CustomerController::class)->only(['index']);
+        Route::resource('reports', AdminReportController::class)->only(['index', 'show']);
+        Route::resource('reviews', AdminReviewController::class)->only(['index']);
+        // On Sale routes: only index, edit, update, use 'product' as parameter name
+        Route::resource('onsale', OnsaleController::class)
+            ->only(['index', 'edit', 'update'])
+            ->parameters(['onsale' => 'product']);
+        Route::patch('products/{product}/remove-sale', [OnsaleController::class, 'removeFromSale'])->name('products.removeFromSale');
+        Route::resource('settings', SettingController::class)->only(['index']);
+        Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::get('products/import', [AdminProductController::class, 'showImportForm'])->name('products.import.form');
+        Route::post('products/import', [AdminProductController::class, 'import'])->name('products.import');
+    });
+
+require __DIR__ . '/auth.php';

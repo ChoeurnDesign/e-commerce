@@ -28,7 +28,8 @@
 <?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
 <?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-    Home
+    <?php echo e(__('navigation.home')); ?>
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalc295f12dca9d42f28a259237a5724830)): ?>
@@ -70,7 +71,8 @@
 <?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
 <?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-    Products
+    <?php echo e(__('navigation.products')); ?>
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalc295f12dca9d42f28a259237a5724830)): ?>
@@ -112,7 +114,8 @@
 <?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
 <?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-    Categories
+    <?php echo e(__('navigation.categories')); ?>
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalc295f12dca9d42f28a259237a5724830)): ?>
@@ -155,7 +158,8 @@
 <?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
 <?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-    Orders
+    <?php echo e(__('navigation.orders')); ?>
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalc295f12dca9d42f28a259237a5724830)): ?>
@@ -198,7 +202,8 @@
 <?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
 <?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-    About
+    <?php echo e(__('navigation.about')); ?>
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalc295f12dca9d42f28a259237a5724830)): ?>
@@ -240,7 +245,8 @@
 <?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
 <?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-    Contact
+    <?php echo e(__('navigation.contact')); ?>
+
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalc295f12dca9d42f28a259237a5724830)): ?>
@@ -284,7 +290,7 @@
 <?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
 <?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-            <span>Dashboard</span>
+            <span><?php echo e(__('navigation.dashboard')); ?></span>
          <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalc295f12dca9d42f28a259237a5724830)): ?>

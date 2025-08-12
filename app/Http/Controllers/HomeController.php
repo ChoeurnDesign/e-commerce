@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,6 +12,11 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $settings = Setting::pluck('value', 'key')->toArray();
+        $storefrontTitle = trim($settings['storefront_title'] ?? '');
+        $welcomeMessage = trim($settings['welcome_message'] ?? '');
+        $banners = \App\Models\HomepageBanner::where('enabled', 1)->orderBy('order')->get();
+
         // Featured products (limit 8)
         $featuredProducts = Product::with('category')
             ->active()
@@ -63,7 +69,10 @@ class HomeController extends Controller
             'parentCategories',
             'cartCount',
             'wishlistCount',
-            'saleProducts'
+            'saleProducts',
+            'storefrontTitle',
+            'welcomeMessage',
+            'banners'
         ));
     }
 }

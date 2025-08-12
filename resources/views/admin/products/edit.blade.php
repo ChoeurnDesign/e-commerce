@@ -3,7 +3,7 @@
 @section('title', 'Edit Product')
 
 @section('content')
-<div class="max-w-full mx-auto space-y-8 bg-gray-300 dark:bg-[#181f31] min-h-screen p-10">
+<div class="max-w-full mx-auto space-y-8">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Product</h2>

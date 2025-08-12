@@ -11,6 +11,7 @@ use App\Services\CartService;
 use App\View\Composers\CartComposer;
 use App\Services\CurrencyService;
 use App\Models\Report;
+use App\Models\Setting;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CartService::class, function ($app) {
             return new CartService();
         });
+
+        // Automatically load all helpers in app/Helpers
+        foreach (glob(app_path('Helpers') . '/*.php') as $filename) {
+            require_once $filename;
+        }
     }
 
     /**
@@ -45,18 +51,29 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $view->with('wishlistCount', $wishlistCount)
-                 ->with('userUnreadCount', $userUnreadCount); // renamed to avoid collision with admin noti
+                ->with('userUnreadCount', $userUnreadCount);
         });
 
         // Provide $reports and $unreadCount to admin notification partial
         View::composer('admin.partials.noti', function ($view) {
-            $reports = \App\Models\Report::latest()->take(5)->get();
-            $unreadCount = \App\Models\Report::where('is_read', false)->count();
+            $reports = \App\Models\UserReport::latest()->take(5)->get();
+            $unreadCount = \App\Models\UserReport::where('is_read', false)->count();
             $view->with('reports', $reports)
-                 ->with('unreadCount', $unreadCount);
+                ->with('unreadCount', $unreadCount);
         });
 
         // Set application locale from session
-        App::setLocale(Session::get('locale', config('app.locale')));
+         if (Session::has('lang')) {
+            App::setLocale(Session::get('lang', 'en'));
+        }
+
+        // Fetch all settings and make them available to all views.
+        // This is a more robust way to handle all your settings in one place.
+        View::composer('*', function ($view) {
+            $settings = Setting::pluck('value', 'key')->toArray();
+            $view->with('settings', $settings);
+        });
+
+
     }
 }

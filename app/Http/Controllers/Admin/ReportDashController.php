@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Report;
+use App\Models\UserReport;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
@@ -13,14 +13,20 @@ class ReportDashController extends Controller
 {
     public function index()
     {
+        // Calculate total orders and revenue
+        $totalOrders = Order::count();
+        $totalRevenue = Order::where('payment_status', 'paid')->sum('total_price');
+        $averageOrderValue = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
+
         // Stats array for dashboard analytics/market report
         $stats = [
             'total_customers' => User::count(),
-            'total_orders' => Order::count(),
-            'total_revenue' => Order::where('payment_status', 'paid')->sum('total_price'),
-            'total_reports' => Report::count(),
+            'total_orders' => $totalOrders,
+            'total_revenue' => $totalRevenue,
+            'total_reports' => UserReport::count(),
             'page_views' => Product::sum('page_views'),
             'goal_conversion' => '0%',
+            'average_order_value' => $averageOrderValue, // <-- Added
         ];
 
         // Orders by month (current year)
@@ -59,8 +65,8 @@ class ReportDashController extends Controller
         // Reports Status
         $reportsStatusLabels = ['Open', 'Resolved'];
         $reportsStatusData = [
-            Report::where('status', 'open')->count(),
-            Report::where('status', 'resolved')->count(),
+            UserReport::where('status', 'open')->count(),
+            UserReport::where('status', 'resolved')->count(),
         ];
 
         // Recent Orders

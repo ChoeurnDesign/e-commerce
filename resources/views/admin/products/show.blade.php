@@ -3,7 +3,7 @@
 @section('title', 'Product Details')
 
 @section('content')
-<div class="max-w-3xl mx-auto space-y-8 bg-gray-300 dark:bg-[#181f31] min-h-screen p-10">
+<div class="max-w-full mx-auto space-y-8">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Product Details</h2>
@@ -16,7 +16,7 @@
     <div class="bg-white dark:bg-[#23263a] rounded-lg shadow p-6 flex flex-col md:flex-row gap-6 border border-gray-100 dark:border-[#23263a]">
         <img class="h-40 w-auto rounded-lg object-cover border border-gray-100 dark:border-[#23263a]" src="{{ $product->image ? asset('img/products/' . $product->image) : 'https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=' . urlencode($product->name) }}" alt="{{ $product->name }}">
         <div class="flex-1 space-y-3">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{{ $product->name }}</h3>
+            <h3 class="text-xl  text-gray-900 dark:text-gray-100">{{ $product->name }}</h3>
             <div class="text-sm text-gray-500 dark:text-gray-400">SKU: {{ $product->sku }}</div>
             <div>
                 <span class="font-medium text-gray-700 dark:text-gray-200">Category:</span>
@@ -35,7 +35,7 @@
             </div>
             <div>
                 <span class="font-medium text-gray-700 dark:text-gray-200">Status:</span>
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $product->is_active ? 'bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300' }}">
+                <span class="inline-flex px-2 py-1 text-xs  rounded-full {{ $product->is_active ? 'bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300' }}">
                     {{ $product->is_active ? 'Active' : 'Inactive' }}
                 </span>
             </div>

@@ -36,8 +36,18 @@
                 <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded">Send Message</button>
             </form>
             <div class="mt-8 text-gray-700 dark:text-gray-200">
-                <p><span class="font-semibold">Email:</span> support@shopexpress.com</p>
-                <p><span class="font-semibold">Phone:</span> +855 70 229 710</p>
+                <p>
+                    <span class="font-semibold">Email:</span>
+                    <a href="mailto:{{ setting('support_email', 'support@shopexpress.com') }}" class="underline text-indigo-700 dark:text-indigo-300 hover:text-indigo-500">
+                        {{ setting('support_email', 'support@shopexpress.com') }}
+                    </a>
+                </p>
+                <p>
+                    <span class="font-semibold">Phone:</span>
+                    <a href="tel:{{ setting('support_phone', '+855 70 229 710') }}" class="underline text-indigo-700 dark:text-indigo-300 hover:text-indigo-500">
+                        {{ setting('support_phone', '+855 70 229 710') }}
+                    </a>
+                </p>
             </div>
         </div>
     </div>

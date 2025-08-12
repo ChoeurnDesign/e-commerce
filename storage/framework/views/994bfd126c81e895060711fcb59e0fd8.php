@@ -28,6 +28,7 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
+
 <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden border border-gray-100 dark:border-gray-800 relative z-20">
     <div class="relative overflow-hidden bg-gray-300 dark:bg-gray-800 rounded-t-2xl">
         <a href="<?php echo e(route('products.show', $product->slug)); ?>">
@@ -56,24 +57,32 @@ unset($__defined_vars); ?>
 
             </a>
         </h3>
-        <div class="flex items-center justify-between mb-2">
-             <div>
-                <?php if($product->sale_price && $product->compare_price && $product->sale_price < $product->compare_price): ?>
-                    <span class="text-lg font-bold text-green-600 dark:text-green-400">$<?php echo e(number_format($product->sale_price, 2)); ?></span>
-                    <span class="text-sm text-gray-500 dark:text-gray-400 line-through ml-2">$<?php echo e(number_format($product->compare_price, 2)); ?></span>
-                <?php elseif($product->sale_price && $product->sale_price < $product->price): ?>
-                    <span class="text-lg font-bold text-green-600 dark:text-green-400">$<?php echo e(number_format($product->sale_price, 2)); ?></span>
-                    <span class="text-sm text-gray-500 dark:text-gray-400 line-through ml-2">$<?php echo e(number_format($product->price, 2)); ?></span>
-                <?php else: ?>
-                    <span class="text-lg font-bold text-gray-900 dark:text-gray-100">$<?php echo e(number_format($product->price, 2)); ?></span>
-                <?php endif; ?>
-            </div>
-            <span class="text-xs <?php echo e($product->stock_quantity > 0 ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900' : 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900'); ?> px-2 py-1 rounded-full font-medium flex items-center">
-                <div class="w-2 h-2 <?php echo e($product->stock_quantity > 0 ? 'bg-green-500 dark:bg-green-400' : 'bg-red-500 dark:bg-red-400'); ?> rounded-full mr-2"></div>
-                <?php echo e($product->stock_quantity > 0 ? 'In Stock' : 'Out of Stock'); ?>
+        <div>
+            <?php if($product->sale_price && $product->compare_price && $product->sale_price < $product->compare_price): ?>
+                <span class="text-lg font-bold text-green-600 dark:text-green-400">
+                    <?php echo e(\App\Helpers\CurrencyHelper::format($product->sale_price)); ?>
 
-            </span>
-        </div>
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 line-through ml-2">
+                    <?php echo e(\App\Helpers\CurrencyHelper::format($product->compare_price)); ?>
+
+                </span>
+            <?php elseif($product->sale_price && $product->sale_price < $product->price): ?>
+                <span class="text-lg font-bold text-green-600 dark:text-green-400">
+                    <?php echo e(\App\Helpers\CurrencyHelper::format($product->sale_price)); ?>
+
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 line-through ml-2">
+                    <?php echo e(\App\Helpers\CurrencyHelper::format($product->price)); ?>
+
+                </span>
+            <?php else: ?>
+                <span class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                    <?php echo e(\App\Helpers\CurrencyHelper::format($product->price)); ?>
+
+                </span>
+            <?php endif; ?>
+            </div>
         <div class="flex items-center mb-2">
             <div class="flex text-yellow-400">
                 <?php for($i = 1; $i <= 5; $i++): ?>

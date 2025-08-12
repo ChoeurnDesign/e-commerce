@@ -3,7 +3,7 @@
 @section('title', 'Order Details')
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-8 bg-gray-300 dark:bg-[#181f31] min-h-screen p-8">
+<div class="max-w-full mx-auto space-y-8 bg-gray-300 dark:bg-[#181f31] min-h-screen p-8">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Order #{{ $order->id }} Details</h2>
@@ -24,7 +24,7 @@
             </div>
             <div>
                 <h3 class="font-semibold text-lg mb-2 text-gray-800 dark:text-gray-100">Order Info</h3>
-                <div class="text-gray-700 dark:text-gray-200">
+                <div class="text-gray-700    dark:text-gray-200">
                     <div>Order ID: <span class="font-medium">#{{ $order->id }}</span></div>
                     <div>Placed At: <span class="font-medium">{{ $order->created_at->format('Y-m-d H:i') }}</span></div>
                     <div>Status:

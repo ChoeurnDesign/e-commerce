@@ -14,7 +14,8 @@
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
         "paypal/paypal-checkout-sdk": "^1.0",
-        "srmklive/paypal": "^3.0"
+        "srmklive/paypal": "^3.0",
+        "stichoza/google-translate-php": "^5.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -34,7 +35,9 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/ImageHelper.php"
+            "app/Helpers/ImageHelper.php",
+            "app/Helpers/setting.php",
+            "app/Helpers/TranslationHelper.php"
         ]
     },
     "autoload-dev": {

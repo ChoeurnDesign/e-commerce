@@ -17,7 +17,9 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\VerificationController;
-use App\Http\Controllers\ReportController as UserReportController;
+use App\Http\Controllers\UserReportController;
+use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\Admin\ReportDashController;
 
 // Admin Controllers
@@ -29,7 +31,8 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\OnsaleController;
-use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\HomepageBannerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,21 +48,14 @@ Route::post('/contact', [ContactController::class, 'submit'])->name('contact.sub
 Route::get('/faq', [FaqController::class, 'index'])->name('faq');
 Route::get('/help', [HelpController::class, 'index'])->name('help');
 
-// Language & Currency
-Route::get('locale/{locale}', function ($locale) {
-    if (array_key_exists($locale, config('app.available_locales'))) {
-        app()->setLocale($locale);
-        session(['locale' => $locale]);
-    }
-    return back();
-})->name('locale.switch');
-Route::get('currency/{currency}', function ($currency) {
-    $available = app('currencyService')->getAvailableCurrencies();
-    if (isset($available[$currency])) {
-        session(['currency' => $currency]);
-    }
-    return back();
-})->name('currency.switch');
+// Language & Currency switching (Controller-based)
+Route::get('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
+Route::get('currency/{currency}', [CurrencyController::class, 'switch'])->name('currency.switch');
+
+// Admin Banner Management
+Route::post('admin/settings/add-banner', [SettingsController::class, 'addBanner'])->name('admin.settings.add_banner');
+Route::delete('admin/settings/delete-banner/{banner}', [SettingsController::class, 'deleteBanner'])->name('admin.settings.delete_banner');
+Route::put('/admin/settings/banner/{banner}/edit', [SettingsController::class, 'editBanner'])->name('admin.settings.edit_banner');
 
 // Categories & Products
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -70,14 +66,14 @@ Route::get('/shops-on-sale', [ProductController::class, 'shopsOnSale'])->name('p
 
 /*
 |--------------------------------------------------------------------------
-| Report (User)
+| User Report Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('report')->name('report.')->group(function () {
+Route::prefix('user-report')->name('user_report.')->group(function () {
+    Route::get('/create', [UserReportController::class, 'create'])->name('create');
     Route::post('/', [UserReportController::class, 'store'])->name('store');
     Route::get('/{id}', [UserReportController::class, 'show'])->name('show');
 });
-
 /*
 |--------------------------------------------------------------------------
 | Authenticated User Routes
@@ -156,14 +152,20 @@ Route::prefix('admin')
         Route::resource('categories', AdminCategoryController::class);
         Route::resource('orders', AdminOrderController::class);
         Route::resource('customers', CustomerController::class)->only(['index']);
-        Route::resource('reports', AdminReportController::class)->only(['index', 'show']);
+        Route::resource('reports', UserReportController::class)->only(['index', 'show']);
         Route::resource('reviews', AdminReviewController::class)->only(['index']);
         // On Sale routes: only index, edit, update, use 'product' as parameter name
         Route::resource('onsale', OnsaleController::class)
             ->only(['index', 'edit', 'update'])
             ->parameters(['onsale' => 'product']);
         Route::patch('products/{product}/remove-sale', [OnsaleController::class, 'removeFromSale'])->name('products.removeFromSale');
-        Route::resource('settings', SettingController::class)->only(['index']);
+        // --- Settings routes updated for sectioned save buttons ---
+        Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::post('settings/policies', [SettingsController::class, 'savePolicies'])->name('settings.savePolicies');
+        Route::post('settings/general', [SettingsController::class, 'saveGeneral'])->name('settings.save_general');
+        Route::post('settings/storefront', [SettingsController::class, 'saveStorefront'])->name('settings.save_storefront');
+        Route::post('settings/payment', [SettingsController::class, 'savePayment'])->name('settings.save_payment');
+        Route::post('settings/shipping', [SettingsController::class, 'saveShipping'])->name('settings.save_shipping');
         Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::get('products/import', [AdminProductController::class, 'showImportForm'])->name('products.import.form');
         Route::post('products/import', [AdminProductController::class, 'import'])->name('products.import');

@@ -3,11 +3,15 @@
 @section('title', 'Products Management')
 
 @section('content')
-<div class="space-y-6 bg-gray-300 dark:bg-[#181f31] min-h-screen p-4 sm:p-8">
     <!-- Header -->
-    <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Products</h2>
-        <div class="flex gap-3">
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center">
+            <span class="mr-2">
+                <x-icon-dashboard name="products" class="w-7 h-7 text-indigo-600 dark:text-yellow-400"/>
+            </span>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Products</h1>
+        </div>
+        <div class="flex space-x-4">
             <a href="{{ route('admin.products.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -64,7 +68,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $product->is_active ? 'bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300' }}">
+                                <span class="inline-flex px-2 py-1 text-xs  rounded-full {{ $product->is_active ? 'bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300' }}">
                                     {{ $product->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
@@ -111,5 +115,4 @@
             {{ $products->links() }}
         </div>
     </div>
-</div>
 @endsection

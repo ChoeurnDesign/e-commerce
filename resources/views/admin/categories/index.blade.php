@@ -3,10 +3,16 @@
 @section('title', 'Categories Management')
 
 @section('content')
-<div class="space-y-6 bg-gray-300 dark:bg-[#181f31] min-h-screen p-8">
+<div class="space-y-6 min-h-screen">
     <!-- Header -->
     <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Categories</h2>
+        <div class="flex items-center">
+            <span class="mr-2">
+                <x-icon-dashboard name="categories" class="w-7 h-7 text-indigo-600 dark:text-yellow-400"/>
+            </span>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Categories</h1>
+        </div>
+
         <a href="{{ route('admin.categories.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -38,7 +44,7 @@
                                     class="h-20 w-20 rounded-full object-cover border border-indigo-200 dark:border-indigo-700"
                                     onerror="this.onerror=null;this.src='{{ asset('/img/default-category.png') }}';">
                             </td>
-                            <td class="px-6 py-4 font-semibold text-gray-900 dark:text-gray-100">
+                            <td class="px-6 py-4  text-gray-900 dark:text-gray-100">
                                 {{ $category->name }}
                             </td>
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-300">

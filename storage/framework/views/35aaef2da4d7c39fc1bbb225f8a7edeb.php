@@ -8,39 +8,56 @@
 <?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
-    <!-- Hero Section -->
-<div class="relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white dark:from-gray-900 dark:to-gray-800 dark:text-gray-100 overflow-hidden">
-    <div class="absolute inset-0 bg-black opacity-40 dark:opacity-70" aria-hidden="true"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center z-10">
-        <h1 class="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">
-            <?php echo e(__('Welcome to ShopExpress')); ?>
+    <!-- Banner Slider -->
+    <div x-data="{ active: 0, count: <?php echo e(count($banners)); ?> }" class="relative overflow-hidden">
+        <?php $__currentLoopData = $banners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $banner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div x-show="active === <?php echo e($i); ?>" class="relative bg-cover bg-center min-h-[400px] transition-all duration-500"
+                style="background-image: url('<?php echo e(asset('storage/'.$banner->image_path)); ?>');">
+                <div class="absolute inset-0 bg-black opacity-40 dark:opacity-70" aria-hidden="true"></div>
+                <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center z-10">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">
+                        <?php echo e($storefrontTitle ?? "Welcome to Our Store"); ?>
 
-        </h1>
-        <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            <?php echo e(__('Discover amazing products at unbeatable prices. Your one-stop shop for everything you need.')); ?>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                        <?php echo e($welcomeMessage ?? __('Discover amazing products at unbeatable prices. Your one-stop shop for everything you need.')); ?>
 
-        </p>
-        <div class="flex flex-col items-center gap-0 mt-6">
-            <!-- Top row: Browse Categories & Shop Featured side by side -->
-            <div class="flex flex-row gap-4 mb-4">
-                <a href="#categories" class="inline-block bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-2 px-6 rounded-full text-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white dark:bg-gray-900 dark:text-purple-200 dark:hover:bg-gray-800 dark:focus:ring-gray-900">
-                    <?php echo e(__('Browse Categories')); ?>
+                    </p>
+                    <?php if($banner->title || $banner->subtitle): ?>
+                    <div class="mb-8">
+                        <?php if($banner->title): ?>
+                            <div class="text-3xl font-semibold mb-2"><?php echo e($banner->title); ?></div>
+                        <?php endif; ?>
+                        <?php if($banner->subtitle): ?>
+                            <div class="text-lg mb-2"><?php echo e($banner->subtitle); ?></div>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
+                    <div class="flex flex-col items-center gap-0 mt-6">
+                        <div class="flex flex-row gap-4 mb-4">
+                            <a href="#categories" class="inline-block bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-2 px-6 rounded-full text-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white dark:bg-gray-900 dark:text-purple-200 dark:hover:bg-gray-800 dark:focus:ring-gray-900">
+                                <?php echo e(__('Browse Categories')); ?>
 
-                </a>
-                <a href="#featured-products" class="inline-block border-2 border-white text-white hover:bg-white hover:text-indigo-600 font-bold py-2 px-6 rounded-full text-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white dark:border-purple-200 dark:hover:bg-gray-900 dark:hover:text-purple-200 dark:focus:ring-gray-900">
-                    <?php echo e(__('Shop Featured')); ?>
+                            </a>
+                            <a href="#featured-products" class="inline-block border-2 border-white text-white hover:bg-white hover:text-indigo-600 font-bold py-2 px-6 rounded-full text-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white dark:border-purple-200 dark:hover:bg-gray-900 dark:hover:text-purple-200 dark:focus:ring-gray-900">
+                                <?php echo e(__('Shop Featured')); ?>
 
-                </a>
+                            </a>
+                        </div>
+                        <a href="<?php echo e(route('products.shops_on_sale', ['on_sale' => 1])); ?>"
+                        class="inline-block bg-pink-600 text-white font-bold py-2 px-6 rounded-full text-lg transition duration-300 shadow hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-300 dark:bg-pink-700 dark:hover:bg-pink-800 dark:focus:ring-pink-900">
+                            <?php echo e(__('Shop On Sale')); ?>
+
+                        </a>
+                    </div>
+                </div>
             </div>
-            <!-- Shop On Sale (bottom, always below the row above) -->
-            <a href="<?php echo e(route('products.shops_on_sale', ['on_sale' => 1])); ?>"
-            class="inline-block bg-pink-600 text-white font-bold py-2 px-6 rounded-full text-lg transition duration-300 shadow hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-300 dark:bg-pink-700 dark:hover:bg-pink-800 dark:focus:ring-pink-900">
-                <?php echo e(__('Shop On Sale')); ?>
-
-            </a>
-        </div>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        <?php if(count($banners) > 1): ?>
+        <button @click="active = (active - 1 + count) % count" class="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/40 rounded-full text-white">&lt;</button>
+        <button @click="active = (active + 1) % count" class="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/40 rounded-full text-white">&gt;</button>
+        <?php endif; ?>
     </div>
-</div>
 
     <!-- Categories Preview Section -->
     <div id="categories" class="py-16 bg-white dark:bg-gray-900">

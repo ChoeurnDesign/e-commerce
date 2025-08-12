@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 @section('title', 'Add Product')
 @section('content')
-<div class="min-h-screen bg-gray-300 dark:bg-[#181f31] p-8">
-    <div class="max-w-full mx-auto">
+<div class="min-h-screen ">
+    <div class="space-y-6 min-h-screen">
         <div class="bg-white dark:bg-[#23263a] rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-600">
             <div class="flex items-center mb-8">
                 <div class="bg-blue-100 dark:bg-blue-900 rounded-full p-2 mr-3">

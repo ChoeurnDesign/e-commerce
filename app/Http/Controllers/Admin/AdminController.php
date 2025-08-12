@@ -7,7 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Category;
-use App\Models\Report;
+use App\Models\UserReport;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -61,9 +61,9 @@ class AdminController extends Controller
         $pageViews = $stats['page_views'];
 
         // Admin notifications (last 7 days)
-        $reports = Report::where('created_at', '>=', $lastWeek)
+        $reports = UserReport::where('created_at', '>=', $lastWeek)
             ->latest()->take(5)->get();
-        $unreadCount = Report::where('is_read', false)
+        $unreadCount = UserReport::where('is_read', false)
             ->where('created_at', '>=', $lastWeek)
             ->count();
 

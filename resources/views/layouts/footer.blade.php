@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div class="col-span-1 md:col-span-2">
-                <h3 class="text-2xl font-bold mb-4">ShopExpress</h3>
+                <h3 class="text-2xl mb-4">{{ setting('store_name') }}</h3>
                 <p class="text-gray-300 mb-4">Your premier destination for quality products and exceptional service. Shop with confidence and convenience.</p>
                 <div class="flex space-x-4">
                     <!-- GitHub -->
@@ -24,10 +24,38 @@
                         </svg>
                     </a>
                 </div>
+                <div class="mt-6 text-gray-300">
+                    <ul class="space-y-2">
+                        @if(setting('store_phone'))
+                        <li>
+                            <a href="tel:{{ setting('store_phone') }}" class="underline text-white hover:text-indigo-300">
+                                {{ setting('store_phone') }}
+                            </a>
+                            <span class="mx-2">|</span>
+                            <span class="text-gray-100 font-medium">
+                                {{ setting('store_address', '123 Main Street, City, Country') }}
+                            </span>
+                        </li>
+                        @else
+                        <li>
+                            <span class="text-gray-100 font-medium">
+                                {{ setting('store_address', '123 Main Street, City, Country') }}
+                            </span>
+                        </li>
+                        @endif
+                        <li class="mt-2">
+                            Contact our store directly by
+                            <a href="mailto:{{ setting('store_email', 'support@shopexpress.com') }}"
+                            class="underline text-indigo-300 hover:text-indigo-400 font-medium">
+                                {{ setting('store_email', 'support@shopexpress.com') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div>
-                <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                <h4 class="text-lg  mb-4">Quick Links</h4>
                 <ul class="space-y-2">
                     <li><a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition duration-150 ease-in-out">Home</a></li>
                     <li><a href="{{ route('products.index') }}" class="text-gray-300 hover:text-white transition duration-150 ease-in-out">Products</a></li>
@@ -41,19 +69,42 @@
 
             {{-- Customer Service Section with Modals --}}
             <div x-data="{ open: '', content: '' }">
-                <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Customer Service</h4>
+                <h4 class="text-lg  mb-4 text-gray-900 dark:text-gray-100">Customer Service</h4>
                 <ul class="space-y-2">
                     <li>
-                        <a href="#" @click.prevent="open = 'Return Policy'; content = `You can return items within 30 days of purchase. Please contact support for instructions.`;" class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">Return Policy</a>
+                        <a href="#"
+                        @click.prevent="open = 'Return Policy'; content = `{!! addslashes(nl2br(e(setting('return_policy', 'You can return items within 30 days of purchase. Please contact support for instructions.'))) ) !!}`;"
+                        class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">
+                            Return Policy
+                        </a>
                     </li>
                     <li>
-                        <a href="#" @click.prevent="open = 'Privacy Policy'; content = `We respect your privacy and protect your personal data. Read our full policy for more info.`;" class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">Privacy Policy</a>
+                        <a href="#"
+                        @click.prevent="open = 'Privacy Policy'; content = `{!! addslashes(nl2br(e(setting('privacy_policy', 'We respect your privacy and protect your personal data. Read our full policy for more info.'))) ) !!}`;"
+                        class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">
+                            Privacy Policy
+                        </a>
                     </li>
                     <li>
-                        <a href="#" @click.prevent="open = 'Terms of Service'; content = `By using our site, you agree to our terms of service. Please review all terms before making a purchase.`;" class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">Terms of Service</a>
+                        <a href="#"
+                        @click.prevent="open = 'Terms of Service'; content = `{!! addslashes(nl2br(e(setting('terms_of_service', 'By using our site, you agree to our terms of service. Please review all terms before making a purchase.'))) ) !!}`;"
+                        class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">
+                            Terms of Service
+                        </a>
                     </li>
                     <li>
-                        <a href="#" @click.prevent="open = 'Support'; content = `Need help? Contact our support team at support@shopexpress.com or use the contact form.`;" class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">Support</a>
+                        <a href="#"
+                        @click.prevent="open = 'Shipping Policy'; content = `{!! addslashes(nl2br(e(setting('shipping_policy', 'No shipping policy set.'))) ) !!}`;"
+                        class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">
+                            Shipping Policy
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                        @click.prevent="open = 'Support'; content = `{!! addslashes(nl2br(e($settings['support_info'] ?? 'Contact us for support.'))) !!}`;"
+                        class="text-gray-300 hover:text-white dark:text-gray-400 dark:hover:text-white transition duration-150 ease-in-out">
+                            Support
+                        </a>
                     </li>
                 </ul>
                 <!-- Modal -->
@@ -68,15 +119,16 @@
                     >
                         <button @click="open = ''"
                                 class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 text-2xl leading-none">&times;</button>
-                        <h4 class="text-lg font-bold mb-3 text-gray-800 dark:text-gray-100" x-text="open"></h4>
+                        <h4 class="text-lg mb-3 text-gray-800 dark:text-gray-100" x-text="open"></h4>
                         <div class="text-gray-700 dark:text-gray-300" x-text="content"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        @include('layouts.report-problem')
-
+        <div class="flex justify-end">
+            @include('layouts.user-report')
+        </div>
         <div class="border-t border-gray-700 mt-8 pt-8 text-center">
             <p class="text-gray-300">&copy; {{ date('Y') }} ShopExpress. All rights reserved.</p>
             <span>Developed by <strong>Choeurn</strong></span>

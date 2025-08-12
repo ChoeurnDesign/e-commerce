@@ -3,7 +3,7 @@
 @section('title', 'Edit Category')
 
 @section('content')
-<div class="max-w-full mx-auto space-y-8 bg-gray-300 dark:bg-[#181f31] min-h-screen p-10">
+<div class="space-y-6 min-h-screen">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Category</h2>
@@ -64,10 +64,10 @@
             </div>
 
             <div class="pt-4 flex space-x-4">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-200">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg  transition duration-200">
                     Update Category
                 </button>
-                <a href="{{ route('admin.categories.index') }}" class="bg-gray-300 dark:bg-[#23263a] hover:bg-gray-400 dark:hover:bg-[#262c47] text-gray-800 dark:text-gray-200 px-6 py-2 rounded-lg font-semibold transition duration-200">
+                <a href="{{ route('admin.categories.index') }}" class="bg-gray-300 dark:bg-[#23263a] hover:bg-gray-400 dark:hover:bg-[#262c47] text-gray-800 dark:text-gray-200 px-6 py-2 rounded-lg  transition duration-200">
                     Cancel
                 </a>
             </div>

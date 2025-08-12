@@ -2,9 +2,11 @@
 
 @section('content')
 <div class="p-6 bg-gray-300 dark:bg-[#181f31] min-h-screen">
-    <div class="flex items-center mb-6">
-        <span class="text-3xl mr-2">👥</span>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Customers</h2>
+    <div class="mb-6 flex items-center">
+        <span class="mr-2">
+            <x-icon-dashboard name="customers" class="w-7 h-7 text-indigo-600 dark:text-yellow-400"/>
+        </span>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Customers</h1>
     </div>
     <div class="bg-white dark:bg-[#23263a] shadow rounded-lg border-2 border-gray-300 dark:border-[#23263a] overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-[#23263a]">

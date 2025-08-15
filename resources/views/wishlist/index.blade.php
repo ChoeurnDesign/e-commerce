@@ -13,7 +13,9 @@
                     @foreach($wishlistItems as $product)
                         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300"> {{-- ADDED dark:bg-gray-800 here --}}
                             <div class="relative">
-                                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+                                <img src="{{ $product->image ? asset('img/products/' . $product->image) : 'https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=' . urlencode($product->name) }}"
+
+                                    alt="{{ $product->name }}" class="w-full h-48 object-cover">
 
                                 <button
                                     onclick="toggleWishlist({{ $product->id }}, this)"

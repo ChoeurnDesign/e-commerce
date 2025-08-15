@@ -20,10 +20,16 @@
         </div>
         <div class="flex items-center gap-2 mt-1">
             @if(isset($item['sale_price']) && $item['sale_price'])
-                <span class="text-sm font-semibold text-green-600 dark:text-green-400">${{ number_format($item['price'], 2) }}</span>
-                <span class="text-xs text-gray-400 dark:text-gray-500 line-through">${{ number_format($item['original_price'], 2) }}</span>
+                <span class="text-sm font-semibold text-green-600 dark:text-green-400">
+                    {{ \App\Helpers\CurrencyHelper::format($item['price']) }}
+                </span>
+                <span class="text-xs text-gray-400 dark:text-gray-500 line-through">
+                    {{ \App\Helpers\CurrencyHelper::format($item['original_price']) }}
+                </span>
             @else
-                <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">${{ number_format($item['price'], 2) }}</span>
+                <span class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    {{ \App\Helpers\CurrencyHelper::format($item['price']) }}
+                </span>
             @endif
             @if($item['stock_quantity'] <= 5)
                 <span class="text-xs text-orange-500 dark:text-orange-400 ml-2">Only {{ $item['stock_quantity'] }} left</span>
@@ -51,7 +57,7 @@
             </button>
         </div>
         <div class="text-xs mt-1 font-semibold text-gray-700 dark:text-gray-300 item-subtotal" data-product-id="{{ $item['id'] }}">
-            ${{ number_format($item['subtotal'], 2) }}
+            {{ \App\Helpers\CurrencyHelper::format($item['subtotal']) }}
         </div>
     </div>
 </div>

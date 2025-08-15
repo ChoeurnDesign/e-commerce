@@ -16,6 +16,10 @@ class CartComposer
 
     public function compose(View $view)
     {
-        $view->with('cartCount', $this->cartService->getCartCount());
+        $view->with([
+            'cartCount'  => $this->cartService->getCartCount(),
+            'cartItems'  => $this->cartService->getCartItems(),
+            'cartTotals' => $this->cartService->getCartTotals(),
+        ]);
     }
 }

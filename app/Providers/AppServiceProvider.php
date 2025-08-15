@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Provide cartCount to all views via CartComposer
-        View::composer('*', CartComposer::class);
+        View::composer('*', \App\View\Composers\CartComposer::class);
 
         // Provide wishlistCount and unreadCount to all views for users
         View::composer('*', function ($view) {
@@ -63,7 +63,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Set application locale from session
-         if (Session::has('lang')) {
+        if (Session::has('lang')) {
             App::setLocale(Session::get('lang', 'en'));
         }
 
@@ -73,7 +73,5 @@ class AppServiceProvider extends ServiceProvider
             $settings = Setting::pluck('value', 'key')->toArray();
             $view->with('settings', $settings);
         });
-
-
     }
 }

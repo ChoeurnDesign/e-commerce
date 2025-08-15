@@ -3,16 +3,24 @@
     <div class="space-y-2 text-sm mb-4">
         <div class="flex justify-between">
             <span class="text-gray-600 dark:text-gray-400">Subtotal ({{ $cartTotals['total_quantity'] }} items)</span>
-            <span class="font-medium text-gray-900 dark:text-gray-100" id="cart-subtotal">${{ number_format($cartTotals['subtotal'], 2) }}</span>
+            <span class="font-medium text-gray-900 dark:text-gray-100" id="cart-subtotal">
+                {{ \App\Helpers\CurrencyHelper::format($cartTotals['subtotal']) }}
+            </span>
         </div>
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Tax ({{ number_format($cartTotals['tax_rate'] * 100, 1) }}%)</span>
-            <span class="font-medium text-gray-900 dark:text-gray-100" id="cart-tax">${{ number_format($cartTotals['tax'], 2) }}</span>
+            <span class="text-gray-600 dark:text-gray-400">
+                Tax ({{ number_format($cartTotals['tax_rate'] * 100, 1) }}%)
+            </span>
+            <span class="font-medium text-gray-900 dark:text-gray-100" id="cart-tax">
+                {{ \App\Helpers\CurrencyHelper::format($cartTotals['tax']) }}
+            </span>
         </div>
         <div class="border-t border-gray-200 dark:border-gray-700 pt-2">
             <div class="flex justify-between font-bold text-gray-900 dark:text-gray-100">
                 <span>Total</span>
-                <span id="cart-total">${{ number_format($cartTotals['total'], 2) }}</span>
+                <span id="cart-total">
+                    {{ \App\Helpers\CurrencyHelper::format($cartTotals['total']) }}
+                </span>
             </div>
         </div>
     </div>
@@ -36,7 +44,7 @@
         </div>
         <div class="flex items-center gap-1">
             <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span>Free shipping over $50</span>
+            <span>Free shipping over {{ \App\Helpers\CurrencyHelper::format(50) }}</span>
         </div>
         <div class="flex items-center gap-1">
             <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>

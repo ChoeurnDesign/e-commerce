@@ -9,7 +9,8 @@ use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -27,12 +28,10 @@ class CheckoutController extends Controller
      */
     public function index()
     {
-        // Check if cart has items
         if (!$this->cartService->hasItems()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty. Please add some items before checkout.');
         }
 
-        // Validate cart items before checkout
         $hasChanges = $this->cartService->validateCart();
         if ($hasChanges) {
             return redirect()->route('cart.index')->with('warning', 'Some items in your cart have been updated. Please review your cart before proceeding to checkout.');
@@ -41,17 +40,16 @@ class CheckoutController extends Controller
         $cartItems = $this->cartService->getCartItems();
         $cartTotals = $this->cartService->getCartTotals();
         $user = Auth::user();
-        $orderTotal = $cartTotals['total']; // <-- Add this line
+        $orderTotal = $cartTotals['total'];
 
-        return view('checkout.index', compact('cartItems', 'cartTotals', 'user', 'orderTotal')); // <-- Add orderTotal here
+        return view('checkout.index', compact('cartItems', 'cartTotals', 'user', 'orderTotal'));
     }
 
     /**
-     * Process the order
+     * Process the order for all payments (unified Place Order button)
      */
     public function placeOrder(Request $request)
     {
-        // Validate input
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
@@ -71,19 +69,24 @@ class CheckoutController extends Controller
             'notes' => 'nullable|string|max:1000'
         ]);
 
-        // Check if cart has items
         if (!$this->cartService->hasItems()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+        }
+
+        // Unified flow: Only allow PayPal via PayPal button with order_id
+        if ($validated['payment_method'] === 'paypal') {
+            if (!$request->filled('paypal_order_id')) {
+                return redirect()->back()->with('paypal_error', 'Please use the PayPal button to complete PayPal payments.');
+            }
+            // Optional: verify the PayPal order here for extra safety!
         }
 
         try {
             DB::beginTransaction();
 
-            // Get cart data
             $cartItems = $this->cartService->getCartItems();
             $cartTotals = $this->cartService->getCartTotals();
 
-            // Validate stock availability
             foreach ($cartItems as $item) {
                 $product = Product::find($item['id']);
                 if (!$product || !$product->is_active) {
@@ -94,7 +97,6 @@ class CheckoutController extends Controller
                 }
             }
 
-            // Handle billing address
             if ($request->billing_same_as_shipping) {
                 $validated['billing_address'] = $validated['shipping_address'];
                 $validated['billing_city'] = $validated['shipping_city'];
@@ -103,16 +105,16 @@ class CheckoutController extends Controller
                 $validated['billing_country'] = $validated['shipping_country'];
             }
 
-            // Create order
             $order = Order::create([
                 'user_id' => Auth::id(),
-                'order_number' => $this->generateOrderNumber(), // 👈 ADD ORDER NUMBER GENERATION
+                'order_number' => $this->generateOrderNumber(),
                 'subtotal' => $cartTotals['subtotal'],
                 'tax_amount' => $cartTotals['tax'],
                 'total_price' => $cartTotals['total'],
-                'status' => 'pending',
-                'payment_status' => 'pending',
+                'status' => ($validated['payment_method'] === 'paypal') ? 'confirmed' : 'pending',
+                'payment_status' => ($validated['payment_method'] === 'paypal') ? 'paid' : 'pending',
                 'payment_method' => $validated['payment_method'],
+                'payment_id' => $request->input('paypal_order_id', null),
                 'customer_name' => $validated['customer_name'],
                 'customer_email' => $validated['customer_email'],
                 'customer_phone' => $validated['customer_phone'],
@@ -129,11 +131,8 @@ class CheckoutController extends Controller
                 'notes' => $validated['notes'] ?? null
             ]);
 
-            // Create order items and update stock
             foreach ($cartItems as $item) {
                 $product = Product::find($item['id']);
-
-                // Create order item
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,
@@ -144,29 +143,23 @@ class CheckoutController extends Controller
                     'price' => $item['price'],
                     'total' => $item['subtotal']
                 ]);
-
-                // Update product stock
                 $product->decrement('stock_quantity', $item['quantity']);
             }
 
-            // Process payment (mock for now)
-            $paymentResult = $this->processPayment($order, $validated['payment_method']);
-
-            if ($paymentResult['success']) {
-                $order->update([
-                    'payment_status' => 'paid',
-                    'status' => 'confirmed',
-                    'payment_id' => $paymentResult['payment_id']
-                ]);
+            // Credit card and COD: process payment simulation
+            if (in_array($validated['payment_method'], ['credit_card', 'cash_on_delivery'])) {
+                $paymentResult = $this->processPayment($order, $validated['payment_method']);
+                if ($paymentResult['success']) {
+                    $order->update([
+                        'payment_status' => 'paid',
+                        'status' => 'confirmed',
+                        'payment_id' => $paymentResult['payment_id']
+                    ]);
+                }
             }
 
-            // Clear cart
             $this->cartService->clearCart();
-
             DB::commit();
-
-            // Send confirmation email (optional - implement later)
-            // $this->sendOrderConfirmationEmail($order);
 
             return redirect()->route('checkout.confirmation', $order->order_number)
                 ->with('success', 'Your order has been placed successfully!');
@@ -175,6 +168,97 @@ class CheckoutController extends Controller
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Failed to place order: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * PayPal capture (called by PayPal JS)
+     */
+    public function paypalCapture(Request $request)
+    {
+        $orderID = $request->input('orderID');
+        $clientId = config('services.paypal.client_id');
+        $secret = config('services.paypal.secret');
+
+        // Get Access Token
+        $tokenResponse = Http::withBasicAuth($clientId, $secret)
+            ->asForm()
+            ->post('https://api-m.sandbox.paypal.com/v1/oauth2/token', [
+                'grant_type' => 'client_credentials'
+            ]);
+
+        if (!$tokenResponse->successful()) {
+            Log::error('PayPal Token Error: ' . $tokenResponse->body());
+            return response()->json(['success' => false, 'message' => 'PayPal token error'], 500);
+        }
+        $accessToken = $tokenResponse->json()['access_token'];
+
+        // Capture Payment
+        $captureResponse = Http::withToken($accessToken)
+            ->post("https://api-m.sandbox.paypal.com/v2/checkout/orders/{$orderID}/capture");
+
+        // Check Capture Status
+        if (!($captureResponse->successful() && isset($captureResponse['status']) && $captureResponse['status'] === 'COMPLETED')) {
+            // ADDED: Log the full error response from PayPal
+            Log::error('PayPal Capture Error: ' . $captureResponse->body());
+            return response()->json(['success' => false, 'message' => 'PayPal payment not completed'], 400);
+        }
+
+        // Existing code to create order, save to database, etc.
+        // ... (rest of your method)
+        try {
+            DB::beginTransaction();
+            $cartItems = $this->cartService->getCartItems();
+            $cartTotals = $this->cartService->getCartTotals();
+            $user = Auth::user();
+            $order = Order::create([
+                'user_id' => $user ? $user->id : null,
+                'order_number' => $this->generateOrderNumber(),
+                'subtotal' => $cartTotals['subtotal'],
+                'tax_amount' => $cartTotals['tax'],
+                'total_price' => $cartTotals['total'],
+                'status' => 'confirmed',
+                'payment_status' => 'paid',
+                'payment_method' => 'paypal',
+                'payment_id' => $orderID,
+                'customer_name' => $user ? $user->name : 'PayPal Guest',
+                'customer_email' => $user ? $user->email : null,
+                'customer_phone' => null,
+                'shipping_address' => null,
+                'shipping_city' => null,
+                'shipping_state' => null,
+                'shipping_postal_code' => null,
+                'shipping_country' => null,
+                'billing_address' => null,
+                'billing_city' => null,
+                'billing_state' => null,
+                'billing_postal_code' => null,
+                'billing_country' => null,
+                'notes' => null
+            ]);
+            foreach ($cartItems as $item) {
+                $product = Product::find($item['id']);
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'product_sku' => $product->sku,
+                    'product_image' => $product->image,
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    'total' => $item['subtotal']
+                ]);
+                $product->decrement('stock_quantity', $item['quantity']);
+            }
+            $this->cartService->clearCart();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'orderNumber' => $order->order_number
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -191,66 +275,30 @@ class CheckoutController extends Controller
         return view('checkout.confirmation', compact('order'));
     }
 
-    /**
-     * Generate unique order number
-     */
     private function generateOrderNumber()
     {
         do {
             $orderNumber = 'ORD-' . date('Y') . '-' . strtoupper(Str::random(8));
         } while (Order::where('order_number', $orderNumber)->exists());
-
         return $orderNumber;
     }
 
-    /**
-     * Mock payment processing
-     */
     private function processPayment($order, $paymentMethod)
     {
-        // This is a mock payment processor
-        // In a real application, you would integrate with Stripe, PayPal, etc.
-
         switch ($paymentMethod) {
             case 'credit_card':
-                // Mock credit card processing
-                $success = rand(1, 10) > 1; // 90% success rate
-                break;
-            case 'paypal':
-                // Mock PayPal processing
-                $success = rand(1, 10) > 1; // 90% success rate
+                $success = rand(1, 10) > 1;
                 break;
             case 'cash_on_delivery':
-                // COD is always successful
                 $success = true;
                 break;
             default:
                 $success = false;
         }
-
         return [
             'success' => $success,
             'payment_id' => $success ? 'PAY_' . strtoupper(Str::random(10)) : null,
             'message' => $success ? 'Payment processed successfully' : 'Payment failed'
         ];
-    }
-
-    /**
-     * Send order confirmation email
-     */
-    private function sendOrderConfirmationEmail($order)
-    {
-        // Implement email sending logic here
-        // Mail::to($order->customer_email)->send(new OrderConfirmation($order));
-    }
-
-    public function paypalCapture(Request $request)
-    {
-        $orderID = $request->input('orderID');
-        $payerID = $request->input('payerID');
-        // Optionally: Call PayPal API to verify/capture payment
-        // Mark order as paid in your DB
-        // Return JSON response with order number
-        return response()->json(['order_number' => 'ORD-...']);
     }
 }

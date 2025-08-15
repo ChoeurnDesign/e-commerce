@@ -1,10 +1,7 @@
 <div x-data="{ open: false }" class="relative">
     <button @click="open = !open"
         class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-300 dark:hover:bg-[#2e1065] transition-colors focus:outline-none">
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
+        <x-icon-nav name="notification" class="inline w-5 h-5 mr-1" />
         @php
         $unreadCount = auth()->check() ? auth()->user()->unreadNotifications->count() : 0;
         @endphp

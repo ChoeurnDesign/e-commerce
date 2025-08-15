@@ -5,123 +5,90 @@
 
 <div class="container mx-auto p-8 min-h-screen font-sans">
     {{-- Homepage Banner Management --}}
-<div
-    x-data="{
-        showEdit: false,
-        editBanner: null,
-        editForm: { id: '', title: '', subtitle: '', order: '', image: '' },
-        openEdit(banner) {
-            this.editForm = {
-                id: banner.id,
-                title: banner.title ?? '',
-                subtitle: banner.subtitle ?? '',
-                order: banner.order ?? 0,
-                image: ''
-            };
-            this.showEdit = true;
-        }
-    }"
-    class="mb-12 bg-gray-800 p-8 rounded-xl shadow-lg space-y-8"
->
-    <h2 class="text-3xl text-white mb-6 border-b border-gray-700 pb-4">Homepage Banners</h2>
-    {{-- Add Banner Form --}}
-    <form action="{{ route('admin.settings.add_banner') }}" method="POST" enctype="multipart/form-data" class="mb-8">
-        @csrf
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-            <div>
-                <label class="block text-gray-300 mb-2">Image</label>
-                <input type="file" name="image" required class="bg-gray-700 border-none text-gray-100 p-2 rounded">
+    <div
+        x-data="{
+            showEdit: false,
+            editBanner: null,
+            editForm: { id: '', image: '' },
+            openEdit(banner) {
+                this.editForm = {
+                    id: banner.id,
+                    image: ''
+                };
+                this.showEdit = true;
+            }
+        }"
+        class="mb-12 bg-gray-800 p-8 rounded-xl shadow-lg space-y-8">
+        <h2 class="text-3xl text-white mb-6 border-b border-gray-700 pb-4">Homepage Banners</h2>
+        {{-- Add Banner Form --}}
+        <form action="{{ route('admin.settings.add_banner') }}" method="POST" enctype="multipart/form-data" class="mb-8">
+            @csrf
+            <div class="grid grid-cols-1 gap-6 mb-4">
+                <div>
+                    <label class="block text-gray-300 mb-2">Image: (Recommended: 515 x 1515 px)</label>
+                    <input type="file" name="image" required class="bg-gray-700 border-none text-gray-100 px-2 py-1 rounded">
+                </div>
             </div>
-            <div>
-                <label class="block text-gray-300 mb-2">Order</label>
-                <input type="number" name="order" value="0" class="bg-gray-700 border-none text-gray-100 p-2 rounded">
-            </div>
-            <div>
-                <label class="block text-gray-300 mb-2">Title (optional)</label>
-                <input type="text" name="title" class="bg-gray-700 border-none text-gray-100 p-2 rounded">
-            </div>
-            <div>
-                <label class="block text-gray-300 mb-2">Subtitle (optional)</label>
-                <input type="text" name="subtitle" class="bg-gray-700 border-none text-gray-100 p-2 rounded">
-            </div>
-        </div>
-        <button type="submit" class="bg-indigo-600 text-white rounded px-5 py-2 font-bold">Add Banner</button>
-    </form>
+            <button type="submit" class="bg-indigo-600 text-white rounded-full px-3 py-2">Add Banner</button>
+        </form>
 
-    {{-- List Banners --}}
-    <div class="space-y-4">
-        @foreach($banners as $banner)
-            <div class="bg-gray-700 p-4 rounded flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <img src="{{ asset('storage/'.$banner->image_path) }}" class="h-16 rounded shadow" />
-                    <div>
-                        <div class="text-white font-bold">{{ $banner->title }}</div>
-                        <div class="text-gray-300">{{ $banner->subtitle }}</div>
+        {{-- List Banners --}}
+        <div class="space-y-4">
+            @foreach($banners as $banner)
+                <div class="bg-gray-700 p-4 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <img src="{{ asset('storage/'.$banner->image_path) }}" class="h-16 rounded shadow" />
+                        <div>
+                            <div class="text-white font-bold">Banner ID: {{ $banner->id }}</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <button
+                            class="text-blue-400 hover:text-blue-600 font-bold"
+                            @click="openEdit({ id: {{ $banner->id }} })"
+                            type="button"
+                        >
+                            Edit
+                        </button>
+                        <form action="{{ route('admin.settings.delete_banner', $banner) }}" method="POST" onsubmit="return confirm('Delete this banner?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="text-red-400 hover:text-red-600 font-bold">Delete</button>
+                        </form>
                     </div>
                 </div>
-                <div class="flex gap-4">
-                    <button
-                        class="text-blue-400 hover:text-blue-600 font-bold"
-                        @click="openEdit({
-                            id: {{ $banner->id }},
-                            title: @js($banner->title),
-                            subtitle: @js($banner->subtitle),
-                            order: {{ $banner->order }}
-                        })"
-                        type="button"
-                    >
-                        Edit
-                    </button>
-                    <form action="{{ route('admin.settings.delete_banner', $banner) }}" method="POST" onsubmit="return confirm('Delete this banner?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="text-red-400 hover:text-red-600 font-bold">Delete</button>
-                    </form>
-                </div>
-            </div>
-        @endforeach
-    </div>
+            @endforeach
+        </div>
 
-    {{-- Edit Banner Modal --}}
-    <div
-        x-show="showEdit"
-        style="display: none;"
-        class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-    >
-        <div class="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-lg relative">
-            <button class="absolute top-3 right-4 text-gray-400" @click="showEdit = false">&times;</button>
-            <h3 class="text-2xl font-bold text-white mb-4">Edit Banner</h3>
-            <form
-                :action="'/admin/settings/banner/' + editForm.id + '/edit'"
-                method="POST"
-                enctype="multipart/form-data"
-            >
-                @csrf
-                @method('PUT')
-                <div class="mb-4">
-                    <label class="block text-gray-300 mb-2">Image (leave blank to keep current)</label>
-                    <input type="file" name="image" class="bg-gray-700 border-none text-gray-100 p-2 rounded w-full">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-300 mb-2">Order</label>
-                    <input type="number" name="order" x-model="editForm.order" class="bg-gray-700 border-none text-gray-100 p-2 rounded w-full">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-300 mb-2">Title (optional)</label>
-                    <input type="text" name="title" x-model="editForm.title" class="bg-gray-700 border-none text-gray-100 p-2 rounded w-full">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-300 mb-2">Subtitle (optional)</label>
-                    <input type="text" name="subtitle" x-model="editForm.subtitle" class="bg-gray-700 border-none text-gray-100 p-2 rounded w-full">
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="bg-indigo-600 text-white rounded px-5 py-2 font-bold">Save Changes</button>
-                    <button type="button" class="bg-gray-700 text-white rounded px-5 py-2 font-bold" @click="showEdit = false">Cancel</button>
-                </div>
-            </form>
+        {{-- Edit Banner Modal --}}
+        <div
+            x-show="showEdit"
+            style="display: none;"
+            class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+        >
+            <div class="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-lg relative">
+                <button class="absolute top-3 right-4 text-gray-400" @click="showEdit = false">&times;</button>
+                <h3 class="text-2xl font-bold text-white mb-4">Edit Banner</h3>
+                <form
+                    :action="'/admin/settings/banner/' + editForm.id + '/edit'"
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-4">
+                        <label class="block text-gray-300 mb-2">Image (leave blank to keep current)</label>
+                        <input type="file" name="image" class="bg-gray-700 border-none text-gray-100 px-2 py-1 rounded w-full">
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="bg-indigo-600 text-white rounded-full px-3 py-2 font-bold">Save Changes</button>
+                        <button type="button" class="bg-gray-700 text-white rounded-full px-5 py-2 font-bold" @click="showEdit = false">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
 
     {{-- General Settings --}}
     <form action="{{ route('admin.settings.save_general') }}" method="POST" enctype="multipart/form-data" class="mb-12 bg-gray-800 p-8 rounded-xl shadow-lg space-y-8">

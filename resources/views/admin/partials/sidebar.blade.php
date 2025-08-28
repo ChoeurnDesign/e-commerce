@@ -30,6 +30,11 @@
             <x-icon-dashboard name="customers" class="mr-3 h-5 w-5 text-gray-300 dark:text-gray-200" />
             Customers
         </a>
+        <a href="{{ route('admin.sellers.index') }}"
+           class="{{ request()->routeIs('admin.sellers.*') ? 'bg-gray-700 dark:bg-[#23263a] text-white' : 'text-gray-300 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-[#23263a] hover:text-white' }} flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
+            <x-icon-dashboard name="sellers" class="mr-3 h-5 w-5 text-gray-300 dark:text-gray-200" />
+            Sellers
+        </a>
         <a href="{{ route('admin.reports-dash.index') }}"
            class="{{ request()->routeIs('admin.reports-dash.*') ? 'bg-gray-700 dark:bg-[#23263a] text-white' : 'text-gray-300 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-[#23263a] hover:text-white' }} flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
             <x-icon-dashboard name="reports" class="mr-3 h-5 w-5 text-gray-300 dark:text-gray-200" />

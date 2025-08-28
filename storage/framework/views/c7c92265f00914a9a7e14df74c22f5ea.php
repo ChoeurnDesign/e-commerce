@@ -257,5 +257,4 @@
         // Initialize tooltips or other components if needed
         console.log('ShopExpress initialized successfully');
     });
-</script>
-<?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/layouts/scripts.blade.php ENDPATH**/ ?>
+</script><?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/layouts/scripts.blade.php ENDPATH**/ ?>

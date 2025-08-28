@@ -19,26 +19,27 @@
             @method('PUT')
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Category Name</label>
-                <input type="text" name="name" value="{{ old('name', $category->name) }}" required
-                    class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <x-input-label for="name" value="Category Name" class="block text-sm font-medium" />
+                <x-text-input type="text" name="name" id="name" :value="old('name', $category->name)" required
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                 @error('name')
                     <p class="text-red-600 dark:text-red-400 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Description</label>
-                <textarea name="description" rows="4"
-                    class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $category->description) }}</textarea>
+                <x-input-label for="description" value="Description" class="block text-sm font-medium" />
+                <textarea name="description" id="description" rows="4"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $category->description) }}</textarea>
                 @error('description')
                     <p class="text-red-600 dark:text-red-400 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Parent Category</label>
-                <select name="parent_id" class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <x-input-label for="parent_id" value="Parent Category" class="block text-sm font-medium" />
+                <select name="parent_id" id="parent_id"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">None</option>
                     @foreach($parentCategories as $parent)
                         <option value="{{ $parent->id }}" @if(old('parent_id', $category->parent_id) == $parent->id) selected @endif>
@@ -52,10 +53,11 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Category Image</label>
-                <input type="file" name="image" class="mt-1 block w-full text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 dark:bg-[#23263a]">
+                <x-input-label for="image" value="Category Image" class="block text-sm font-medium" />
+                <input type="file" name="image" id="image"
+                    class="mt-1 block w-full text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 dark:bg-[#23263a]">
                 @if($category->image)
-                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="h-24 w-24 mt-2 rounded object-cover border border-gray-300 dark:border-gray-600"
+                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="h-24 w-24 mt-2 object-cover border border-gray-300 dark:border-gray-600"
                          onerror="this.onerror=null;this.src='{{ asset('/img/default-category.png') }}';">
                 @endif
                 @error('image')
@@ -64,12 +66,8 @@
             </div>
 
             <div class="pt-4 flex space-x-4">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg  transition duration-200">
-                    Update Category
-                </button>
-                <a href="{{ route('admin.categories.index') }}" class="bg-gray-300 dark:bg-[#23263a] hover:bg-gray-400 dark:hover:bg-[#262c47] text-gray-800 dark:text-gray-200 px-6 py-2 rounded-lg  transition duration-200">
-                    Cancel
-                </a>
+                <x-admin.form-submit-button :action="route('admin.categories.update', $category->id)">Update Category</x-admin.form-submit-button>
+                <x-admin.form-cancel-button :href="route('admin.categories.index')">Cancel</x-admin.form-cancel-button>
             </div>
         </form>
     </div>

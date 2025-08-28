@@ -1,5 +1,5 @@
 <button aria-haspopup="true" aria-expanded="false" aria-label="View latest reports"
-    class="relative p-1 text-gray-500 bg-blue-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-full"
+    class="relative p-1 text-gray-500 bg-gray-600 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white z rounded-full"
     @click="notifOpen = !notifOpen" x-data="{ notifOpen: false }" :aria-expanded="notifOpen.toString()">
 
     <x-icon-nav name="notification" class="inline w-5 h-5 mr-1" />

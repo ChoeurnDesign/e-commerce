@@ -1,13 +1,26 @@
 <!-- Cart -->
 <a href="<?php echo e(route('cart.index')); ?>"
-    class="relative p-2 mx-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-300 dark:hover:bg-[#2e1065] transition-colors">
-    <svg class="h-6 w-6 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2"
-        viewBox="0 0 24 24">
-        <circle cx="9" cy="21" r="1" />
-        <circle cx="20" cy="21" r="1" />
-        <path stroke-linecap="round" stroke-linejoin="round"
-            d="M1 1h2l4 14a2 2 0 0 0 2 1.5h9a2 2 0 0 0 2-1.5l3-10.5H6" />
-    </svg>
+    class="relative p-2 mx-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-600 dark:hover:bg-[#2e1065] transition-colors">
+    <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'cart','class' => 'w-8 h-8']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'cart','class' => 'w-8 h-8']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
     <?php if(auth()->guard()->check()): ?>
     <?php if(isset($cartCount) && $cartCount > 0): ?>
     <span
@@ -17,12 +30,27 @@
 </a>
 <!-- Wishlist -->
 <a href="<?php echo e(route('wishlist.index')); ?>"
-    class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-300 dark:hover:bg-[#2e1065] transition-colors">
-    <svg class="h-6 w-6 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2"
-        viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-    </svg>
+    class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-600 dark:hover:bg-[#2e1065] transition-colors">
+    <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'wishlist-filled','class' => 'w-8 h-8']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'wishlist-filled','class' => 'w-8 h-8']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
     <?php if(auth()->guard()->check()): ?>
     <?php if(isset($wishlistCount) && $wishlistCount > 0): ?>
     <span

@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>@yield('title', 'Admin') - {{ config('app.name', 'ShopExpress') }}</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('styles')
+    @include('layouts.head')
+    @include('layouts.styles')
 </head>
-<body class="bg-gray-300 dark:bg-[#181f31] font-sans antialiased transition-colors">
+<body class="bg-[#181f31] text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-sans antialiased transition-colors">
     <div class="flex h-screen">
         @include('admin.partials.sidebar')
 
         <div class="flex-1 flex flex-col overflow-hidden">
             @include('admin.partials.header')
 
-            <main class="flex-1 overflow-y-auto p-6 bg-gray-300 dark:bg-[#101624] transition-colors">
+            <main class="flex-1 overflow-y-auto p-6 bg-gray-300 dark:bg-[#101624] transition-colors text-gray-900 dark:text-gray-100">
                 @if(session('success'))
                     <div x-data="{ show: true }" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-full" class="mb-6 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded relative" role="alert">
                         <span class="block sm:inline">{{ session('success') }}</span>
@@ -40,8 +34,6 @@
             </main>
         </div>
     </div>
-
-    {{-- <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script> --}}
     @stack('scripts')
 </body>
 </html>

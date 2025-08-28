@@ -28,5 +28,5 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
-<input <?php if($disabled): echo 'disabled'; endif; ?> <?php echo e($attributes->merge(['class' => 'border-gray-300 rounded-full shadow-sm'])); ?>>
+<input <?php if($disabled): echo 'disabled'; endif; ?> <?php echo e($attributes->merge(['class' => 'border-gray-300 rounded-md shadow-sm'])); ?>>
 <?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/components/text-input.blade.php ENDPATH**/ ?>

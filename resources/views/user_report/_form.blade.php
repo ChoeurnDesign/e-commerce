@@ -1,24 +1,24 @@
 @csrf
 
 <div class="mb-4">
-    <label class="block font-semibold mb-1 text-gray-700 dark:text-gray-200" for="title">
+    <x-input-label for="title" class="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
         Title <span class="text-red-500">*</span>
-    </label>
-    <input
+    </x-input-label>
+    <x-text-input
         type="text"
         name="title"
         id="title"
         required
         maxlength="255"
+        :value="old('title')"
         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400"
-        value="{{ old('title') }}"
-    >
+    />
 </div>
 
 <div class="mb-4">
-    <label class="block font-semibold mb-1 text-gray-700 dark:text-gray-200" for="description">
+    <x-input-label for="description" class="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
         Description
-    </label>
+    </x-input-label>
     <textarea
         name="description"
         id="description"
@@ -29,9 +29,9 @@
 </div>
 
 <div class="mb-4">
-    <label class="block font-semibold mb-1 text-gray-700 dark:text-gray-200" for="images">
+    <x-input-label for="images" class="block font-semibold mb-1 text-gray-700 dark:text-gray-200">
         Images (optional, up to 5)
-    </label>
+    </x-input-label>
     <input
         type="file"
         name="images[]"

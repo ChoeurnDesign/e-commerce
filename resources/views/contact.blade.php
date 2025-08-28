@@ -13,21 +13,21 @@
             <form action="{{ route('contact.submit') }}" method="POST" class="space-y-4 bg-indigo-50 dark:bg-[#23263a] rounded-lg p-6 border border-indigo-100 dark:border-indigo-900">
                 @csrf
                 <div>
-                    <label for="name" class="block text-gray-800 dark:text-gray-200 font-semibold">Your Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 w-full rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-[#23263a] text-gray-900 dark:text-white" required>
+                    <x-input-label for="name" class="block text-gray-800 dark:text-gray-200 font-semibold">Your Name</x-input-label>
+                    <x-text-input type="text" name="name" id="name" :value="old('name')" class="mt-1 w-full rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-[#23263a] text-gray-900 dark:text-white" required />
                     @error('name')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
-                    <label for="email" class="block text-gray-800 dark:text-gray-200 font-semibold">Email Address</label>
-                    <input type="email" name="email" id="email" value="{{ old('email') }}" class="mt-1 w-full rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-[#23263a] text-gray-900 dark:text-white" required>
+                    <x-input-label for="email" class="block text-gray-800 dark:text-gray-200 font-semibold">Email Address</x-input-label>
+                    <x-text-input type="email" name="email" id="email" :value="old('email')" class="mt-1 w-full rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-[#23263a] text-gray-900 dark:text-white" required />
                     @error('email')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
-                    <label for="message" class="block text-gray-800 dark:text-gray-200 font-semibold">Message</label>
+                    <x-input-label for="message" class="block text-gray-800 dark:text-gray-200 font-semibold">Message</x-input-label>
                     <textarea name="message" id="message" rows="5" class="mt-1 w-full rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-[#23263a] text-gray-900 dark:text-white" required>{{ old('message') }}</textarea>
                     @error('message')
                         <span class="text-red-500 text-sm">{{ $message }}</span>

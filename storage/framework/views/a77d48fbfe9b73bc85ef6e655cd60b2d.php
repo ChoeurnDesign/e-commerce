@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-
-    <title><?php echo $__env->yieldContent('title', 'Admin'); ?> - <?php echo e(config('app.name', 'ShopExpress')); ?></title>
-
-    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
-    <?php echo $__env->yieldPushContent('styles'); ?>
+    <?php echo $__env->make('layouts.head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    <?php echo $__env->make('layouts.styles', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 </head>
-<body class="bg-gray-300 dark:bg-[#181f31] font-sans antialiased transition-colors">
+<body class="bg-[#181f31] text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-sans antialiased transition-colors">
     <div class="flex h-screen">
         <?php echo $__env->make('admin.partials.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         <div class="flex-1 flex flex-col overflow-hidden">
             <?php echo $__env->make('admin.partials.header', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-            <main class="flex-1 overflow-y-auto p-6 bg-gray-300 dark:bg-[#101624] transition-colors">
+            <main class="flex-1 overflow-y-auto p-6 bg-gray-300 dark:bg-[#101624] transition-colors text-gray-900 dark:text-gray-100">
                 <?php if(session('success')): ?>
                     <div x-data="{ show: true }" x-show="show" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-full" class="mb-6 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded relative" role="alert">
                         <span class="block sm:inline"><?php echo e(session('success')); ?></span>
@@ -40,8 +34,6 @@
             </main>
         </div>
     </div>
-
-    
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>

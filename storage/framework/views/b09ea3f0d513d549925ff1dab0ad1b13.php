@@ -125,6 +125,30 @@
 <?php endif; ?>
             Customers
         </a>
+        <a href="<?php echo e(route('admin.sellers.index')); ?>"
+           class="<?php echo e(request()->routeIs('admin.sellers.*') ? 'bg-gray-700 dark:bg-[#23263a] text-white' : 'text-gray-300 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-[#23263a] hover:text-white'); ?> flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
+            <?php if (isset($component)) { $__componentOriginal7ac833788d87377235d115adad0b6b1f = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal7ac833788d87377235d115adad0b6b1f = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'sellers','class' => 'mr-3 h-5 w-5 text-gray-300 dark:text-gray-200']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-dashboard'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'sellers','class' => 'mr-3 h-5 w-5 text-gray-300 dark:text-gray-200']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal7ac833788d87377235d115adad0b6b1f)): ?>
+<?php $attributes = $__attributesOriginal7ac833788d87377235d115adad0b6b1f; ?>
+<?php unset($__attributesOriginal7ac833788d87377235d115adad0b6b1f); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal7ac833788d87377235d115adad0b6b1f)): ?>
+<?php $component = $__componentOriginal7ac833788d87377235d115adad0b6b1f; ?>
+<?php unset($__componentOriginal7ac833788d87377235d115adad0b6b1f); ?>
+<?php endif; ?>
+            Sellers
+        </a>
         <a href="<?php echo e(route('admin.reports-dash.index')); ?>"
            class="<?php echo e(request()->routeIs('admin.reports-dash.*') ? 'bg-gray-700 dark:bg-[#23263a] text-white' : 'text-gray-300 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-[#23263a] hover:text-white'); ?> flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
             <?php if (isset($component)) { $__componentOriginal7ac833788d87377235d115adad0b6b1f = $component; } ?>

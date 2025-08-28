@@ -9,6 +9,9 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './resources/views/**/*.blade.php',
+        './resources/js/**/*.js',
+        './resources/css/**/*.css'
     ],
 
     theme: {
@@ -19,12 +22,14 @@ export default {
         },
         screens: {
             sm: '640px',
-            md: '900px', // <-- CHANGED from 768px
+            md: '900px',
             lg: '1024px',
             xl: '1280px',
             '2xl': '1536px',
         },
     },
 
-    plugins: [forms],
+    plugins: [
+        require('@tailwindcss/forms'),
+    ],
 };

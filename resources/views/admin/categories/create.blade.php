@@ -16,29 +16,25 @@
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label for="name" class="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-semibold mb-1">
-                            Name
-                        </label>
-                        <input type="text" name="name" id="name"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900"
-                            value="{{ old('name') }}">
+                        <x-input-label for="name" value="Name" class="flex items-center gap-2 font-semibold mb-1" />
+                        <x-text-input type="text" name="name" id="name"
+                            :value="old('name')"
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900" />
                         @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label for="slug" class="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-semibold mb-1">
-                            Slug
-                        </label>
-                        <input type="text" name="slug" id="slug"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900"
-                            value="{{ old('slug') }}">
+                        <x-input-label for="slug" value="Slug" class="flex items-center gap-2 font-semibold mb-1" />
+                        <x-text-input type="text" name="slug" id="slug"
+                            :value="old('slug')"
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900" />
                         @error('slug') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 <div>
-                    <label for="parent_id" class="text-gray-700 dark:text-gray-200 font-semibold mb-1 block">Parent Category</label>
+                    <x-input-label for="parent_id" value="Parent Category" class="font-semibold mb-1" />
                     <select name="parent_id" id="parent_id"
-                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900">
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900">
                         <option value="">None</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ old('parent_id') == $category->id ? 'selected' : '' }}>
@@ -50,33 +46,33 @@
                 </div>
 
                 <div>
-                    <label for="description" class="text-gray-700 dark:text-gray-200 font-semibold mb-1 block">Description</label>
+                    <x-input-label for="description" value="Description" class="font-semibold mb-1" />
                     <textarea name="description" id="description" rows="3"
-                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900">{{ old('description') }}</textarea>
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900">{{ old('description') }}</textarea>
                     @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="grid grid-cols-2 gap-5">
                     <div>
-                        <label for="image" class="text-gray-700 dark:text-gray-200 font-semibold mb-1 block">Image</label>
+                        <x-input-label for="image" value="Image" class="font-semibold mb-1" />
                         <input type="file" name="image" id="image"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900"
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900"
                             accept="image/*" onchange="showCategoryPreview(event)">
                         <div id="categoryImagePreview" class="mt-2"></div>
                         @error('image') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div class="grid grid-cols-2 gap-5">
                         <div>
-                            <label for="sort_order" class="text-gray-700 dark:text-gray-200 font-semibold mb-1 block">Sort Order</label>
-                            <input type="number" name="sort_order" id="sort_order"
-                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 rounded-lg px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900"
-                                value="{{ old('sort_order', 0) }}">
+                            <x-input-label for="sort_order" value="Sort Order" class="font-semibold mb-1" />
+                            <x-text-input type="number" name="sort_order" id="sort_order"
+                                :value="old('sort_order', 0)"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-[#23263a] dark:text-gray-100 px-4 py-2 focus:ring focus:ring-blue-100 dark:focus:ring-blue-900" />
                             @error('sort_order') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                         <div class="flex items-center h-full mt-7 md:mt-0">
                             <label class="inline-flex items-center font-semibold">
                                 <input type="checkbox" name="is_active" value="1"
-                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-2 focus:ring-blue-500 transition"
+                                    class="border-gray-300 text-blue-600 shadow-sm focus:ring-2 focus:ring-blue-500 transition"
                                     {{ old('is_active', 1) ? 'checked' : '' }}>
                                 <span class="ml-2 text-gray-700 dark:text-gray-200">Active</span>
                             </label>
@@ -107,7 +103,7 @@ function showCategoryPreview(event) {
         const src = URL.createObjectURL(event.target.files[0]);
         const img = document.createElement('img');
         img.src = src;
-        img.className = 'mt-2 rounded shadow h-24';
+        img.className = 'mt-2 shadow h-24';
         preview.appendChild(img);
     }
 }

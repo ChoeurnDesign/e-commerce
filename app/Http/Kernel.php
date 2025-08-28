@@ -26,5 +26,8 @@ class Kernel extends HttpKernel
 
         // 👈 ADD THIS LINE
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'seller' => \App\Http\Middleware\SellerMiddleware::class,
+        'seller.exists'   => \App\Http\Middleware\EnsureSellerExists::class,
+        'seller.approved' => \App\Http\Middleware\EnsureSellerApproved::class,
     ];
 }

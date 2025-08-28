@@ -1,4 +1,4 @@
-<footer class="bg-gray-800 text-white mt-16">
+<footer class="bg-gray-800 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div class="col-span-1 md:col-span-2">
@@ -55,7 +55,7 @@
             </div>
 
             <div>
-                <h4 class="text-lg  mb-4">Quick Links</h4>
+                <h4 class="text-lg mb-4">Quick Links</h4>
                 <ul class="space-y-2">
                     <li><a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition duration-150 ease-in-out">Home</a></li>
                     <li><a href="{{ route('products.index') }}" class="text-gray-300 hover:text-white transition duration-150 ease-in-out">Products</a></li>
@@ -69,7 +69,7 @@
 
             {{-- Customer Service Section with Modals --}}
             <div x-data="{ open: '', content: '' }">
-                <h4 class="text-lg  mb-4 text-gray-900 dark:text-gray-100">Customer Service</h4>
+                <h4 class="text-lg mb-4">Customer Service</h4>
                 <ul class="space-y-2">
                     <li>
                         <a href="#"

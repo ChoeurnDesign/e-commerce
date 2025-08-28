@@ -1,6 +1,6 @@
 <div x-data="{ open: false }" class="relative">
     <button @click="open = !open"
-        class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-300 dark:hover:bg-[#2e1065] transition-colors focus:outline-none">
+        class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-600 dark:hover:bg-[#2e1065] transition-colors focus:outline-none">
         <x-icon-nav name="notification" class="inline w-5 h-5 mr-1" />
         @php
         $unreadCount = auth()->check() ? auth()->user()->unreadNotifications->count() : 0;

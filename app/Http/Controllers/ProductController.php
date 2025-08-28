@@ -9,57 +9,108 @@ use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
+    private int $defaultPerPage = 12;
+    private int $maxPerPage = 60;
+
     /**
-     * Display a paginated list of products with filters and sorting.
+     * Frontend product listing with filters & sorting.
      */
     public function index(Request $request)
     {
-        $query = Product::with(['category'])
+        $validated = $request->validate([
+            'search'     => 'nullable|string|max:120',
+            'category'   => 'nullable|string|max:100',
+            'min_price'  => 'nullable|numeric|min:0',
+            'max_price'  => 'nullable|numeric|min:0',
+            'min_rating' => 'nullable|numeric|min:1|max:5',
+            'on_sale'    => 'nullable|in:1',
+            'sort'       => 'nullable|in:latest,price_low,price_high,name,rating,featured',
+            'per_page'   => 'nullable|integer|min:1|max:' . $this->maxPerPage,
+        ]);
+
+        // Collect filters for view repopulation
+        $filters = [
+            'search'     => $validated['search']     ?? '',
+            'category'   => $validated['category']   ?? '',
+            'min_price'  => $validated['min_price']  ?? '',
+            'max_price'  => $validated['max_price']  ?? '',
+            'min_rating' => $validated['min_rating'] ?? '',
+            'on_sale'    => $validated['on_sale']    ?? '',
+            'sort'       => $validated['sort']       ?? 'latest',
+            'per_page'   => $validated['per_page']   ?? $this->defaultPerPage,
+        ];
+
+        // Normalize per_page
+        $perPage = (int) $filters['per_page'];
+        if ($perPage > $this->maxPerPage) {
+            $perPage = $this->maxPerPage;
+        }
+
+        // Swap min/max if inverted
+        if ($filters['min_price'] !== '' && $filters['max_price'] !== '' &&
+            (float)$filters['max_price'] < (float)$filters['min_price']) {
+            [$filters['min_price'], $filters['max_price']] = [$filters['max_price'], $filters['min_price']];
+        }
+
+        // Optional: ensure category slug exists; if not, blank it (prevents wasted whereHas)
+        if ($filters['category'] !== '' &&
+            ! Category::where('slug', $filters['category'])->active()->exists()) {
+            $filters['category'] = '';
+        }
+
+        $query = Product::query()
+            ->with(['category'])
             ->withCount(['approvedReviews as reviews_count'])
             ->withAvg('approvedReviews as average_rating', 'rating')
             ->active();
 
-        // Filtering
-        if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                    ->orWhere('description', 'like', "%{$searchTerm}%")
-                    ->orWhere('short_description', 'like', "%{$searchTerm}%");
+        // Search tokens (AND across tokens); ignore if < 2 chars
+        if ($filters['search'] !== '' && mb_strlen(trim($filters['search'])) >= 2) {
+            $tokens = preg_split('/\s+/', trim($filters['search']));
+            $query->where(function ($outer) use ($tokens) {
+                foreach ($tokens as $term) {
+                    $outer->where(function ($q) use ($term) {
+                        $like = '%' . $term . '%';
+                        if (ctype_digit($term)) {
+                            $q->orWhere('id', (int)$term);
+                        }
+                        $q->orWhere('name', 'like', $like)
+                          ->orWhere('sku', 'like', $like)
+                          ->orWhere('short_description', 'like', $like);
+                    });
+                }
             });
         }
-        // UPDATED: make sure only filter if category exists
-        if ($request->filled('category')) {
-            $categorySlug = $request->category;
-            $categoryExists = Category::where('slug', $categorySlug)->exists();
-            if ($categoryExists) {
-                $query->whereHas('category', function ($q) use ($categorySlug) {
-                    $q->where('slug', $categorySlug);
-                });
-            }
+
+        // Category filter
+        $query->when($filters['category'] !== '', function ($q) use ($filters) {
+            $q->whereHas('category', fn($c) => $c->where('slug', $filters['category'])->active());
+        });
+
+        // Price filters
+        $query->when($filters['min_price'] !== '', fn($q) => $q->where('price', '>=', (float)$q->getModel()->getAttributeFromArray('min_price') ?? (float)request('min_price')));
+        // Simpler & explicit instead of above dynamic attempt:
+        if ($filters['min_price'] !== '') {
+            $query->where('price', '>=', (float)$filters['min_price']);
         }
-        if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
+        if ($filters['max_price'] !== '') {
+            $query->where('price', '<=', (float)$filters['max_price']);
         }
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
+
+        // Rating filter (HAVING on alias)
+        if ($filters['min_rating'] !== '') {
+            $query->having('average_rating', '>=', (float)$filters['min_rating']);
         }
-        if ($request->filled('min_rating')) {
-            $query->whereHas('approvedReviews', function ($q) use ($request) {
-                $q->selectRaw('AVG(rating) as avg_rating')
-                    ->groupBy('product_id')
-                    ->havingRaw('AVG(rating) >= ?', [$request->min_rating]);
-            });
-        }
-        // On Sale filter
-        if ($request->has('on_sale') && $request->on_sale) {
+
+        // On sale
+        if ($filters['on_sale'] === '1') {
             $query->where('on_sale', 1)
-                ->whereNotNull('sale_price')
-                ->whereColumn('sale_price', '<', 'compare_price');
+                  ->whereNotNull('sale_price')
+                  ->whereColumn('sale_price', '<', 'price'); // adjust if compare_price is your original
         }
 
         // Sorting
-        switch ($request->get('sort', 'latest')) {
+        switch ($filters['sort']) {
             case 'price_low':
                 $query->orderBy('price', 'asc');
                 break;
@@ -69,55 +120,92 @@ class ProductController extends Controller
             case 'name':
                 $query->orderBy('name', 'asc');
                 break;
-            case 'featured':
-                $query->orderBy('is_featured', 'desc')->orderBy('created_at', 'desc');
-                break;
             case 'rating':
-                $query->orderBy('average_rating', 'desc');
+                $query->orderByDesc('average_rating')
+                      ->orderByDesc('reviews_count');
                 break;
+            case 'featured':
+                $query->orderBy('is_featured', 'desc')
+                      ->orderByDesc('created_at');
+                break;
+            case 'latest':
             default:
-                $query->latest();
+                $query->orderByDesc('created_at');
         }
 
-        $products = $query->paginate(9)->withQueryString();
-        $categories = Category::active()->get();
+        $products = $query->paginate($perPage)->appends($request->query());
 
-        return view('products.index', compact('products', 'categories'));
+        // Categories (cache optional)
+        $categories = Category::active()
+            ->select('id','name','slug')
+            ->orderBy('name')
+            ->get();
+        // $categories = cache()->remember('categories.active.list', 1800, fn() =>
+        //     Category::active()->select('id','name','slug')->orderBy('name')->get()
+        // );
+
+        return view('products.index', compact('products', 'categories', 'filters'));
     }
 
     /**
-     * Display products that are currently on sale.
+     * On-sale products listing.
      */
-    public function shopsOnSale()
+    public function shopsOnSale(Request $request)
     {
-        $saleProducts = Product::with(['category'])
+        $validated = $request->validate([
+            'sort'     => 'nullable|in:price_low,price_high,rating,latest',
+            'per_page' => 'nullable|integer|min:1|max:' . $this->maxPerPage,
+        ]);
+
+        $sort    = $validated['sort'] ?? 'price_low';
+        $perPage = (int)($validated['per_page'] ?? $this->defaultPerPage);
+        if ($perPage > $this->maxPerPage) $perPage = $this->maxPerPage;
+
+        $query = Product::query()
+            ->with(['category'])
             ->withCount(['approvedReviews as reviews_count'])
             ->withAvg('approvedReviews as average_rating', 'rating')
             ->active()
             ->where('on_sale', 1)
             ->whereNotNull('sale_price')
-            ->whereColumn('sale_price', '<', 'compare_price')
-            ->orderBy('sale_price', 'asc')
-            ->paginate(9);
+            ->whereColumn('sale_price', '<', 'price');
 
-        $categories = Category::active()->get();
+        switch ($sort) {
+            case 'price_high':
+                $query->orderBy('sale_price', 'desc');
+                break;
+            case 'rating':
+                $query->orderByDesc('average_rating')->orderByDesc('reviews_count');
+                break;
+            case 'latest':
+                $query->orderByDesc('created_at');
+                break;
+            case 'price_low':
+            default:
+                $query->orderBy('sale_price', 'asc');
+        }
+
+        $saleProducts = $query->paginate($perPage)->appends($request->query());
+
+        $categories = Category::active()->orderBy('name')->get();
 
         return view('products.shops-on-sale', compact('saleProducts', 'categories'));
     }
 
     /**
-     * AJAX: Return quick search suggestions for products.
+     * Quick async suggestions.
      */
     public function searchSuggestions(Request $request)
     {
-        $term = $request->get('q', '');
+        $term = (string) $request->get('q', '');
         if (mb_strlen($term) < 2) {
             return response()->json([]);
         }
 
         $products = Product::active()
-            ->where('name', 'like', "%{$term}%")
-            ->select('id', 'name', 'slug', 'price', 'image')
+            ->select('id','name','slug','price','image')
+            ->where('name','like','%'.$term.'%')
+            ->orderByDesc('created_at')
             ->limit(5)
             ->get();
 
@@ -125,50 +213,48 @@ class ProductController extends Controller
     }
 
     /**
-     * Show details for a single product, with reviews and related products.
+     * Show product detail.
      */
-    public function show($slug)
+    public function show(string $slug)
     {
-        $product = Product::with(['category', 'approvedReviews.user'])
-            ->where('slug', $slug)
+        $product = Product::with(['category','approvedReviews.user'])
+            ->where('slug',$slug)
             ->active()
             ->firstOrFail();
 
-        // Increment page views (without updating timestamps)
         $product->increment('page_views', 1, ['updated_at' => $product->updated_at]);
 
-        $relatedProducts = Product::with(['category'])
+        $relatedProducts = Product::with('category')
             ->where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
+            ->where('id','!=',$product->id)
             ->active()
+            ->orderByDesc('created_at')
             ->take(4)
             ->get();
 
-        $userReview = null;
-        if (Auth::check()) {
-            $userReview = $product->approvedReviews()
-                ->where('user_id', Auth::id())
-                ->first();
-        }
+        $userReview = Auth::check()
+            ? $product->approvedReviews()->where('user_id', Auth::id())->first()
+            : null;
 
-        return view('products.show', compact('product', 'relatedProducts', 'userReview'));
+        return view('products.show', compact('product','relatedProducts','userReview'));
     }
 
     /**
-     * Show products by a specific category (deprecated, but supported for deep links).
+     * Category-specific listing (legacy route).
      */
-    public function byCategory($slug)
+    public function byCategory(string $slug)
     {
-        $category = Category::where('slug', $slug)->active()->firstOrFail();
+        $category = Category::where('slug',$slug)->active()->firstOrFail();
 
         $products = Product::with(['category'])
             ->withCount(['approvedReviews as reviews_count'])
-            ->withAvg('approvedReviews as average_rating', 'rating')
-            ->where('category_id', $category->id)
+            ->withAvg('approvedReviews as average_rating','rating')
+            ->where('category_id',$category->id)
             ->active()
-            ->latest()
-            ->paginate(9);
+            ->orderByDesc('created_at')
+            ->paginate($this->defaultPerPage)
+            ->appends(['category' => $slug]);
 
-        return view('products.category', compact('products', 'category'));
+        return view('products.category', compact('products','category'));
     }
 }

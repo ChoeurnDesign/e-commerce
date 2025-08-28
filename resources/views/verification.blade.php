@@ -24,18 +24,18 @@
             <form method="POST" action="{{ route('code.verify') }}" class="flex flex-col gap-4" aria-label="Verification code form">
                 @csrf
                 <div>
-                    <label for="code" class="block mb-2 font-medium text-[#7b7afc]">Verification Code</label>
-                    <input
+                    <x-input-label for="code" class="block mb-2 font-medium text-[#7b7afc]">Verification Code</x-input-label>
+                    <x-text-input
                         type="text"
                         name="code"
                         id="code"
-                        class="w-full border-1 bg-[#23262F] text-white rounded-full px-4 py-2 focus:ring-1 focus:ring-[#7b7afc] text-lg tracking-widest text-center transition"
                         maxlength="6"
                         inputmode="numeric"
                         pattern="[0-9]*"
                         required
                         autofocus
-                    >
+                        class="w-full border-1 bg-[#23262F] text-white rounded-full px-4 py-2 focus:ring-1 focus:ring-[#7b7afc] text-lg tracking-widest text-center transition"
+                    />
                     @error('code')
                         <div class="text-red-400 mt-2 animate-shake">{{ $message }}</div>
                     @enderror

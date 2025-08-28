@@ -1,3 +1,5 @@
+<?php $__env->startSection('title', 'Report Management'); ?>
+
 <?php $__env->startSection('content'); ?>
 <div class="p-8 bg-gray-300 dark:bg-[#181f31] min-h-screen">
     <h1 class="text-3xl mb-2 text-gray-900 dark:text-gray-100">Market Report for Ecommerce Website</h1>

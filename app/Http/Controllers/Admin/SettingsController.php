@@ -20,6 +20,34 @@ class SettingsController extends Controller
         return view('admin.settings.index', compact('settings', 'banners'));
     }
 
+    // Show the edit form (GET)
+    public function showEditBanner(HomepageBanner $banner)
+    {
+        return view('admin.settings.partials.edit-banner', compact('banner'));
+    }
+
+    // Update the banner (PUT)
+    public function updateBanner(Request $request, HomepageBanner $banner)
+    {
+        $data = $request->validate([
+            'image' => 'nullable|image|max:2048',
+            'title' => 'nullable|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'order' => 'nullable|integer',
+        ]);
+
+        if ($request->hasFile('image')) {
+            if ($banner->image_path) {
+                Storage::disk('public')->delete($banner->image_path);
+            }
+            $data['image_path'] = $request->file('image')->store('banners', 'public');
+        }
+
+        $banner->update($data);
+
+        return redirect()->route('admin.settings.index')->with('success', 'Banner updated!');
+    }
+
     public function saveGeneral(Request $request)
     {
         $data = $request->validate([

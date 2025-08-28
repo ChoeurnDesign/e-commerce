@@ -1,18 +1,24 @@
 <x-app-layout>
-    <div class="py-8">
+    <div class="py-8 bg-gray-300 dark:bg-gray-900 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Breadcrumb -->
             <nav class="mb-8">
                 <ol class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-300">
-                    <li><a href="{{ route('home') }}" class="hover:text-indigo-600 dark:hover:text-indigo-300">Home</a></li>
+                    <li>
+                        <a href="{{ route('home') }}" class="hover:text-indigo-600 dark:hover:text-indigo-300">Home</a>
+                    </li>
                     <li><span class="mx-2">/</span></li>
-                    <li><a href="{{ route('categories.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-300">Categories</a></li>
+                    <li>
+                        <a href="{{ route('categories.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-300">Categories</a>
+                    </li>
                     @foreach($breadcrumb as $crumb)
                         <li><span class="mx-2">/</span></li>
                         @if($loop->last)
                             <li class="text-gray-900 dark:text-gray-100 font-medium">{{ $crumb->name }}</li>
                         @else
-                            <li><a href="{{ route('category.show', $crumb->slug) }}" class="hover:text-indigo-600 dark:hover:text-indigo-300">{{ $crumb->name }}</a></li>
+                            <li>
+                                <a href="{{ route('category.show', $crumb->slug) }}" class="hover:text-indigo-600 dark:hover:text-indigo-300">{{ $crumb->name }}</a>
+                            </li>
                         @endif
                     @endforeach
                 </ol>
@@ -54,15 +60,16 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
-                        <input type="text"
-                               name="search"
-                               value="{{ request('search') }}"
-                               placeholder="Search products in {{ $category->name }}..."
-                               autocomplete="off"
-                               class="w-full pl-10 pr-4 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-sm">
+                        <x-text-input
+                            type="text"
+                            name="search"
+                            :value="request('search')"
+                            placeholder="Search products in {{ $category->name }}..."
+                            autocomplete="off"
+                            class="w-full pl-10 pr-4 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-sm"
+                        />
                     </div>
 
-                    <!-- Optional: Category dropdown for jumping between categories -->
                     @isset($allCategories)
                     <select name="category" class="px-4 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 transition-all text-gray-700 dark:text-gray-200 min-w-40 text-sm">
                         <option value="">All Categories</option>
@@ -74,17 +81,21 @@
                     </select>
                     @endisset
 
-                    <input type="number"
-                           name="min_price"
-                           value="{{ request('min_price') }}"
-                           placeholder="Min $"
-                           class="w-20 px-3 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 text-center transition-all text-gray-700 dark:text-gray-200 text-sm placeholder-gray-500 dark:placeholder-gray-400">
+                    <x-text-input
+                        type="number"
+                        name="min_price"
+                        :value="request('min_price')"
+                        placeholder="Min $"
+                        class="w-20 px-3 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 text-center transition-all text-gray-700 dark:text-gray-200 text-sm placeholder-gray-500 dark:placeholder-gray-400"
+                    />
 
-                    <input type="number"
-                           name="max_price"
-                           value="{{ request('max_price') }}"
-                           placeholder="Max $"
-                           class="w-20 px-3 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 text-center transition-all text-gray-700 dark:text-gray-200 text-sm placeholder-gray-500 dark:placeholder-gray-400">
+                    <x-text-input
+                        type="number"
+                        name="max_price"
+                        :value="request('max_price')"
+                        placeholder="Max $"
+                        class="w-20 px-3 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 text-center transition-all text-gray-700 dark:text-gray-200 text-sm placeholder-gray-500 dark:placeholder-gray-400"
+                    />
 
                     <select name="sort" class="px-4 py-2 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 transition-all text-gray-700 dark:text-gray-200 min-w-32 text-sm">
                         <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>

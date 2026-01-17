@@ -7,6 +7,9 @@
         'title' => 'Import Products',
         'formAction' => route('seller.products.import'),
         'backRoute' => route('seller.products.index'),
-        'buttonText' => 'Import Products'
+        'buttonText' => 'Import Products',
+        'templateRoute'=> asset('sample-template-seller.csv'),
+        'maxSizeMB'    => 10,
+        'acceptTxt'    => true
     ])
 @endsection

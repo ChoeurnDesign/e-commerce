@@ -2,7 +2,7 @@
 
 <?php $__env->startSection('content'); ?>
 <?php
-    $seller        = $seller ?? auth()->user()->seller;
+    $seller = $seller ?? auth()->user()->seller;
 ?>
 
 <?php if(!$seller): ?>
@@ -21,19 +21,52 @@
     
     <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
-            <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm5.25 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75z" />
-            </svg>
+            <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'dashboard','class' => 'w-8 h-8 text-indigo-600']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'dashboard','class' => 'w-8 h-8 text-indigo-600']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
             Dashboard
         </h1>
 
         <?php if($seller->status === 'approved'): ?>
             <a href="<?php echo e(route('seller.products.create')); ?>"
                class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'add','class' => 'w-5 h-5 mr-2']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'add','class' => 'w-5 h-5 mr-2']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
                 Add Product
             </a>
         <?php endif; ?>
@@ -124,9 +157,26 @@
 
         <?php if($seller->status === 'approved'): ?>
             <div class="flex items-start gap-4">
-                <svg class="w-10 h-10 text-green-500 dark:text-green-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'approve','class' => 'w-14 h-14 text-green-500 dark:text-green-300']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'approve','class' => 'w-14 h-14 text-green-500 dark:text-green-300']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
                 <div>
                     <p class="text-green-700 dark:text-green-300 text-lg font-semibold">Your seller account is active!</p>
                     <p class="text-gray-600 dark:text-gray-400">Manage your products, track sales, and grow your store.</p>
@@ -134,10 +184,26 @@
             </div>
         <?php elseif($seller->status === 'pending'): ?>
             <div class="flex items-start gap-4">
-                <svg class="w-10 h-10 text-yellow-500 dark:text-yellow-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M12 8v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="12" cy="12" r="10" />
-                </svg>
+                <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'pending','class' => 'w-14 h-14 text-yellow-500 dark:text-yellow-300']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'pending','class' => 'w-14 h-14 text-yellow-500 dark:text-yellow-300']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
                 <div>
                     <p class="text-yellow-700 dark:text-yellow-200 text-lg font-semibold">Application Pending</p>
                     <p class="text-gray-600 dark:text-gray-400">
@@ -149,9 +215,26 @@
             </div>
         <?php elseif($seller->status === 'rejected'): ?>
             <div class="flex items-start gap-4">
-                <svg class="w-10 h-10 text-red-500 dark:text-red-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'reject','class' => 'w-14 h-14 text-red-500 dark:text-red-300']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'reject','class' => 'w-14 h-14 text-red-500 dark:text-red-300']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
                 <div>
                     <p class="text-red-700 dark:text-red-200 text-lg font-semibold">Application Rejected</p>
                     <p class="text-gray-600 dark:text-gray-400">

@@ -1,4 +1,4 @@
-<?php $__env->startSection('title','Products On Sale'); ?>
+<?php $__env->startSection('title','Onsale Management'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="space-y-6 min-h-screen">
@@ -127,7 +127,7 @@
 <?php endif; ?>
                                     <form method="POST" action="<?php echo e(route('admin.products.removeFromSale', $product)); ?>">
                                         <?php echo csrf_field(); ?>
-                                        <?php echo method_field('PATCH'); ?>
+                                        <input type="hidden" name="_method" value="">
                                         <button type="submit"
                                             class="px-2 py-1 text-xs rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600">
                                             Remove
@@ -172,5 +172,6 @@
     <?php endif; ?>
 </div>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/admin/onsale/index.blade.php ENDPATH**/ ?>

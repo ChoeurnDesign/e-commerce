@@ -1,6 +1,24 @@
 
 <div class="mb-12 bg-gray-800 p-8 rounded-xl shadow-lg space-y-8">
     <h2 class="text-3xl text-white mb-6 border-b border-gray-700 pb-4">Homepage Banners</h2>
+
+    
+    <?php if($errors->any()): ?>
+        <div class="alert alert-danger bg-red-400 text-white p-2 rounded mb-4">
+            <ul class="list-disc pl-5">
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+    <?php if(session('success')): ?>
+        <div class="alert alert-success bg-green-400 text-white p-2 rounded mb-4">
+            <?php echo e(session('success')); ?>
+
+        </div>
+    <?php endif; ?>
+
     
     <form action="<?php echo e(route('admin.settings.add_banner')); ?>" method="POST" enctype="multipart/form-data" class="mb-8">
         <?php echo csrf_field(); ?>
@@ -8,14 +26,14 @@
             <div>
                 <?php if (isset($component)) { $__componentOriginale3da9d84bb64e4bc2eeebaafabfb2581 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginale3da9d84bb64e4bc2eeebaafabfb2581 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-label','data' => ['for' => 'banner_image','value' => 'Image: (Recommended: 515 x 1515 px)']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.input-label','data' => ['for' => 'banner_image','value' => 'Image (any file type/size up to 2MB):']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('input-label'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['for' => 'banner_image','value' => 'Image: (Recommended: 515 x 1515 px)']); ?>
+<?php $component->withAttributes(['for' => 'banner_image','value' => 'Image (any file type/size up to 2MB):']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginale3da9d84bb64e4bc2eeebaafabfb2581)): ?>
@@ -80,7 +98,6 @@
                 </div>
             </div>
             <div class="flex gap-4">
-                
                 <?php if (isset($component)) { $__componentOriginald756e030c4774b83c500f23dd3d7c0ad = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginald756e030c4774b83c500f23dd3d7c0ad = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.table-edit-button','data' => ['href' => route('admin.settings.edit_banner', $banner)]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -101,7 +118,6 @@
 <?php $component = $__componentOriginald756e030c4774b83c500f23dd3d7c0ad; ?>
 <?php unset($__componentOriginald756e030c4774b83c500f23dd3d7c0ad); ?>
 <?php endif; ?>
-                
                 <?php if (isset($component)) { $__componentOriginal8f15d364f5bcededd1a8e1e23253c652 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal8f15d364f5bcededd1a8e1e23253c652 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.table-delete-button','data' => ['action' => route('admin.settings.delete_banner', $banner)]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -126,5 +142,4 @@
         </div>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
-</div>
-<?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/admin/settings/partials/banner-section.blade.php ENDPATH**/ ?>
+</div><?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/admin/settings/partials/banner-section.blade.php ENDPATH**/ ?>

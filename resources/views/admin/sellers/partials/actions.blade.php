@@ -19,17 +19,17 @@
 {{-- STATUS ACTIONS (status passed in URL) --}}
 @if($seller->status === 'pending')
     <form action="{{ route('admin.sellers.updateStatus', [$seller->id, 'approved']) }}" method="POST" class="inline-block">
-        @csrf
-        @method('PATCH')
-        <button type="submit"
-            class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition"
-            title="Approve Seller">
-            Approve
-        </button>
-    </form>
+    @csrf
+    @method('PATCH') <!-- Correctly specify the PATCH method -->
+    <button type="submit"
+        class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition"
+        title="Approve Seller">
+        Approve
+    </button>
+</form>
     <form action="{{ route('admin.sellers.updateStatus', [$seller->id, 'rejected']) }}" method="POST" class="inline-block ml-2">
         @csrf
-        @method('PATCH')
+        <input type="hidden" name="_method" value="">
         <button type="submit"
             class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition"
             title="Reject Seller">
@@ -41,7 +41,7 @@
     @if(!$compact)
         <form action="{{ route('admin.sellers.updateStatus', [$seller->id, 'rejected']) }}" method="POST" class="inline-block ml-2">
             @csrf
-            @method('PATCH')
+            <input type="hidden" name="_method" value="">
             <button type="submit"
                 class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition"
                 title="Reject Seller">
@@ -54,7 +54,7 @@
     @if(!$compact)
         <form action="{{ route('admin.sellers.updateStatus', [$seller->id, 'approved']) }}" method="POST" class="inline-block ml-2">
             @csrf
-            @method('PATCH')
+            <input type="hidden" name="_method" value="">
             <button type="submit"
                 class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition"
                 title="Approve Seller">
@@ -63,3 +63,4 @@
         </form>
     @endif
 @endif
+

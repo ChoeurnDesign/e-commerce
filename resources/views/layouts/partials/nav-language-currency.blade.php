@@ -3,7 +3,7 @@
     $currentCurrency = session('currency', 'usd');
 @endphp
 
-<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-4 mr-2">
     {{-- Currency Dropdown --}}
     <div x-data="{ open: false }" class="relative">
         <button @click="open = !open"

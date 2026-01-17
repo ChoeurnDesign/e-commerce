@@ -1,5 +1,5 @@
 <!-- Categories Preview Section -->
-<div id="categories" class="py-16 bg-white dark:bg-gray-900">
+<div id="categories" class="py-16 bg-gray-200 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -39,5 +39,5 @@
 
         </a>
     </div>
-</div>
-<?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/components/home/categories-preview.blade.php ENDPATH**/ ?>
+    <div class="border-b border-gray-300 dark:border-gray-700 w-[90%] mx-auto mt-8"></div>
+</div>  <?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/components/home/categories-preview.blade.php ENDPATH**/ ?>

@@ -1,13 +1,24 @@
 @php
-    $user   = auth()->user();
+    $user = auth()->user();
     $seller = $user?->seller;
     $status = $seller?->status;
-
+    $storeName = $seller?->store_name; 
+    
     // Avatar logic: prefer user profile image, fallback to store logo, then initial
-    $userAvatar  = $user?->profile_image ? asset('storage/' . ltrim($user->profile_image,'/')) : null;
-    $storeLogo   = $seller?->store_logo_url;
+    $userAvatar = $user?->profile_image ? asset('storage/' . ltrim($user->profile_image,'/')) : null;
+    $storeLogo = $seller?->store_logo_url;
     $displayAvatar = $userAvatar ?? $storeLogo;
     $initial = strtoupper(mb_substr($user?->name ?? 'U', 0, 1));
+    
+    // Logic for store name initials (e.g., "MyPhone Shop" -> "MPS")
+    $storeInitials = 'S'; // Default value if no store name exists
+    if ($storeName) {
+        $words = explode(' ', $storeName);
+        $initialsArray = array_map(function($word) {
+            return mb_substr($word, 0, 1);
+        }, $words);
+        $storeInitials = strtoupper(implode('', $initialsArray));
+    }
 
     $hasStorefront = $seller
         && $seller->slug
@@ -28,14 +39,24 @@
         </button>
 
         <div class="flex items-center gap-3">
+            {{-- Store Logo / Placeholder Logic --}}
             @if($storeLogo)
                 <img src="{{ $storeLogo }}"
                      alt="Store Logo"
                      class="w-10 h-10 rounded object-cover border border-indigo-500"
                      onerror="this.onerror=null;this.src='{{ asset('images/default-store.png') }}';">
+            @else
+                <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-sm border border-indigo-500">
+                    {{ $storeInitials }}
+                </div>
             @endif
             <span class="text-lg text-gray-100">
-                Welcome, {{ $user->name }}
+                Welcome, 
+                @if($seller?->store_name)
+                    {{ $seller->store_name }}
+                @else
+                    {{ $user->name }}
+                @endif
                 @if($seller && $status !== 'approved')
                     <span class="ml-2 text-xs px-2 py-0.5 rounded
                         @class([
@@ -53,18 +74,11 @@
     {{-- Right: Dark mode & seller-only dropdown --}}
     <div class="flex items-center gap-4">
 
+        {{-- Chat Icon --}}
+        <x-chat.chat-icon :route="route('seller.chat.index')" label="Seller Chat" :badge="$unreadSellerChats ?? 0" />
+        
         {{-- Dark mode toggle (Alpine variable "dark") --}}
-        <button @click="dark = !dark"
-                class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition focus:outline-none"
-                :aria-label="dark ? 'Switch to light mode' : 'Switch to dark mode'">
-            <svg x-show="!dark" class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="5"/>
-                <path d="M12 1v2m0 18v2m11-11h-2M3 12H1m16.95 6.95l-1.414-1.414M6.05 6.05L4.636 4.636m12.728 0l-1.414 1.414M6.05 17.95l-1.414 1.414"/>
-            </svg>
-            <svg x-show="dark" class="w-5 h-5 text-gray-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
-            </svg>
-        </button>
+        <x-dark-mode-toggle />
 
         {{-- Seller Dropdown (NO general user links here) --}}
         <div x-data="{ open:false }" class="relative">

@@ -1,16 +1,16 @@
-<div x-data="{ open: false }" class="relative">
-    <button @click="open = !open"
-        class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-600 dark:hover:bg-[#2e1065] transition-colors focus:outline-none">
+<div x-data="{ open: false }" class="relative group">
+    <button type="button" @click="open = !open"
+        class="relative p-2 text-gray-400 transition-colors duration-150 focus:outline-none focus-visible:ring focus-visible:ring-indigo-300">
         <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'notification','class' => 'inline w-5 h-5 mr-1']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'notification','class' => 'inline w-6 h-6 text-gray-400 group-hover:text-indigo-500 transition-colors duration-150']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('icon-nav'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['name' => 'notification','class' => 'inline w-5 h-5 mr-1']); ?>
+<?php $component->withAttributes(['name' => 'notification','class' => 'inline w-6 h-6 text-gray-400 group-hover:text-indigo-500 transition-colors duration-150']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
@@ -26,7 +26,7 @@
         ?>
         <?php if($unreadCount > 0): ?>
         <span
-            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold leading-none">
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center leading-none">
             <?php echo e($unreadCount); ?>
 
         </span>
@@ -54,5 +54,4 @@
             <?php endif; ?>
         </div>
     </div>
-</div>
-<?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/layouts/partials/nav-notification.blade.php ENDPATH**/ ?>
+</div><?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/layouts/partials/nav-notification.blade.php ENDPATH**/ ?>

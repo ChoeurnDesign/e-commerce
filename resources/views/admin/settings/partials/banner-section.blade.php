@@ -1,12 +1,29 @@
 {{-- Homepage Banner Management --}}
 <div class="mb-12 bg-gray-800 p-8 rounded-xl shadow-lg space-y-8">
     <h2 class="text-3xl text-white mb-6 border-b border-gray-700 pb-4">Homepage Banners</h2>
+
+    {{-- Show validation errors --}}
+    @if ($errors->any())
+        <div class="alert alert-danger bg-red-400 text-white p-2 rounded mb-4">
+            <ul class="list-disc pl-5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    @if (session('success'))
+        <div class="alert alert-success bg-green-400 text-white p-2 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
     {{-- Add Banner Form --}}
     <form action="{{ route('admin.settings.add_banner') }}" method="POST" enctype="multipart/form-data" class="mb-8">
         @csrf
         <div class="grid grid-cols-1 gap-6 mb-4">
             <div>
-                <x-input-label for="banner_image" value="Image: (Recommended: 515 x 1515 px)" />
+                <x-input-label for="banner_image" value="Image (any file type/size up to 2MB):" />
                 <x-text-input
                     id="banner_image"
                     name="image"
@@ -30,9 +47,7 @@
                 </div>
             </div>
             <div class="flex gap-4">
-                {{-- Edit as link to edit page --}}
                 <x-admin.table-edit-button :href="route('admin.settings.edit_banner', $banner)" />
-                {{-- Delete button --}}
                 <x-admin.table-delete-button :action="route('admin.settings.delete_banner', $banner)" />
             </div>
         </div>

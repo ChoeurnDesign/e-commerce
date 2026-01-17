@@ -1,7 +1,8 @@
 <?php
 
 namespace Database\Seeders;
-use Database\Seeders\CategoryAndProductSeeder;
+use Database\Seeders\CategorySeeder;
+use Database\Seeders\CategoryImageSeeder;
 use Database\Seeders\AdminUserSeeder;
 use Database\Seeders\ReviewSeeder;
 
@@ -13,9 +14,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             // Use only the new combined seeder for categories and products
-            CategoryAndProductSeeder::class,
+            CategorySeeder::class,
             AdminUserSeeder::class,
             ReviewSeeder::class,
+            SellerSeeder::class,
+            ProductSeeder::class,
         ]);
     }
 }

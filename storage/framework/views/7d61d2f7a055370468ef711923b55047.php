@@ -56,10 +56,20 @@
                     <?php $__empty_1 = true; $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr class="hover:bg-gray-300 dark:hover:bg-[#262c47]">
                             <td class="px-6 py-4">
-                                <img src="<?php echo e($category->image ? asset($category->image) : asset('/img/default-category.png')); ?>"
-                                    alt="<?php echo e($category->name); ?>"
-                                    class="h-20 w-20 rounded-full object-cover border border-indigo-200 dark:border-indigo-700"
-                                    onerror="this.onerror=null;this.src='<?php echo e(asset('/img/default-category.png')); ?>';">
+                                <?php
+                                    // Use PlaceholderAvatar for SVG placeholders
+                                    $imgSrc = $category->image_url ?? \App\Helpers\PlaceholderAvatar::svgDataUri($category->name);
+                                    $alt = $category->image_alt ?? $category->name;
+                                ?>
+
+                                <!-- Ensure consistent circular appearance -->
+                                <div class="h-20 w-20 rounded-full overflow-hidden border border-indigo-200 dark:border-indigo-700">
+                                    <img src="<?php echo e($imgSrc); ?>"
+                                        alt="<?php echo e($alt); ?>"
+                                        class="h-full w-full object-cover"
+                                        loading="lazy"
+                                        onerror="this.onerror=null;this.src='<?php echo e(asset('/img/default-category.png')); ?>';">
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-gray-900 dark:text-gray-100">
                                 <?php echo e($category->name); ?>
@@ -159,5 +169,4 @@
     </div>
 </div>
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/admin/categories/index.blade.php ENDPATH**/ ?>

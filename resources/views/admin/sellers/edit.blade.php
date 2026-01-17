@@ -9,7 +9,7 @@
     </div>
     <form method="POST" action="{{ route('admin.sellers.update', $seller) }}">
         @csrf
-        @method('PUT')
+        <input type="hidden" name="_method" value="">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
                 <x-input-label for="name" value="Name"/>
@@ -45,3 +45,4 @@
     </form>
 </div>
 @endsection
+

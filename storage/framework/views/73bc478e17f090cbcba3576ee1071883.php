@@ -20,6 +20,28 @@
 
             <?php echo $__env->make('admin.partials.noti', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
+            
+            <?php if (isset($component)) { $__componentOriginalfefe5dbf3b22960644eea9a713073a08 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalfefe5dbf3b22960644eea9a713073a08 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.dark-mode-toggle','data' => ['class' => 'p-1.5 bg-gray-600 rounded-full hover:bg-gray-600 transition focus:outline-none']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('dark-mode-toggle'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'p-1.5 bg-gray-600 rounded-full hover:bg-gray-600 transition focus:outline-none']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalfefe5dbf3b22960644eea9a713073a08)): ?>
+<?php $attributes = $__attributesOriginalfefe5dbf3b22960644eea9a713073a08; ?>
+<?php unset($__attributesOriginalfefe5dbf3b22960644eea9a713073a08); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalfefe5dbf3b22960644eea9a713073a08)): ?>
+<?php $component = $__componentOriginalfefe5dbf3b22960644eea9a713073a08; ?>
+<?php unset($__componentOriginalfefe5dbf3b22960644eea9a713073a08); ?>
+<?php endif; ?>
+
             <div class="relative" x-data="{ open: false }">
                 <button @click="open = !open" class="max-w-xs flex items-center text-sm rounded-full transition-colors">
                     <img class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=<?php echo e(urlencode(auth()->user()->name)); ?>&background=6366f1&color=fff" alt="<?php echo e(auth()->user()->name); ?>">
@@ -77,30 +99,7 @@
 <?php $component = $__componentOriginal68cb1971a2b92c9735f83359058f7108; ?>
 <?php unset($__componentOriginal68cb1971a2b92c9735f83359058f7108); ?>
 <?php endif; ?>
-                        <button id="dark-mode-toggle" type="button"
-                            class="w-full flex items-center px-5 py-2 text-sm text-gray-300 dark:text-gray-100 hover:bg-gray-500 dark:hover:bg-[#2e1065]">
-                            <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'dark-mode','class' => 'w-5 h-5 mr-2']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('icon-nav'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['name' => 'dark-mode','class' => 'w-5 h-5 mr-2']); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
-<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
-<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
-<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
-<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
-<?php endif; ?>
-                            <span>Dark Mode</span>
-                        </button>
+                        
                         <?php if (isset($component)) { $__componentOriginal68cb1971a2b92c9735f83359058f7108 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal68cb1971a2b92c9735f83359058f7108 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.dropdown-link','data' => ['href' => route('home'),'class' => 'flex items-center text-gray-300 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-[#262c47]']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>

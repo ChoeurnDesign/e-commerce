@@ -257,4 +257,41 @@
         // Initialize tooltips or other components if needed
         console.log('ShopExpress initialized successfully');
     });
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Auto-detect user's actual timezone
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    console.log('Detected timezone:', userTimezone); // For debugging
+    
+    // Store in localStorage for immediate use
+    localStorage.setItem('userTimezone', userTimezone);
+    
+    // Send to server to store permanently
+    fetch('/api/user/timezone', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ 
+            timezone: userTimezone,
+            offset: new Date().getTimezoneOffset()
+        })
+    }).catch(console.error);
+});
+
+// Helper function to format time in user's timezone
+window.formatTimeInUserTimezone = function(utcTime, format = 'HH:mm') {
+    const userTimezone = localStorage.getItem('userTimezone') || 'UTC';
+    const date = new Date(utcTime);
+    
+    return date.toLocaleString('en-US', {
+        timeZone: userTimezone,
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
 </script>

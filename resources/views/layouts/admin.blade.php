@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      x-data="{ dark: localStorage.getItem('theme') === 'dark' }"
+      :class="{ 'dark': dark }"
+      x-init="$watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'))">
 <head>
     @include('layouts.head')
     @include('layouts.styles')

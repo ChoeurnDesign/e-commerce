@@ -81,7 +81,7 @@
                                     <x-admin.table-edit-button :href="route('admin.onsale.edit', $product)" />
                                     <form method="POST" action="{{ route('admin.products.removeFromSale', $product) }}">
                                         @csrf
-                                        @method('PATCH')
+                                        <input type="hidden" name="_method" value="">
                                         <button type="submit"
                                             class="px-2 py-1 text-xs rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600">
                                             Remove
@@ -106,3 +106,4 @@
     @endif
 </div>
 @endsection
+

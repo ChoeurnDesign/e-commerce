@@ -52,6 +52,30 @@ unset($__defined_vars); ?>
             <?php echo e($product->category->name ?? 'Uncategorized'); ?>
 
         </div>
+         
+        <div class="flex items-center gap-2 mb-3">
+            <?php if($product->seller && $product->seller->store_name): ?>
+                <a href="<?php echo e(route('stores.show', $product->seller->slug)); ?>" class="flex items-center gap-2 group">
+                    <img src="<?php echo e($product->seller->store_logo_url ?? asset('images/default-store.png')); ?>"
+                        alt="<?php echo e($product->seller->store_name); ?>"
+                        class="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-700 shadow-sm"
+                        onerror="this.onerror=null;this.src='<?php echo e(asset('images/default-store.png')); ?>';">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-purple-300 truncate">
+                        <?php echo e($product->seller->store_name); ?>
+
+                    </span>
+                </a>
+            <?php else: ?>
+                <span class="flex items-center gap-2">
+                    <img src="<?php echo e(asset('images/default-store.png')); ?>"
+                        alt="Unknown Store"
+                        class="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-700 shadow-sm">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                        Unknown Store
+                    </span>
+                </span>
+            <?php endif; ?>
+        </div>
         <h3 class= "text-gray-900 dark:text-gray-100 mb-3 line-clamp-2 leading-tight">
             <a href="<?php echo e(route('products.show', $product->slug)); ?>" class="hover:underline">
                 <?php echo e($product->name); ?>
@@ -145,7 +169,7 @@ unset($__defined_vars); ?>
                 
                 <button onclick="event.stopPropagation(); addToCart(<?php echo e($product->id); ?>, this)"
                     type="button"
-                    class="add-to-cart-btn flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-2 py-2.5 rounded-full text-sm transition-all shadow-md"
+                    class="add-to-cart-btn flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-full text-sm transition-all shadow-md"
                     style="font-size: 1rem; min-width:unset;"
                     data-product-id="<?php echo e($product->id); ?>">
                     <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
@@ -281,7 +305,7 @@ unset($__defined_vars); ?>
             
             <button type="button"
                     onclick="event.stopPropagation(); showProductInfo(<?php echo e($product->id); ?>)"
-                    class="border-2 border-gray-400 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-purple-300 hover:border-indigo-600 dark:hover:border-purple-400 flex items-center justify-center w-10 h-10 rounded-full transition"
+                    class="border-2 border-gray-400 dark:border-gray-700 text-gray-400 dark:text-gray-500  hover:border-indigo-600 dark:hover:border-purple-400 flex items-center justify-center w-10 h-10 rounded-full transition"
                     title="More Info">
                 <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>

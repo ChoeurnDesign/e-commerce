@@ -7,7 +7,6 @@
     </div>
 
     @php
-        // Helper closures for active state (keeps classes tidy)
         $is = fn(...$names) => request()->routeIs($names);
         $linkBase = 'flex items-center px-3 py-2 rounded-lg transition font-medium';
         $activePrimary = 'bg-indigo-900 text-indigo-300';
@@ -25,43 +24,44 @@
             Dashboard
         </a>
 
-        {{-- Products (index + create + edit etc.) --}}
+        {{-- Products --}}
         <a href="{{ route('seller.products.index') }}"
-           class="{{ $linkBase }} {{ $is('seller.products.*') ? $activePrimary : $idlePrimary }}"
-           aria-label="Manage Products">
+           class="{{ $linkBase }} {{ $is('seller.products.*') ? $activePrimary : $idlePrimary }}">
             <x-icon-dashboard name="products" class="mr-3 h-5 w-5 {{ $is('seller.products.*') ? $activeIcon : $idleIcon }}" />
             Products
         </a>
 
-        {{-- Orders (placeholder until seller.orders.* routes exist) --}}
-        <a href="#"
-           class="{{ $linkBase }} text-gray-400 cursor-not-allowed"
-           title="Orders section not implemented yet">
-            <x-icon-dashboard name="orders" class="mr-3 h-5 w-5 text-gray-500" />
+        {{-- Image Gallery --}}
+        <a href="{{ route('seller.images.index') }}"
+           class="{{ $linkBase }} {{ $is('seller.images.*') ? $activePrimary : $idlePrimary }}">
+            <x-icon-dashboard name="images" class="mr-3 h-5 w-5 {{ $is('seller.images.*') ? $activeIcon : $idleIcon }}" />
+            Image Gallery
+        </a>
+
+        {{-- Orders --}}
+        <a href="{{ route('seller.orders.index') }}"
+           class="{{ $linkBase }} {{ $is('seller.orders.*') ? $activePrimary : $idlePrimary }}">
+            <x-icon-dashboard name="orders" class="mr-3 h-5 w-5 {{ $is('seller.orders.*') ? $activeIcon : $idleIcon }}" />
             Orders
         </a>
 
-        {{-- Customers (placeholder) --}}
-        <a href="#"
-           class="{{ $linkBase }} text-gray-400 cursor-not-allowed"
-           title="Customers section not implemented yet">
-            <x-icon-dashboard name="customers" class="mr-3 h-5 w-5 text-gray-500" />
-            Customers
+        {{-- Reviews (new) --}}
+        <a href="{{ route('seller.reviews.index') }}"
+           class="{{ $linkBase }} {{ $is('seller.reviews.*') ? $activePrimary : $idlePrimary }}">
+            <x-icon-dashboard name="reviews" class="mr-3 h-5 w-5 {{ $is('seller.reviews.*') ? $activeIcon : $idleIcon }}" />
+            Reviews
         </a>
 
-        {{-- Analytics / Reports (placeholder) --}}
-        <a href="#"
-           class="{{ $linkBase }} text-gray-400 cursor-not-allowed"
-           title="Analytics section not implemented yet">
-            <x-icon-dashboard name="reports" class="mr-3 h-5 w-5 text-gray-500" />
-            Analytics
-        </a>
-
-        {{-- Settings (store profile) --}}
+        {{-- Settings --}}
         <a href="{{ route('seller.settings.edit') }}"
            class="{{ $linkBase }} {{ $is('seller.settings.edit') ? $activePrimary : $idlePrimary }}">
             <x-icon-dashboard name="settings" class="mr-3 h-5 w-5 {{ $is('seller.settings.edit') ? $activeIcon : $idleIcon }}" />
             Settings
+        </a>
+        <a href="{{ route('home') }}"
+           class="{{ $linkBase }} text-gray-300 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-[#23263a] hover:text-white flex items-center px-4 py-2 text-sm font-medium rounded-md mt-8 transition-colors">
+            <x-icon-nav name="back" class="mr-3 h-5 w-5 text-gray-300 dark:text-gray-200" />
+            Visit Store
         </a>
     </nav>
 

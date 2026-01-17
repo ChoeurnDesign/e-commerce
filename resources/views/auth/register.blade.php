@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="w-full max-w-md mx-auto py-2">
         <!-- Google Login Button -->
-        <a href="{{ route('social.login', ['provider' => 'google']) }}"
+        <a href="{{ route('google.login', ['provider' => 'google']) }}"
             class="flex items-center justify-center gap-6 px-1 py-1.5 rounded-full hover:bg-gray-300 text-black border-2 border-gray-300 font-bold text-lg shadow transition mb-6">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png"
                 alt="Google Logo" class="h-8 w-8 rounded-full" />

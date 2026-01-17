@@ -13,12 +13,16 @@ class WelcomeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $user;
+    public $storeName;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($user, $storeName = null)
     {
-        //
+        $this->user = $user;
+        $this->storeName = $storeName ?? config('app.name');
     }
 
     /**
@@ -27,7 +31,11 @@ class WelcomeEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome Email',
+            from: new \Illuminate\Mail\Mailables\Address(
+                config('mail.from.address'), // Must be valid email
+                config('mail.from.name')     // Can be "ShopExpress"
+            ),
+            subject: "Welcome to {$this->storeName}!",
         );
     }
 
@@ -37,7 +45,11 @@ class WelcomeEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.welcome',
+            with: [
+                'user' => $this->user,
+                'storeName' => $this->storeName,
+            ],
         );
     }
 

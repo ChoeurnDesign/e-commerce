@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Setting;
-use App\Models\HomepageBanner; // <-- Add this line
+use App\Models\HomepageBanner;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
@@ -30,7 +30,7 @@ class SettingsController extends Controller
     public function updateBanner(Request $request, HomepageBanner $banner)
     {
         $data = $request->validate([
-            'image' => 'nullable|image|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'title' => 'nullable|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'order' => 'nullable|integer',
@@ -158,14 +158,19 @@ class SettingsController extends Controller
     public function addBanner(Request $request)
     {
         $data = $request->validate([
-            'image' => 'required|image|max:2048',
+            'image' => 'nullable', // Accept any file or none
             'title' => 'nullable|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'order' => 'nullable|integer',
         ]);
 
-        $data['image_path'] = $request->file('image')->store('banners', 'public');
-        HomepageBanner::create($data);
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')->store('banners', 'public');
+        } else {
+            $data['image_path'] = null;
+        }
+
+        \App\Models\HomepageBanner::create($data);
 
         return redirect()->back()->with('success', 'Banner added!');
     }
@@ -181,21 +186,17 @@ class SettingsController extends Controller
 
     public function editBanner(Request $request, HomepageBanner $banner)
     {
+        // Always disallow image field
         $data = $request->validate([
-            'image' => 'nullable|image|max:2048',
+            'image' => ['prohibited'],
             'title' => 'nullable|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'order' => 'nullable|integer',
+        ], [
+            'image.prohibited' => 'Banner image updates are currently disabled.',
         ]);
 
-        if ($request->hasFile('image')) {
-            // Delete old image
-            if ($banner->image_path) {
-                Storage::disk('public')->delete($banner->image_path);
-            }
-            $data['image_path'] = $request->file('image')->store('banners', 'public');
-        }
-
+        // Only update non-image data
         $banner->update($data);
 
         return redirect()->back()->with('success', 'Banner updated!');

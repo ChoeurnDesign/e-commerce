@@ -7,7 +7,7 @@
             <a href="{{ route('products.show', $item['slug']) }}"
                 class="font-medium text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-purple-400 truncate block">{{ $item['name'] }}</a>
             <form action="{{ route('cart.remove', $item['id']) }}" method="POST" class="inline ml-2">
-                @csrf @method('DELETE')
+                @csrf <input type="hidden" name="_method" value="">
                 <button type="submit"
                     class="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 p-2.5 rounded transition"
                     title="Remove" aria-label="Remove" onclick="return confirm('Remove this item?')">
@@ -61,3 +61,4 @@
         </div>
     </div>
 </div>
+

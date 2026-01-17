@@ -85,9 +85,10 @@
         <a href="{{ route('admin.orders.edit', $order) }}" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition duration-200">Edit Order</a>
         <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this order?')">
             @csrf
-            @method('DELETE')
+            <input type="hidden" name="_method" value="">
             <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200">Delete Order</button>
         </form>
     </div>
 </div>
 @endsection
+

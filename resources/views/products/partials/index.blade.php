@@ -1,7 +1,4 @@
-@extends('layouts.admin')
-@section('title', 'Products Management')
 
-@section('content')
 <!-- Header -->
 <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
     <div class="flex items-center">
@@ -13,26 +10,27 @@
     <div class="flex space-x-4">
         @isset($importRoute)
             <a href="{{ $importRoute }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
-                <svg class="w-6 h-6 text-white mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                </svg>
+                <x-icon-nav name="download"/>
                 Import
             </a>
         @endisset
         @isset($createRoute)
             <a href="{{ $createRoute }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
+                <x-icon-nav name="add"/>
                 Add Product
             </a>
         @endisset
     </div>
 </div>
 
-{{-- Filter / Search Bar (only renders if $filterFields exist) --}}
-@if(isset($filterFields) && is_array($filterFields))
-    <x-admin.filter-bar :fields="$filterFields" :action="$filterAction ?? request()->url()" />
+{{-- Filter / Search Bar (renders when $filterFields provided as array or Collection) --}}
+@if(!empty($filterFields) && (is_array($filterFields) || $filterFields instanceof \Illuminate\Support\Collection))
+    <x-seller.filter-bar
+        :fields="$filterFields"
+        :action="$filterAction ?? request()->url()"
+        :filters="$filters ?? []"
+        :auto-submit="false"
+    />
 @endif
 
 <!-- Products Table -->
@@ -55,7 +53,7 @@
                     <tr class="hover:bg-gray-100 dark:hover:bg-[#262c47]">
                         <td class="px-6 py-4">
                             <div class="flex items-center">
-                                @include('products.partials.image-unified', ['product' => $product])
+                                @include('products.partials.image-seller', ['product' => $product])
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $product->name }}</div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">SKU: {{ $product->sku }}</div>
@@ -68,7 +66,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">
                             {{ $product->category->name ?? 'No Category' }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap justify-center flex text-sm text-gray-800 dark:text-gray-100">
+                        <td class="px-6 py-4 whitespace-nowrap justify-center text-sm text-gray-800 dark:text-gray-100">
                             @if($product->creator)
                                 <span class="flex items-center">
                                     <span class="inline-block px-2 py-1 rounded-full shadow text-xs font-semibold
@@ -129,4 +127,4 @@
         {{ $products->links() }}
     </div>
 </div>
-@endsection
+

@@ -1,6 +1,4 @@
-<?php $__env->startSection('title', 'Products Management'); ?>
 
-<?php $__env->startSection('content'); ?>
 <!-- Header -->
 <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
     <div class="flex items-center">
@@ -31,17 +29,51 @@
     <div class="flex space-x-4">
         <?php if(isset($importRoute)): ?>
             <a href="<?php echo e($importRoute); ?>" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
-                <svg class="w-6 h-6 text-white mr-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                </svg>
+                <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'download']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'download']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
                 Import
             </a>
         <?php endif; ?>
         <?php if(isset($createRoute)): ?>
             <a href="<?php echo e($createRoute); ?>" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
+                <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'add']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'add']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
                 Add Product
             </a>
         <?php endif; ?>
@@ -49,26 +81,26 @@
 </div>
 
 
-<?php if(isset($filterFields) && is_array($filterFields)): ?>
-    <?php if (isset($component)) { $__componentOriginal6745939b27c8af4f46b782316e447f80 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal6745939b27c8af4f46b782316e447f80 = $attributes; } ?>
-<?php $component = App\View\Components\Admin\FilterBar::resolve(['fields' => $filterFields,'action' => $filterAction ?? request()->url()] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('admin.filter-bar'); ?>
+<?php if(!empty($filterFields) && (is_array($filterFields) || $filterFields instanceof \Illuminate\Support\Collection)): ?>
+    <?php if (isset($component)) { $__componentOriginalcad10da55311e1e8753385cd5411a2f4 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalcad10da55311e1e8753385cd5411a2f4 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.seller.filter-bar','data' => ['fields' => $filterFields,'action' => $filterAction ?? request()->url(),'filters' => $filters ?? [],'autoSubmit' => false]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('seller.filter-bar'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\App\View\Components\Admin\FilterBar::ignoredParameterNames()); ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes([]); ?>
+<?php $component->withAttributes(['fields' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($filterFields),'action' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($filterAction ?? request()->url()),'filters' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($filters ?? []),'auto-submit' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(false)]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginal6745939b27c8af4f46b782316e447f80)): ?>
-<?php $attributes = $__attributesOriginal6745939b27c8af4f46b782316e447f80; ?>
-<?php unset($__attributesOriginal6745939b27c8af4f46b782316e447f80); ?>
+<?php if (isset($__attributesOriginalcad10da55311e1e8753385cd5411a2f4)): ?>
+<?php $attributes = $__attributesOriginalcad10da55311e1e8753385cd5411a2f4; ?>
+<?php unset($__attributesOriginalcad10da55311e1e8753385cd5411a2f4); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginal6745939b27c8af4f46b782316e447f80)): ?>
-<?php $component = $__componentOriginal6745939b27c8af4f46b782316e447f80; ?>
-<?php unset($__componentOriginal6745939b27c8af4f46b782316e447f80); ?>
+<?php if (isset($__componentOriginalcad10da55311e1e8753385cd5411a2f4)): ?>
+<?php $component = $__componentOriginalcad10da55311e1e8753385cd5411a2f4; ?>
+<?php unset($__componentOriginalcad10da55311e1e8753385cd5411a2f4); ?>
 <?php endif; ?>
 <?php endif; ?>
 
@@ -92,7 +124,7 @@
                     <tr class="hover:bg-gray-100 dark:hover:bg-[#262c47]">
                         <td class="px-6 py-4">
                             <div class="flex items-center">
-                                <?php echo $__env->make('products.partials.image-unified', ['product' => $product], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                                <?php echo $__env->make('products.partials.image-seller', ['product' => $product], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900 dark:text-gray-100"><?php echo e($product->name); ?></div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">SKU: <?php echo e($product->sku); ?></div>
@@ -107,7 +139,7 @@
                             <?php echo e($product->category->name ?? 'No Category'); ?>
 
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap justify-center flex text-sm text-gray-800 dark:text-gray-100">
+                        <td class="px-6 py-4 whitespace-nowrap justify-center text-sm text-gray-800 dark:text-gray-100">
                             <?php if($product->creator): ?>
                                 <span class="flex items-center">
                                     <span class="inline-block px-2 py-1 rounded-full shadow text-xs font-semibold
@@ -229,6 +261,5 @@
 
     </div>
 </div>
-<?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/products/partials/index.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/products/partials/index.blade.php ENDPATH**/ ?>

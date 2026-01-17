@@ -47,6 +47,7 @@ unset($__defined_vars); ?>
 <?php
     $value = request($name, '');
     $formAction = $action ?: url()->current();
+    $inputId = 'simple-search-' . md5($name);
 ?>
 
 <form method="GET" action="<?php echo e($formAction); ?>"
@@ -62,6 +63,7 @@ unset($__defined_vars); ?>
             </label>
         <?php endif; ?>
         <input
+            id="<?php echo e($inputId); ?>"
             type="text"
             name="<?php echo e($name); ?>"
             value="<?php echo e($value); ?>"
@@ -89,4 +91,31 @@ unset($__defined_vars); ?>
     <?php echo e($slot ?? ''); ?>
 
 </form>
-<?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/components/admin/simple-search.blade.php ENDPATH**/ ?>
+
+<?php if($autofocus): ?>
+<script>
+    (function() {
+        const el = document.getElementById('<?php echo e($inputId); ?>');
+        if (!el) return;
+        // Wait for browser/autofocus to run, then move caret to end if there's already text
+        window.requestAnimationFrame(() => {
+            if (el.value && el.value.length) {
+                try {
+                    // modern browsers
+                    el.focus();
+                    el.setSelectionRange(el.value.length, el.value.length);
+                } catch (e) {
+                    // fallback: reassign value to move caret to end
+                    const v = el.value;
+                    el.value = '';
+                    el.value = v;
+                    el.focus();
+                }
+            } else {
+                // ensure focused if autofocus requested
+                el.focus();
+            }
+        });
+    })();
+</script>
+<?php endif; ?><?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/components/admin/simple-search.blade.php ENDPATH**/ ?>

@@ -4,9 +4,7 @@
 @section('content')
     @include('products.partials.index', [
         'products' => $products,
-        'imagePartial' => 'products.partials.image-admin',
-        'createRoute' => route('admin.products.create'),
-        'importRoute' => route('admin.products.import.form'),
+        'imagePartial' => 'products.partials.image-seller',
         'showRouteName' => 'admin.products.show',
         'editRouteName' => 'admin.products.edit',
         'deleteRouteName' => 'admin.products.destroy',

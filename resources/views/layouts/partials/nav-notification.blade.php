@@ -1,13 +1,13 @@
-<div x-data="{ open: false }" class="relative">
-    <button @click="open = !open"
-        class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-600 dark:hover:bg-[#2e1065] transition-colors focus:outline-none">
-        <x-icon-nav name="notification" class="inline w-5 h-5 mr-1" />
+<div x-data="{ open: false }" class="relative group">
+    <button type="button" @click="open = !open"
+        class="relative p-2 text-gray-400 transition-colors duration-150 focus:outline-none focus-visible:ring focus-visible:ring-indigo-300">
+        <x-icon-nav name="notification" class="inline w-6 h-6 text-gray-400 group-hover:text-indigo-500 transition-colors duration-150" />
         @php
         $unreadCount = auth()->check() ? auth()->user()->unreadNotifications->count() : 0;
         @endphp
         @if($unreadCount > 0)
         <span
-            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold leading-none">
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center leading-none">
             {{ $unreadCount }}
         </span>
         @endif

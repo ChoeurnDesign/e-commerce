@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -29,7 +30,7 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:2048',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -37,9 +38,8 @@ class CategoryController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = time() . '-' . $file->getClientOriginalName();
-            $destinationPath = public_path('img/categories');
-            $file->move($destinationPath, $fileName);
-            $validated['image'] = 'img/categories/' . $fileName; // Save relative path in DB
+            $filePath = $file->storeAs('categories', $fileName, 'public'); // Use Laravel storage
+            $validated['image'] = $filePath; // Save relative path in DB
         }
 
         Category::create($validated);
@@ -56,24 +56,27 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:2048',
         ]);
 
-        if ($category->name !== $validated['name']) {
-            $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
+        if ($request->has('remove_image')) {
+            $validated['image'] = null;
+
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
         }
 
         if ($request->hasFile('image')) {
-            // Delete old image if it exists
-            if ($category->image && file_exists(public_path($category->image))) {
-                unlink(public_path($category->image));
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
             }
 
             $file = $request->file('image');
-            $fileName = time() . '-' . $file->getClientOriginalName();
-            $destinationPath = public_path('img/categories');
-            $file->move($destinationPath, $fileName);
-            $validated['image'] = 'img/categories/' . $fileName; // Save this path in DB
+            $fileName = time() . '-' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.png';
+            $filePath = $file->storeAs('categories', $fileName, 'public');
+
+            $validated['image'] = $filePath;
         }
 
         $category->update($validated);
@@ -85,8 +88,8 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         $category->load(['products', 'children']);
-        $allCategories = Category::allCategoriesForDropdown(); 
-        return view('admin.categories.show', compact('category', 'allCategories'));
+        $allCategories = Category::allCategoriesForDropdown();
+        return view('admin.categories.show', compact('category', 'allCategories', 'categories'));
     }
 
     public function edit(Category $category)
@@ -102,6 +105,11 @@ class CategoryController extends Controller
         if ($category->products()->count() > 0) {
             return redirect()->route('admin.categories.index')
                 ->with('error', 'Cannot delete category with products. Move products first.');
+        }
+
+        // Delete image if exists
+        if ($category->image && Storage::disk('public')->exists($category->image)) {
+            Storage::disk('public')->delete($category->image);
         }
 
         $category->delete();

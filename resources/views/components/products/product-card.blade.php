@@ -23,6 +23,29 @@
         <div class="text-xs text-indigo-600 dark:text-purple-300 font-medium mb-2 bg-gray-300 dark:bg-gray-800 px-3 py-1 rounded-full inline-block">
             {{ $product->category->name ?? 'Uncategorized' }}
         </div>
+        {{-- Store Info --}} 
+        <div class="flex items-center gap-2 mb-3">
+            @if($product->seller && $product->seller->store_name)
+                <a href="{{ route('stores.show', $product->seller->slug) }}" class="flex items-center gap-2 group">
+                    <img src="{{ $product->seller->store_logo_url ?? asset('images/default-store.png') }}"
+                        alt="{{ $product->seller->store_name }}"
+                        class="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-700 shadow-sm"
+                        onerror="this.onerror=null;this.src='{{ asset('images/default-store.png') }}';">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-purple-300 truncate">
+                        {{ $product->seller->store_name }}
+                    </span>
+                </a>
+            @else
+                <span class="flex items-center gap-2">
+                    <img src="{{ asset('images/default-store.png') }}"
+                        alt="Unknown Store"
+                        class="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-700 shadow-sm">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                        Unknown Store
+                    </span>
+                </span>
+            @endif
+        </div>
         <h3 class= "text-gray-900 dark:text-gray-100 mb-3 line-clamp-2 leading-tight">
             <a href="{{ route('products.show', $product->slug) }}" class="hover:underline">
                 {{ $product->name }}
@@ -71,7 +94,7 @@
                 {{-- Add to Cart --}}
                 <button onclick="event.stopPropagation(); addToCart({{ $product->id }}, this)"
                     type="button"
-                    class="add-to-cart-btn flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-2 py-2.5 rounded-full text-sm transition-all shadow-md"
+                    class="add-to-cart-btn flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-full text-sm transition-all shadow-md"
                     style="font-size: 1rem; min-width:unset;"
                     data-product-id="{{ $product->id }}">
                     <x-icon-nav name="cart" />
@@ -112,7 +135,7 @@
             {{-- more info --}}
             <button type="button"
                     onclick="event.stopPropagation(); showProductInfo({{ $product->id }})"
-                    class="border-2 border-gray-400 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-purple-300 hover:border-indigo-600 dark:hover:border-purple-400 flex items-center justify-center w-10 h-10 rounded-full transition"
+                    class="border-2 border-gray-400 dark:border-gray-700 text-gray-400 dark:text-gray-500  hover:border-indigo-600 dark:hover:border-purple-400 flex items-center justify-center w-10 h-10 rounded-full transition"
                     title="More Info">
                 <x-icon-nav name="info" />
             </button>

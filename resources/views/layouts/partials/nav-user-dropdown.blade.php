@@ -41,16 +41,11 @@
         @if(auth()->user()->role === 'seller')
             <x-dropdown-link :href="route('seller.dashboard')"
                 class="text-gray-300 hover:text-white flex items-center">
-                <x-icon-nav name="dashboard" class="text-gray-300" />
+                <x-icon-nav name="dashboard" class="h-5 w-5 mr-2 text-gray-300 dark:text-gray-500" />
                 Seller Dashboard
             </x-dropdown-link>
         @endif
 
-        <button id="dark-mode-toggle" type="button"
-            class="w-full flex items-center px-5 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700 rounded">
-            <x-icon-nav name="dark-mode" class="text-gray-300" />
-            <span>Dark Mode</span>
-        </button>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();"
@@ -70,11 +65,6 @@
             <x-icon-nav name="register" class="text-gray-300" />
             Register
         </x-dropdown-link>
-        <button id="dark-mode-toggle" type="button"
-            class="w-full flex items-center px-5 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700 rounded">
-            <x-icon-nav name="dark-mode" class="text-gray-300" />
-            <span>Dark Mode</span>
-        </button>
         @endauth    
     </div>
 </x-slot>

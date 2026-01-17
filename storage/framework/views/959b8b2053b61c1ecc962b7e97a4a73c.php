@@ -1,7 +1,7 @@
 <?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
 
 $__newAttributes = [];
-$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['parentCategories']));
+$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['parentCategories' => null, 'title' => 'Categories']));
 
 foreach ($attributes->all() as $__key => $__value) {
     if (in_array($__key, $__propNames)) {
@@ -16,7 +16,7 @@ $attributes = new \Illuminate\View\ComponentAttributeBag($__newAttributes);
 unset($__propNames);
 unset($__newAttributes);
 
-foreach (array_filter((['parentCategories']), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
+foreach (array_filter((['parentCategories' => null, 'title' => 'Categories']), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
 }
 
@@ -28,74 +28,132 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
-<?php if($parentCategories->count() > 0): ?>
-    <div class="space-y-16">
-        <?php $__currentLoopData = $parentCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="relative overflow-hidden rounded-3xl shadow-xl border border-gray-300 dark:border-gray-700 mb-10 bg-gradient-to-tr from-indigo-50 via-white dark:from-gray-900 dark:via-gray-800 to-indigo-100 dark:to-gray-900 transition-shadow hover:shadow-2xl">
-                <!-- Accent background shape -->
-                <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-200 opacity-60 dark:bg-indigo-900 dark:opacity-30 rounded-full pointer-events-none"></div>
-                <!-- Category Header -->
-                <div class="flex flex-col md:flex-row items-center gap-8 px-8 py-10 relative z-10">
-                    <img src="<?php echo e($category->image); ?>"
-                         alt="<?php echo e($category->name); ?>"
-                         class="w-32 h-32 object-cover rounded-full border-4 border-indigo-300 dark:border-indigo-600 shadow-lg bg-white dark:bg-gray-800 flex-shrink-0"
-                         onerror="this.onerror=null;this.src='/img/default-category.png';">
-                    <div class="flex-1 text-center md:text-left">
-                        <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2"><?php echo e($category->name); ?></h2>
-                        <p class="text-gray-500 dark:text-gray-300 mb-4"><?php echo e($category->description); ?></p>
-                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                            <span class="inline-flex items-center bg-indigo-600/10 text-indigo-700 dark:text-indigo-300 px-4 py-1 rounded-full font-medium text-sm">
-                                <svg class="w-4 h-4 mr-2 text-indigo-400 dark:text-indigo-300" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M8 2a2 2 0 00-2 2v2H5a2 2 0 00-2 2v8a2 2 0 002 2h10a2 2 0 002-2v-8a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H8zm0 2h4v2H8V4z"/>
-                                </svg>
-                                <?php echo e($category->total_products_count); ?> Products
-                            </span>
-                            <a href="<?php echo e(route('category.show', $category->slug)); ?>"
-                                class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-full font-semibold shadow transition duration-200 dark:bg-indigo-700 dark:hover:bg-indigo-600">
-                                View All →
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <?php if($category->children->count() > 0): ?>
-                <!-- Subcategories -->
-                <div class="bg-gray-300 dark:bg-gray-800/60 px-8 py-8 border-t border-gray-300 dark:border-gray-700">
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                        <?php $__currentLoopData = $category->children; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subcategory): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <a href="<?php echo e(route('category.show', $subcategory->slug)); ?>"
-                            class="group relative bg-white dark:bg-gray-900/90 border border-gray-300 dark:border-gray-700 rounded-2xl shadow hover:shadow-lg transition-all transform hover:-translate-y-1 p-5 flex flex-col items-center text-center cursor-pointer">
-                            <!-- Glow hover effect -->
-                            <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition bg-indigo-50 dark:bg-indigo-800/20 pointer-events-none"></div>
-                            <img src="<?php echo e($subcategory->image); ?>"
-                                 alt="<?php echo e($subcategory->name); ?>"
-                                 class="w-20 h-20 object-cover rounded-full border-2 border-indigo-200 dark:border-indigo-600 shadow mb-3 bg-gray-300 dark:bg-gray-700 group-hover:scale-110 transition-transform duration-300"
-                                 onerror="this.onerror=null;this.src='/img/default-category.png';">
-                            <div>
-                                <h3 class="font-semibold text-gray-800 dark:text-gray-100 mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors">
-                                    <?php echo e($subcategory->name); ?>
+<?php
+    use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Storage;
 
-                                </h3>
-                                <p class="text-xs text-gray-500 dark:text-gray-300 mb-2"><?php echo e($subcategory->description); ?></p>
-                                <span class="text-sm font-medium text-indigo-600 dark:text-indigo-300"><?php echo e($subcategory->total_products_count); ?> items</span>
+    $categories = collect($parentCategories ?? [])->map(function($c){
+        // Determine image URL: full URL, storage URL, or SVG placeholder
+        $imageUrl = null;
+        if (!empty($c->image) && filter_var($c->image, FILTER_VALIDATE_URL)) {
+            $imageUrl = $c->image;
+        } elseif (!empty($c->image)) {
+            try {
+                // Use asset() to generate URL for public/storage/categories
+                $imageUrl = asset('storage/' . $c->image);
+            } catch (\Throwable $e) {
+                $imageUrl = null;
+            }
+        }
+
+        if (!$imageUrl) {
+            // Use placeholder helper
+            $imageUrl = \App\Helpers\PlaceholderAvatar::svgDataUri($c->name ?? 'Category');
+        }
+
+        return (object)[
+            'id' => $c->id ?? null,
+            'name' => $c->name ?? 'Untitled Category',
+            'slug' => $c->slug ?? null,
+            'description' => $c->description ?? '',
+            'image' => $imageUrl,
+            'productsCount' => $c->total_products_count ?? $c->products_count ?? 0,
+            'children' => $c->children ?? collect(),
+        ];
+    });
+?>
+
+<section class="my-8">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-gray-100"><?php echo e($title); ?></h2>
+        <a href="<?php echo e(route('categories.index') ?? route('products.index')); ?>" class="text-sm text-indigo-600 hover:text-indigo-700">See all</a>
+    </div>
+
+    <?php if($categories->isNotEmpty()): ?>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <article class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition overflow-hidden">
+                    <a <?php if($category->slug): ?> href="<?php echo e(route('category.show', $category->slug)); ?>" <?php endif; ?> class="block group">
+                        <div class="w-full h-44 md:h-48 lg:h-52 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                            <img src="<?php echo e($category->image); ?>"
+                                 alt="<?php echo e($category->name); ?>"
+                                 loading="lazy"
+                                 onerror="this.onerror=null;this.src='<?php echo e(asset('img/default-category.png')); ?>';"
+                                 class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500">
+                        </div>
+
+                        <div class="p-4 md:p-5">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate"><?php echo e($category->name); ?></h3>
+                                    <?php if($category->description): ?>
+                                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-300 line-clamp-2"><?php echo e($category->description); ?></p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div class="flex-shrink-0 text-right">
+                                    <div class="text-sm font-medium text-indigo-600 dark:text-indigo-300">
+                                        <?php echo e($category->productsCount); ?> <?php echo e(Str::plural('item', $category->productsCount)); ?>
+
+                                    </div>
+                                </div>
                             </div>
-                        </a>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </div>
-<?php else: ?>
-    <!-- No Categories -->
-    <div class="text-center py-20">
-        <div class="text-7xl mb-6 text-indigo-200 dark:text-indigo-600">📂</div>
-        <h3 class="text-2xl font-extrabold text-gray-600 dark:text-gray-300 mb-4">No Categories Available</h3>
-        <p class="text-gray-500 dark:text-gray-400 mb-7">Categories will appear here once they are added.</p>
-        <a href="<?php echo e(route('products.index')); ?>"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow transition duration-200 dark:bg-indigo-700 dark:hover:bg-indigo-600">
-            Browse All Products
-        </a>
-    </div>
-<?php endif; ?>
-<?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/components/categories/category-card.blade.php ENDPATH**/ ?>
+
+                            <?php if($category->children && $category->children->count() > 0): ?>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <?php $__currentLoopData = $category->children->slice(0,4); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sub): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
+                                            $sName = $sub->name ?? 'Sub';
+                                            $sSlug = $sub->slug ?? null;
+                                            $sCount = $sub->total_products_count ?? $sub->products_count ?? 0;
+                                        ?>
+
+                                        <?php if($sSlug): ?>
+                                            <a href="<?php echo e(route('category.show', $sSlug)); ?>" class="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                                                <span class="truncate"><?php echo e($sName); ?></span>
+                                                <span class="text-xs text-gray-400">· <?php echo e($sCount); ?></span>
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-gray-50 dark:bg-gray-900 text-xs text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                                                <span class="truncate"><?php echo e($sName); ?></span>
+                                                <span class="text-xs text-gray-400">· <?php echo e($sCount); ?></span>
+                                            </span>
+                                        <?php endif; ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                                    <?php if($category->children->count() > 4): ?>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full bg-gray-50 dark:bg-gray-900 text-xs text-gray-500 dark:text-gray-400">
+                                            +<?php echo e($category->children->count() - 4); ?> more
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="mt-4 flex items-center justify-between gap-3">
+                                <div>
+                                    <?php if($category->slug): ?>
+                                        <a href="<?php echo e(route('category.show', $category->slug)); ?>" class="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-full hover:bg-indigo-700 transition">
+                                            View All
+                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-200 text-gray-600 text-sm rounded-full">Unavailable</span>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div class="text-xs text-gray-400">Updated recently</div>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+    <?php else: ?>
+        <div class="py-20 text-center">
+            <div class="mx-auto w-44 h-44 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 text-6xl mb-6">📦</div>
+            <h3 class="text-2xl font-bold text-gray-700 dark:text-gray-100 mb-2">No categories yet</h3>
+            <p class="text-gray-500 dark:text-gray-300 mb-6">When you add categories they will appear here.</p>
+            <a href="<?php echo e(route('products.index')); ?>" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-full transition">Browse products</a>
+        </div>
+    <?php endif; ?>
+</section><?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/components/categories/category-card.blade.php ENDPATH**/ ?>

@@ -12,9 +12,6 @@ class ProductController extends Controller
     private int $defaultPerPage = 12;
     private int $maxPerPage = 60;
 
-    /**
-     * Frontend product listing with filters & sorting.
-     */
     public function index(Request $request)
     {
         $validated = $request->validate([
@@ -28,7 +25,6 @@ class ProductController extends Controller
             'per_page'   => 'nullable|integer|min:1|max:' . $this->maxPerPage,
         ]);
 
-        // Collect filters for view repopulation
         $filters = [
             'search'     => $validated['search']     ?? '',
             'category'   => $validated['category']   ?? '',
@@ -40,31 +36,26 @@ class ProductController extends Controller
             'per_page'   => $validated['per_page']   ?? $this->defaultPerPage,
         ];
 
-        // Normalize per_page
         $perPage = (int) $filters['per_page'];
-        if ($perPage > $this->maxPerPage) {
-            $perPage = $this->maxPerPage;
-        }
+        if ($perPage > $this->maxPerPage) $perPage = $this->maxPerPage;
 
-        // Swap min/max if inverted
-        if ($filters['min_price'] !== '' && $filters['max_price'] !== '' &&
-            (float)$filters['max_price'] < (float)$filters['min_price']) {
+        if ($filters['min_price'] !== '' && $filters['max_price'] !== ''
+            && (float)$filters['max_price'] < (float)$filters['min_price']) {
             [$filters['min_price'], $filters['max_price']] = [$filters['max_price'], $filters['min_price']];
         }
 
-        // Optional: ensure category slug exists; if not, blank it (prevents wasted whereHas)
         if ($filters['category'] !== '' &&
             ! Category::where('slug', $filters['category'])->active()->exists()) {
             $filters['category'] = '';
         }
 
         $query = Product::query()
-            ->with(['category'])
+            // DO NOT limit columns on seller; just eager load as you do:
+            ->with(['category', 'seller'])
             ->withCount(['approvedReviews as reviews_count'])
             ->withAvg('approvedReviews as average_rating', 'rating')
             ->active();
 
-        // Search tokens (AND across tokens); ignore if < 2 chars
         if ($filters['search'] !== '' && mb_strlen(trim($filters['search'])) >= 2) {
             $tokens = preg_split('/\s+/', trim($filters['search']));
             $query->where(function ($outer) use ($tokens) {
@@ -82,14 +73,10 @@ class ProductController extends Controller
             });
         }
 
-        // Category filter
         $query->when($filters['category'] !== '', function ($q) use ($filters) {
             $q->whereHas('category', fn($c) => $c->where('slug', $filters['category'])->active());
         });
 
-        // Price filters
-        $query->when($filters['min_price'] !== '', fn($q) => $q->where('price', '>=', (float)$q->getModel()->getAttributeFromArray('min_price') ?? (float)request('min_price')));
-        // Simpler & explicit instead of above dynamic attempt:
         if ($filters['min_price'] !== '') {
             $query->where('price', '>=', (float)$filters['min_price']);
         }
@@ -97,19 +84,16 @@ class ProductController extends Controller
             $query->where('price', '<=', (float)$filters['max_price']);
         }
 
-        // Rating filter (HAVING on alias)
         if ($filters['min_rating'] !== '') {
             $query->having('average_rating', '>=', (float)$filters['min_rating']);
         }
 
-        // On sale
         if ($filters['on_sale'] === '1') {
             $query->where('on_sale', 1)
                   ->whereNotNull('sale_price')
-                  ->whereColumn('sale_price', '<', 'price'); // adjust if compare_price is your original
+                  ->whereColumn('sale_price', '<', 'price');
         }
 
-        // Sorting
         switch ($filters['sort']) {
             case 'price_low':
                 $query->orderBy('price', 'asc');
@@ -135,21 +119,14 @@ class ProductController extends Controller
 
         $products = $query->paginate($perPage)->appends($request->query());
 
-        // Categories (cache optional)
         $categories = Category::active()
             ->select('id','name','slug')
             ->orderBy('name')
             ->get();
-        // $categories = cache()->remember('categories.active.list', 1800, fn() =>
-        //     Category::active()->select('id','name','slug')->orderBy('name')->get()
-        // );
 
         return view('products.index', compact('products', 'categories', 'filters'));
     }
 
-    /**
-     * On-sale products listing.
-     */
     public function shopsOnSale(Request $request)
     {
         $validated = $request->validate([
@@ -162,7 +139,7 @@ class ProductController extends Controller
         if ($perPage > $this->maxPerPage) $perPage = $this->maxPerPage;
 
         $query = Product::query()
-            ->with(['category'])
+            ->with(['category', 'seller'])
             ->withCount(['approvedReviews as reviews_count'])
             ->withAvg('approvedReviews as average_rating', 'rating')
             ->active()
@@ -192,9 +169,6 @@ class ProductController extends Controller
         return view('products.shops-on-sale', compact('saleProducts', 'categories'));
     }
 
-    /**
-     * Quick async suggestions.
-     */
     public function searchSuggestions(Request $request)
     {
         $term = (string) $request->get('q', '');
@@ -203,6 +177,7 @@ class ProductController extends Controller
         }
 
         $products = Product::active()
+            ->with('seller')
             ->select('id','name','slug','price','image')
             ->where('name','like','%'.$term.'%')
             ->orderByDesc('created_at')
@@ -212,19 +187,16 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    /**
-     * Show product detail.
-     */
     public function show(string $slug)
     {
-        $product = Product::with(['category','approvedReviews.user'])
+        $product = Product::with(['category', 'approvedReviews.user', 'seller'])
             ->where('slug',$slug)
             ->active()
             ->firstOrFail();
 
         $product->increment('page_views', 1, ['updated_at' => $product->updated_at]);
 
-        $relatedProducts = Product::with('category')
+        $relatedProducts = Product::with(['category', 'seller'])
             ->where('category_id', $product->category_id)
             ->where('id','!=',$product->id)
             ->active()
@@ -239,14 +211,11 @@ class ProductController extends Controller
         return view('products.show', compact('product','relatedProducts','userReview'));
     }
 
-    /**
-     * Category-specific listing (legacy route).
-     */
     public function byCategory(string $slug)
     {
         $category = Category::where('slug',$slug)->active()->firstOrFail();
 
-        $products = Product::with(['category'])
+        $products = Product::with(['category', 'seller'])
             ->withCount(['approvedReviews as reviews_count'])
             ->withAvg('approvedReviews as average_rating','rating')
             ->where('category_id',$category->id)

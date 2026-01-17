@@ -44,9 +44,10 @@
         <a href="{{ route('admin.categories.edit', $category) }}" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition duration-200">Edit Category</a>
         <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?')">
             @csrf
-            @method('DELETE')
+            <input type="hidden" name="_method" value="">
             <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200">Delete Category</button>
         </form>
     </div>
 </div>
 @endsection
+

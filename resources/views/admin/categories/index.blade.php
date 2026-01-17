@@ -39,10 +39,20 @@
                     @forelse($categories as $category)
                         <tr class="hover:bg-gray-300 dark:hover:bg-[#262c47]">
                             <td class="px-6 py-4">
-                                <img src="{{ $category->image ? asset($category->image) : asset('/img/default-category.png') }}"
-                                    alt="{{ $category->name }}"
-                                    class="h-20 w-20 rounded-full object-cover border border-indigo-200 dark:border-indigo-700"
-                                    onerror="this.onerror=null;this.src='{{ asset('/img/default-category.png') }}';">
+                                @php
+                                    // Use PlaceholderAvatar for SVG placeholders
+                                    $imgSrc = $category->image_url ?? \App\Helpers\PlaceholderAvatar::svgDataUri($category->name);
+                                    $alt = $category->image_alt ?? $category->name;
+                                @endphp
+
+                                <!-- Ensure consistent circular appearance -->
+                                <div class="h-20 w-20 rounded-full overflow-hidden border border-indigo-200 dark:border-indigo-700">
+                                    <img src="{{ $imgSrc }}"
+                                        alt="{{ $alt }}"
+                                        class="h-full w-full object-cover"
+                                        loading="lazy"
+                                        onerror="this.onerror=null;this.src='{{ asset('/img/default-category.png') }}';">
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-gray-900 dark:text-gray-100">
                                 {{ $category->name }}

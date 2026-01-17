@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', 'Report Management'); ?>
+<?php $__env->startSection('title', 'Reports Management'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="p-8 bg-gray-300 dark:bg-[#181f31] min-h-screen">

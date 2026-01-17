@@ -7,7 +7,6 @@
     </div>
 
     <?php
-        // Helper closures for active state (keeps classes tidy)
         $is = fn(...$names) => request()->routeIs($names);
         $linkBase = 'flex items-center px-3 py-2 rounded-lg transition font-medium';
         $activePrimary = 'bg-indigo-900 text-indigo-300';
@@ -46,8 +45,7 @@
 
         
         <a href="<?php echo e(route('seller.products.index')); ?>"
-           class="<?php echo e($linkBase); ?> <?php echo e($is('seller.products.*') ? $activePrimary : $idlePrimary); ?>"
-           aria-label="Manage Products">
+           class="<?php echo e($linkBase); ?> <?php echo e($is('seller.products.*') ? $activePrimary : $idlePrimary); ?>">
             <?php if (isset($component)) { $__componentOriginal7ac833788d87377235d115adad0b6b1f = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal7ac833788d87377235d115adad0b6b1f = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'products','class' => 'mr-3 h-5 w-5 '.e($is('seller.products.*') ? $activeIcon : $idleIcon).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -72,19 +70,44 @@
         </a>
 
         
-        <a href="#"
-           class="<?php echo e($linkBase); ?> text-gray-400 cursor-not-allowed"
-           title="Orders section not implemented yet">
+        <a href="<?php echo e(route('seller.images.index')); ?>"
+           class="<?php echo e($linkBase); ?> <?php echo e($is('seller.images.*') ? $activePrimary : $idlePrimary); ?>">
             <?php if (isset($component)) { $__componentOriginal7ac833788d87377235d115adad0b6b1f = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal7ac833788d87377235d115adad0b6b1f = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'orders','class' => 'mr-3 h-5 w-5 text-gray-500']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'images','class' => 'mr-3 h-5 w-5 '.e($is('seller.images.*') ? $activeIcon : $idleIcon).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('icon-dashboard'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['name' => 'orders','class' => 'mr-3 h-5 w-5 text-gray-500']); ?>
+<?php $component->withAttributes(['name' => 'images','class' => 'mr-3 h-5 w-5 '.e($is('seller.images.*') ? $activeIcon : $idleIcon).'']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal7ac833788d87377235d115adad0b6b1f)): ?>
+<?php $attributes = $__attributesOriginal7ac833788d87377235d115adad0b6b1f; ?>
+<?php unset($__attributesOriginal7ac833788d87377235d115adad0b6b1f); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal7ac833788d87377235d115adad0b6b1f)): ?>
+<?php $component = $__componentOriginal7ac833788d87377235d115adad0b6b1f; ?>
+<?php unset($__componentOriginal7ac833788d87377235d115adad0b6b1f); ?>
+<?php endif; ?>
+            Image Gallery
+        </a>
+
+        
+        <a href="<?php echo e(route('seller.orders.index')); ?>"
+           class="<?php echo e($linkBase); ?> <?php echo e($is('seller.orders.*') ? $activePrimary : $idlePrimary); ?>">
+            <?php if (isset($component)) { $__componentOriginal7ac833788d87377235d115adad0b6b1f = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal7ac833788d87377235d115adad0b6b1f = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'orders','class' => 'mr-3 h-5 w-5 '.e($is('seller.orders.*') ? $activeIcon : $idleIcon).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-dashboard'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'orders','class' => 'mr-3 h-5 w-5 '.e($is('seller.orders.*') ? $activeIcon : $idleIcon).'']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal7ac833788d87377235d115adad0b6b1f)): ?>
@@ -99,19 +122,18 @@
         </a>
 
         
-        <a href="#"
-           class="<?php echo e($linkBase); ?> text-gray-400 cursor-not-allowed"
-           title="Customers section not implemented yet">
+        <a href="<?php echo e(route('seller.reviews.index')); ?>"
+           class="<?php echo e($linkBase); ?> <?php echo e($is('seller.reviews.*') ? $activePrimary : $idlePrimary); ?>">
             <?php if (isset($component)) { $__componentOriginal7ac833788d87377235d115adad0b6b1f = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal7ac833788d87377235d115adad0b6b1f = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'customers','class' => 'mr-3 h-5 w-5 text-gray-500']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'reviews','class' => 'mr-3 h-5 w-5 '.e($is('seller.reviews.*') ? $activeIcon : $idleIcon).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('icon-dashboard'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['name' => 'customers','class' => 'mr-3 h-5 w-5 text-gray-500']); ?>
+<?php $component->withAttributes(['name' => 'reviews','class' => 'mr-3 h-5 w-5 '.e($is('seller.reviews.*') ? $activeIcon : $idleIcon).'']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal7ac833788d87377235d115adad0b6b1f)): ?>
@@ -122,34 +144,7 @@
 <?php $component = $__componentOriginal7ac833788d87377235d115adad0b6b1f; ?>
 <?php unset($__componentOriginal7ac833788d87377235d115adad0b6b1f); ?>
 <?php endif; ?>
-            Customers
-        </a>
-
-        
-        <a href="#"
-           class="<?php echo e($linkBase); ?> text-gray-400 cursor-not-allowed"
-           title="Analytics section not implemented yet">
-            <?php if (isset($component)) { $__componentOriginal7ac833788d87377235d115adad0b6b1f = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal7ac833788d87377235d115adad0b6b1f = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'reports','class' => 'mr-3 h-5 w-5 text-gray-500']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('icon-dashboard'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['name' => 'reports','class' => 'mr-3 h-5 w-5 text-gray-500']); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal7ac833788d87377235d115adad0b6b1f)): ?>
-<?php $attributes = $__attributesOriginal7ac833788d87377235d115adad0b6b1f; ?>
-<?php unset($__attributesOriginal7ac833788d87377235d115adad0b6b1f); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal7ac833788d87377235d115adad0b6b1f)): ?>
-<?php $component = $__componentOriginal7ac833788d87377235d115adad0b6b1f; ?>
-<?php unset($__componentOriginal7ac833788d87377235d115adad0b6b1f); ?>
-<?php endif; ?>
-            Analytics
+            Reviews
         </a>
 
         
@@ -176,6 +171,30 @@
 <?php unset($__componentOriginal7ac833788d87377235d115adad0b6b1f); ?>
 <?php endif; ?>
             Settings
+        </a>
+        <a href="<?php echo e(route('home')); ?>"
+           class="<?php echo e($linkBase); ?> text-gray-300 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-[#23263a] hover:text-white flex items-center px-4 py-2 text-sm font-medium rounded-md mt-8 transition-colors">
+            <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'back','class' => 'mr-3 h-5 w-5 text-gray-300 dark:text-gray-200']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['name' => 'back','class' => 'mr-3 h-5 w-5 text-gray-300 dark:text-gray-200']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
+<?php endif; ?>
+            Visit Store
         </a>
     </nav>
 

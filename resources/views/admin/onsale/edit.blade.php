@@ -8,7 +8,7 @@
 
         <form action="{{ route('admin.onsale.update', ['product' => $product->id]) }}" method="POST">
             @csrf
-            @method('PUT')
+            <input type="hidden" name="_method" value="">
             <div class="mb-4">
                 <x-input-label value="Product Name" />
                 <div class="mt-1 block w-full bg-gray-100 dark:bg-[#23263a] px-4 py-2 text-gray-900 dark:text-gray-100">{{ $product->name }}</div>
@@ -48,3 +48,4 @@
     </div>
 </div>
 @endsection
+

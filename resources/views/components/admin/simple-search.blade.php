@@ -11,6 +11,7 @@
 @php
     $value = request($name, '');
     $formAction = $action ?: url()->current();
+    $inputId = 'simple-search-' . md5($name);
 @endphp
 
 <form method="GET" action="{{ $formAction }}"
@@ -25,6 +26,7 @@
             </label>
         @endif
         <input
+            id="{{ $inputId }}"
             type="text"
             name="{{ $name }}"
             value="{{ $value }}"
@@ -51,3 +53,31 @@
 
     {{ $slot ?? '' }}
 </form>
+
+@if($autofocus)
+<script>
+    (function() {
+        const el = document.getElementById('{{ $inputId }}');
+        if (!el) return;
+        // Wait for browser/autofocus to run, then move caret to end if there's already text
+        window.requestAnimationFrame(() => {
+            if (el.value && el.value.length) {
+                try {
+                    // modern browsers
+                    el.focus();
+                    el.setSelectionRange(el.value.length, el.value.length);
+                } catch (e) {
+                    // fallback: reassign value to move caret to end
+                    const v = el.value;
+                    el.value = '';
+                    el.value = v;
+                    el.focus();
+                }
+            } else {
+                // ensure focused if autofocus requested
+                el.focus();
+            }
+        });
+    })();
+</script>
+@endif

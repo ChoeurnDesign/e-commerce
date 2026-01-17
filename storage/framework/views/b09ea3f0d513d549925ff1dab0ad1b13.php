@@ -247,10 +247,10 @@
         </a>
         <a href="<?php echo e(route('home')); ?>"
            class="text-gray-300 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-[#23263a] hover:text-white flex items-center px-4 py-2 text-sm font-medium rounded-md mt-8 transition-colors">
-            <?php if (isset($component)) { $__componentOriginal7ac833788d87377235d115adad0b6b1f = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal7ac833788d87377235d115adad0b6b1f = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-dashboard','data' => ['name' => 'back','class' => 'mr-3 h-5 w-5 text-gray-300 dark:text-gray-200']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('icon-dashboard'); ?>
+            <?php if (isset($component)) { $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icon-nav','data' => ['name' => 'back','class' => 'mr-3 h-5 w-5 text-gray-300 dark:text-gray-200']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icon-nav'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
@@ -259,15 +259,15 @@
 <?php $component->withAttributes(['name' => 'back','class' => 'mr-3 h-5 w-5 text-gray-300 dark:text-gray-200']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginal7ac833788d87377235d115adad0b6b1f)): ?>
-<?php $attributes = $__attributesOriginal7ac833788d87377235d115adad0b6b1f; ?>
-<?php unset($__attributesOriginal7ac833788d87377235d115adad0b6b1f); ?>
+<?php if (isset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $attributes = $__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__attributesOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginal7ac833788d87377235d115adad0b6b1f)): ?>
-<?php $component = $__componentOriginal7ac833788d87377235d115adad0b6b1f; ?>
-<?php unset($__componentOriginal7ac833788d87377235d115adad0b6b1f); ?>
+<?php if (isset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8)): ?>
+<?php $component = $__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8; ?>
+<?php unset($__componentOriginald9467a222f025bb28cc0dfbd8d0ecdd8); ?>
 <?php endif; ?>
-            Back to Store
+            Visit Store
         </a>
     </nav>
 </div>

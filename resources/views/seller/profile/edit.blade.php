@@ -8,7 +8,7 @@
     @endif
     <form method="POST" action="{{ route('seller.profile.update') }}">
         @csrf
-        @method('PATCH')
+        <input type="hidden" name="_method" value="">
 
         <div class="mb-4">
             <label class="block text-gray-700">Store Name</label>
@@ -27,3 +27,4 @@
     </form>
 </div>
 @endsection
+

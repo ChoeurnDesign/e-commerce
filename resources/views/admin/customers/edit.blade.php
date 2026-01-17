@@ -5,7 +5,7 @@
     <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">Edit Customer</h2>
     <form action="{{ route('admin.customers.update', $customer->id) }}" method="POST">
         @csrf
-        @method('PUT')
+        <input type="hidden" name="_method" value="">
 
         <div class="mb-4">
             <x-input-label for="name" value="Name" class="mb-1 font-medium" />
@@ -32,3 +32,4 @@
     </form>
 </div>
 @endsection
+

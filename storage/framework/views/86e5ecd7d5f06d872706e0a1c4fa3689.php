@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>"
+      x-data="{ dark: localStorage.getItem('theme') === 'dark' }"
+      :class="{ 'dark': dark }"
+      x-init="$watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'))">
 <head>
     <?php echo $__env->make('layouts.head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <?php echo $__env->make('layouts.styles', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>

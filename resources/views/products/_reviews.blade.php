@@ -37,7 +37,7 @@
                                 <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" class="inline-block mt-2 ml-2"
                                     onsubmit="return confirm('Are you sure you want to delete your review?');">
                                     @csrf
-                                    @method('DELETE')
+                                    <input type="hidden" name="_method" value="">
                                     <button type="submit"
                                             class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-medium transition">
                                         Delete Review
@@ -124,3 +124,4 @@
         </div>
     @endguest
 </div>
+

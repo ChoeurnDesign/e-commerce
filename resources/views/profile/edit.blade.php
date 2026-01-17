@@ -12,7 +12,7 @@
         <div class="w-full max-w-2xl border-2 border-gray-300 bg-white dark:bg-[#181f31] rounded-2xl shadow-xl p-8 space-y-10">
             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" id="profile-update-form" class="space-y-10">
                 @csrf
-                @method('patch')
+                @method('PATCH') {{-- <-- Method spoofing so Laravel treats this as PATCH (matches your route) --}}
                 <div class="flex items-center space-x-6">
                     <div class="relative group block">
                         <div id="profile-image-preview" class="h-24 w-24 rounded-full overflow-hidden border-gray-300 dark:border-gray-400 border-2 shadow-lg object-cover transition-shadow group-hover:shadow-xl bg-gray-300 dark:bg-[#181f31] flex items-center justify-center">
@@ -23,7 +23,7 @@
                                      id="current-profile-img" />
                             @else
                                 <span class="h-24 w-24 flex items-center justify-center rounded-full bg-gray-300 dark:bg-[#181f31] text-indigo-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg class="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <circle cx="12" cy="8" r="4" />
                                         <path d="M6 20c0-2.2 3.6-4 6-4s6 1.8 6 4" />
                                     </svg>
@@ -34,16 +34,9 @@
                         <button type="button" id="change-image-btn"
                                 class="absolute bottom-0 right-0 bg-gray-300 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-full p-1 shadow-lg flex items-center justify-center z-10"
                                 style="width: 32px; height: 32px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                              <path d="M12 20h-7a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v3" />
-                              <path d="M14.973 13.406a3 3 0 1 0 -2.973 2.594" />
-                              <path d="M19.001 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-                              <path d="M19.001 15.5v1.5" />
-                              <path d="M19.001 21v1.5" />
-                              <path d="M22.032 17.25l-1.299 .75" />
-                              <path d="M17.27 20l-1.3 .75" />
-                              <path d="M15.97 17.25l1.3 .75" />
-                              <path d="M20.733 20l1.3 .75" />
+                            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
                             </svg>
                         </button>
                         <input type="file" id="profile_image" name="profile_image" accept="image/*" class="hidden">
@@ -54,9 +47,10 @@
                         <p class="text-gray-500 dark:text-gray-400 text-sm">{{ $user->email }}</p>
                         <button type="button" class="mt-2 inline-flex items-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-semibold transition"
                             onclick="document.getElementById('profile-info').scrollIntoView({ behavior: 'smooth' })">
-                            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M15.232 5.232l3.536 3.536M9 11l6.232-6.232a2 2 0 1 1 2.828 2.828L11 13.828V17h3.172l7.071-7.071a4 4 0 1 0-5.656-5.657L6 12.343V17h4.657l7.071-7.071a4 4 0 1 0-5.656-5.657L6 12.343V17"></path>
+                            <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                             </svg>
+
                             Edit Profile
                         </button>
                     </div>
@@ -113,7 +107,7 @@
                                     @endif
                                 </div>
                                 <div class="flex items-center gap-4">
-                                    <x-primary-button>{{ __('Save') }}</x-primary-button>
+                                    <x-primary-button type="submit">{{ __('Save') }}</x-primary-button>
                                     @if (session('status') === 'profile-updated')
                                         <p
                                             x-data="{ show: true }"

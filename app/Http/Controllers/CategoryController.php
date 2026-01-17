@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -12,14 +13,15 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $parentCategories = Category::with(['children' => function ($query) {
-            $query->active()->orderBy('sort_order')->orderBy('name');
-        }])
-        ->active()
-        ->parent()
-        ->orderBy('sort_order')
-        ->orderBy('name')
-        ->get();
+        // Fetch parent categories with active children
+        $parentCategories = Category::whereNull('parent_id') // Fetch only parent categories
+            ->active() // Scope for active categories
+            ->with(['children' => function ($query) {
+                $query->active()->orderBy('sort_order')->orderBy('name');
+            }])
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
 
         return view('categories.index', compact('parentCategories'));
     }
@@ -29,10 +31,15 @@ class CategoryController extends Controller
      */
     public function show(Request $request, $slug)
     {
+        // Fetch category by slug and ensure it's active
         $category = Category::where('slug', $slug)->active()->firstOrFail();
 
         // Build product query for this category and its subcategories
-        $query = $category->allProducts()->with('category')->active();
+        $query = Product::query()
+            ->where('category_id', $category->id) // Products directly in this category
+            ->orWhereIn('category_id', $category->children()->pluck('id')) // Products in subcategories
+            ->with('category') // Eager load category relationship
+            ->active(); // Scope for active products
 
         // --- Filtering ---
         // Search in category
@@ -54,14 +61,6 @@ class CategoryController extends Controller
         }
 
         // Subcategory filter
-        if ($request->filled('subcategory')) {
-            $subcategory = Category::where('slug', $request->subcategory)->active()->first();
-            if ($subcategory) {
-                $query->where('category_id', $subcategory->id);
-            }
-        }
-
-        // Subcategory filter (takes precedence)
         if ($request->filled('subcategory')) {
             $subcategory = Category::where('slug', $request->subcategory)->active()->first();
             if ($subcategory) {
@@ -92,23 +91,34 @@ class CategoryController extends Controller
                 $query->latest();
         }
 
+        // Paginate products
         $products = $query->paginate(12)->withQueryString();
 
         // Subcategories
         $subcategories = $category->children()->active()->orderBy('sort_order')->get();
 
         // Breadcrumbs
-        $breadcrumb = $category->getBreadcrumb();
+        $breadcrumb = [];
+        $currentCategory = $category;
+        while ($currentCategory) {
+            $breadcrumb[] = $currentCategory;
+            $currentCategory = $currentCategory->parent;
+        }
+        $breadcrumb = array_reverse($breadcrumb);
 
-        // For global category dropdown in top bar
+        // Global category dropdown in top bar
         $allCategories = Category::active()->orderBy('sort_order')->orderBy('name')->get();
+
+        // Check if no products are found
+        $noProducts = $products->isEmpty();
 
         return view('categories.show', compact(
             'category',
             'products',
             'subcategories',
             'breadcrumb',
-            'allCategories'
+            'allCategories',
+            'noProducts'
         ));
     }
 }

@@ -10,11 +10,7 @@
 <?php $component->withAttributes([]); ?>
     <div class="py-8 bg-gray-300 dark:bg-gray-900 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Page Header -->
-            <div class="text-center mb-12">
-                <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Shop by Category</h1>
-                <p class="text-xl text-gray-600 dark:text-gray-300">Explore our wide range of product categories</p>
-            </div>
+
             <?php if (isset($component)) { $__componentOriginal3f6b257a1210a29e9db4090961a0ec03 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal3f6b257a1210a29e9db4090961a0ec03 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.categories.category-card','data' => ['parentCategories' => $parentCategories]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -35,6 +31,7 @@
 <?php $component = $__componentOriginal3f6b257a1210a29e9db4090961a0ec03; ?>
 <?php unset($__componentOriginal3f6b257a1210a29e9db4090961a0ec03); ?>
 <?php endif; ?>
+            
         </div>
     </div>
  <?php echo $__env->renderComponent(); ?>

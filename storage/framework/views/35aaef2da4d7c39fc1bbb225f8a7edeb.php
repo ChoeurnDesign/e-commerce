@@ -11,14 +11,14 @@
 
     <?php if (isset($component)) { $__componentOriginal46074e4381a20ab3ec96fa5c86c7b952 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal46074e4381a20ab3ec96fa5c86c7b952 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.home.banner-slider','data' => ['banners' => $banners]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.home.banner-slider','data' => ['banners' => $banners,'storefrontTitle' => $storefrontTitle,'welcomeMessage' => $welcomeMessage]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('home.banner-slider'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['banners' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($banners)]); ?>
+<?php $component->withAttributes(['banners' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($banners),'storefront-title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($storefrontTitle),'welcome-message' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($welcomeMessage)]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal46074e4381a20ab3ec96fa5c86c7b952)): ?>

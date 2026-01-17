@@ -15,7 +15,7 @@
 
             <form action="{{ route('reviews.update', $review->id) }}" method="POST" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
                 @csrf
-                @method('PUT')
+                <input type="hidden" name="_method" value="">
 
                 <div class="mb-4">
                     <x-input-label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" value="Rating" />
@@ -71,3 +71,4 @@
         </div>
     </div>
 </x-app-layout>
+

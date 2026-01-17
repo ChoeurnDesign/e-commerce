@@ -39,7 +39,7 @@
                                 <form action="<?php echo e(route('reviews.destroy', $review->id)); ?>" method="POST" class="inline-block mt-2 ml-2"
                                     onsubmit="return confirm('Are you sure you want to delete your review?');">
                                     <?php echo csrf_field(); ?>
-                                    <?php echo method_field('DELETE'); ?>
+                                    <input type="hidden" name="_method" value="">
                                     <button type="submit"
                                             class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-medium transition">
                                         Delete Review
@@ -140,4 +140,5 @@ unset($__errorArgs, $__bag); ?>
         </div>
     <?php endif; ?>
 </div>
+
 <?php /**PATH D:\Year III\SemesterII\WCT\ShopExpress\resources\views/products/_reviews.blade.php ENDPATH**/ ?>

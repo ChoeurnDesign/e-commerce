@@ -1,6 +1,6 @@
-<form method="GET" action="<?php echo e(route('products.index')); ?>" class="relative w-full max-w-xl">
+<form method="GET" action="<?php echo e(route('products.index')); ?>" class="relative w-full max-w-full">
     <input type="text" name="search" id="search-input" placeholder="Search products..."
-        class="w-full pl-10 pr-4 py-2 rounded-full border-1 border-gray-400 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-[#181f31] transition-all text-gray-100 placeholder-gray-400">
+        class="w-full pl-10 pr-4 py-2 rounded-full border-1 bg-gray-800 dark:bg-gray-900 border-gray-400 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-[#181f31] transition-all text-gray-100 placeholder-gray-400">
     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
         <svg class="h-5 w-5 text-indigo-500 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

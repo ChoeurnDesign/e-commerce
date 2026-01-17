@@ -27,7 +27,6 @@ class Product extends Model
         'sku',
         'stock_quantity',
         'image',
-        'images',
         'specifications',
         'gallery',
         'is_featured',
@@ -39,7 +38,6 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'images' => 'array',
         'gallery' => 'array',
         'specifications' => 'array',
         'is_active' => 'boolean',
@@ -50,6 +48,7 @@ class Product extends Model
         'page_views' => 'integer',
     ];
 
+    // Relationships
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -80,26 +79,26 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    public function getAverageRatingAttribute()
-    {
-        return $this->attributes['average_rating'] ?? $this->approvedReviews()->avg('rating');
-    }
-
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name'] = $value;
-        if (
-            !isset($this->attributes['slug'])
-            || empty($this->attributes['slug'])
-            || $this->attributes['slug'] === Str::slug($this->getOriginal('name'))
-        ) {
-            $this->attributes['slug'] = self::generateUniqueSlug($value, $this->id ?? null);
-        }
-    }
-
     public function creator()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Seller relationship.
+     * Assumes the seller's user_id is the same as the product's user_id.
+     * This is correct and will always fetch the right seller even if store_names repeat.
+     */
+    public function seller()
+    {
+        return $this->belongsTo(Seller::class, 'user_id', 'user_id');
+    }
+
+    // Accessors
+    public function getAverageRatingAttribute()
+    {
+        // Use eager loaded value if present, otherwise calculate
+        return $this->attributes['average_rating'] ?? $this->approvedReviews()->avg('rating');
     }
 
     public function getImageUrlAttribute()
@@ -123,6 +122,26 @@ class Product extends Model
         return [];
     }
 
+    public function getDiscountPercentAttribute(): ?int
+    {
+        if (!$this->on_sale || !$this->sale_price || !$this->price || (float)$this->price == 0) return null;
+        return (int) round(100 - ($this->sale_price / $this->price * 100));
+    }
+
+    // Mutators
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = $value;
+        if (
+            !isset($this->attributes['slug'])
+            || empty($this->attributes['slug'])
+            || $this->attributes['slug'] === Str::slug($this->getOriginal('name'))
+        ) {
+            $this->attributes['slug'] = self::generateUniqueSlug($value, $this->id ?? null);
+        }
+    }
+
+    // Static Methods
     public static function generateUniqueSlug($base, $ignoreId = null)
     {
         $slug = Str::slug($base);
@@ -150,11 +169,5 @@ class Product extends Model
             }
         } while ($exists);
         return $sku;
-    }
-
-    public function getDiscountPercentAttribute(): ?int
-    {
-        if (!$this->on_sale || !$this->sale_price || !$this->price || (float)$this->price == 0) return null;
-        return (int) round(100 - ($this->sale_price / $this->price * 100));
     }
 }

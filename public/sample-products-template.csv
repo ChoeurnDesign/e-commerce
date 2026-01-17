@@ -1,3 +1,0 @@
-name,slug,description,short_description,price,on_sale,compare_price,sale_price,sku,stock_quantity,image,images,specifications,gallery,is_featured,is_active,category_id
-iPhone 16,iphone-16,"Apple's latest smartphone with advanced features","Latest iPhone generation",999.00,1,1099.00,899.00,IPH16,50,/electronics/iphone-16.jpg,"","","",1,1,1
-Mac Pro 2019,mac-pro-2019,"Apple's powerful desktop workstation","High performance for professionals",5499.00,1,5999.00,4999.00,MACPRO2019,30,/computers/mac-pro-2019.png,"","","",1,1,2

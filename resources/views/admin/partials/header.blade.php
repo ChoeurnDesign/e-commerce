@@ -24,6 +24,9 @@
 
             @include('admin.partials.noti')
 
+            {{-- Dark mode toggle --}}
+            <x-dark-mode-toggle class="p-1.5 bg-gray-600 rounded-full hover:bg-gray-600 transition focus:outline-none" />
+
             <div class="relative" x-data="{ open: false }">
                 <button @click="open = !open" class="max-w-xs flex items-center text-sm rounded-full transition-colors">
                     <img class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=6366f1&color=fff" alt="{{ auth()->user()->name }}">
@@ -44,11 +47,7 @@
                             <x-icon-nav name="profile" class="w-5 h-5 mr-2" />
                             Profile
                         </x-dropdown-link>
-                        <button id="dark-mode-toggle" type="button"
-                            class="w-full flex items-center px-5 py-2 text-sm text-gray-300 dark:text-gray-100 hover:bg-gray-500 dark:hover:bg-[#2e1065]">
-                            <x-icon-nav name="dark-mode" class="w-5 h-5 mr-2" />
-                            <span>Dark Mode</span>
-                        </button>
+                        
                         <x-dropdown-link :href="route('home')" class="flex items-center text-gray-300 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-[#262c47]">
                             <x-icon-nav name="store" class="w-5 h-5 mr-2" />
                             View Store

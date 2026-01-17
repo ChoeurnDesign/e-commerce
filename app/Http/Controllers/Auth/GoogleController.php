@@ -11,7 +11,7 @@ class GoogleController extends Controller
 {
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')->stateless()->redirect();
     }
 
     public function handleGoogleCallback()
@@ -25,16 +25,23 @@ class GoogleController extends Controller
                 $user = User::create([
                     'name' => $googleUser->getName() ?? $googleUser->getNickname(),
                     'email' => $googleUser->getEmail(),
-                    'password' => bcrypt(str()->random(32)),
-                    'email_verified_at' => now(),
+                    'password' => bcrypt(str()->random(32)), // just a random password
+                    'email_verified_at' => now(),           // guarantees verified
                 ]);
+            } else {
+                // Optional: update name, mark email as verified
+                $user->name = $googleUser->getName() ?? $googleUser->getNickname();
+                if (!$user->email_verified_at) {
+                    $user->email_verified_at = now();      
+                }
+                $user->save();
             }
 
-            Auth::login($user);
+            Auth::login($user, true);
 
-            return redirect('/dashboard')->with('success', 'Logged in with Google!');
+            return redirect()->intended('/dashboard')->with('success', 'Logged in with Google!');
         } catch (\Exception $e) {
-            return redirect('/login')->withErrors(['msg' => 'Google login failed: ' . $e->getMessage()]);
+            return redirect('/login')->withErrors(['msg' => 'Google login failed. Please try again.']);
         }
     }
 }

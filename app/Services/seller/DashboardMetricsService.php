@@ -4,6 +4,8 @@ namespace App\Services\Seller;
 
 use App\Models\Seller;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class DashboardMetricsService
 {
@@ -47,10 +49,9 @@ class DashboardMetricsService
 
         $averageRating = null;
         if ($includeRatings && method_exists($seller, 'products')) {
-            // Example: if each product has reviews() with 'rating'
             $productIds = $seller->products()->pluck('id');
-            if ($productIds->isNotEmpty() && schema_has_table('reviews')) {
-                $avg = \DB::table('reviews')
+            if ($productIds->isNotEmpty() && Schema::hasTable('reviews')) {
+                $avg = DB::table('reviews')
                     ->whereIn('product_id', $productIds)
                     ->avg('rating');
                 $averageRating = $avg !== null ? round($avg, 2) : null;
@@ -62,19 +63,5 @@ class DashboardMetricsService
             'orders_count'   => $ordersCount,
             'average_rating' => $averageRating,
         ];
-    }
-}
-
-/**
- * Helper to safely check table existence without throwing.
- */
-if (!function_exists('schema_has_table')) {
-    function schema_has_table(string $table): bool
-    {
-        try {
-            return \Schema::hasTable($table);
-        } catch (\Throwable) {
-            return false;
-        }
     }
 }

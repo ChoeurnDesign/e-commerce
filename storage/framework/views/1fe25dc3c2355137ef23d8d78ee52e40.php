@@ -1,13 +1,24 @@
 <?php
-    $user   = auth()->user();
+    $user = auth()->user();
     $seller = $user?->seller;
     $status = $seller?->status;
-
+    $storeName = $seller?->store_name; 
+    
     // Avatar logic: prefer user profile image, fallback to store logo, then initial
-    $userAvatar  = $user?->profile_image ? asset('storage/' . ltrim($user->profile_image,'/')) : null;
-    $storeLogo   = $seller?->store_logo_url;
+    $userAvatar = $user?->profile_image ? asset('storage/' . ltrim($user->profile_image,'/')) : null;
+    $storeLogo = $seller?->store_logo_url;
     $displayAvatar = $userAvatar ?? $storeLogo;
     $initial = strtoupper(mb_substr($user?->name ?? 'U', 0, 1));
+    
+    // Logic for store name initials (e.g., "MyPhone Shop" -> "MPS")
+    $storeInitials = 'S'; // Default value if no store name exists
+    if ($storeName) {
+        $words = explode(' ', $storeName);
+        $initialsArray = array_map(function($word) {
+            return mb_substr($word, 0, 1);
+        }, $words);
+        $storeInitials = strtoupper(implode('', $initialsArray));
+    }
 
     $hasStorefront = $seller
         && $seller->slug
@@ -28,15 +39,27 @@
         </button>
 
         <div class="flex items-center gap-3">
+            
             <?php if($storeLogo): ?>
                 <img src="<?php echo e($storeLogo); ?>"
                      alt="Store Logo"
                      class="w-10 h-10 rounded object-cover border border-indigo-500"
                      onerror="this.onerror=null;this.src='<?php echo e(asset('images/default-store.png')); ?>';">
+            <?php else: ?>
+                <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-sm border border-indigo-500">
+                    <?php echo e($storeInitials); ?>
+
+                </div>
             <?php endif; ?>
             <span class="text-lg text-gray-100">
-                Welcome, <?php echo e($user->name); ?>
+                Welcome, 
+                <?php if($seller?->store_name): ?>
+                    <?php echo e($seller->store_name); ?>
 
+                <?php else: ?>
+                    <?php echo e($user->name); ?>
+
+                <?php endif; ?>
                 <?php if($seller && $status !== 'approved'): ?>
                     <span class="ml-2 text-xs px-2 py-0.5 rounded
                         class="<?php echo \Illuminate\Support\Arr::toCssClasses([
@@ -56,17 +79,48 @@
     <div class="flex items-center gap-4">
 
         
-        <button @click="dark = !dark"
-                class="p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition focus:outline-none"
-                :aria-label="dark ? 'Switch to light mode' : 'Switch to dark mode'">
-            <svg x-show="!dark" class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="5"/>
-                <path d="M12 1v2m0 18v2m11-11h-2M3 12H1m16.95 6.95l-1.414-1.414M6.05 6.05L4.636 4.636m12.728 0l-1.414 1.414M6.05 17.95l-1.414 1.414"/>
-            </svg>
-            <svg x-show="dark" class="w-5 h-5 text-gray-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/>
-            </svg>
-        </button>
+        <?php if (isset($component)) { $__componentOriginale746c89893559e87ed0d7d5b9911963f = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginale746c89893559e87ed0d7d5b9911963f = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.chat.chat-icon','data' => ['route' => route('seller.chat.index'),'label' => 'Seller Chat','badge' => $unreadSellerChats ?? 0]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('chat.chat-icon'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('seller.chat.index')),'label' => 'Seller Chat','badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($unreadSellerChats ?? 0)]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginale746c89893559e87ed0d7d5b9911963f)): ?>
+<?php $attributes = $__attributesOriginale746c89893559e87ed0d7d5b9911963f; ?>
+<?php unset($__attributesOriginale746c89893559e87ed0d7d5b9911963f); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginale746c89893559e87ed0d7d5b9911963f)): ?>
+<?php $component = $__componentOriginale746c89893559e87ed0d7d5b9911963f; ?>
+<?php unset($__componentOriginale746c89893559e87ed0d7d5b9911963f); ?>
+<?php endif; ?>
+        
+        
+        <?php if (isset($component)) { $__componentOriginalfefe5dbf3b22960644eea9a713073a08 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalfefe5dbf3b22960644eea9a713073a08 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.dark-mode-toggle','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('dark-mode-toggle'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalfefe5dbf3b22960644eea9a713073a08)): ?>
+<?php $attributes = $__attributesOriginalfefe5dbf3b22960644eea9a713073a08; ?>
+<?php unset($__attributesOriginalfefe5dbf3b22960644eea9a713073a08); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalfefe5dbf3b22960644eea9a713073a08)): ?>
+<?php $component = $__componentOriginalfefe5dbf3b22960644eea9a713073a08; ?>
+<?php unset($__componentOriginalfefe5dbf3b22960644eea9a713073a08); ?>
+<?php endif; ?>
 
         
         <div x-data="{ open:false }" class="relative">

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class Category extends Model
 {
@@ -17,6 +18,7 @@ class Category extends Model
         'slug',
         'description',
         'image',
+        'image_alt',
         'parent_id',
         'sort_order',
         'is_active',
@@ -26,17 +28,16 @@ class Category extends Model
         'is_active' => 'boolean',
     ];
 
-    /**
-     * Use slug for route model binding.
-     */
+    // Include image_url in arrays/JSON for easy use in views
+    protected $appends = [
+        'image_url',
+    ];
+
     public function getRouteKeyName(): string
     {
         return 'slug';
     }
 
-    /**
-     * Boot the model.
-     */
     protected static function boot(): void
     {
         parent::boot();
@@ -47,7 +48,7 @@ class Category extends Model
             }
         });
 
-        // Ensure slug is unique (optional, but recommended)
+        // Ensure slug uniqueness on save
         static::saving(function ($category) {
             $originalSlug = $category->slug;
             $counter = 2;
@@ -58,10 +59,23 @@ class Category extends Model
                 $category->slug = $originalSlug . '-' . $counter++;
             }
         });
+
+        // Delete stored image when category deleted (if not an external URL)
+        static::deleting(function (Category $category) {
+            if (!empty($category->image) && !filter_var($category->image, FILTER_VALIDATE_URL)) {
+                try {
+                    $disk = config('filesystems.default', 'public');
+                    if (Storage::disk($disk)->exists($category->image)) {
+                        Storage::disk($disk)->delete($category->image);
+                    }
+                } catch (\Throwable $e) {
+                    // ignore storage errors (do not block deletion)
+                }
+            }
+        });
     }
 
     // Relationships
-
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
@@ -77,68 +91,73 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order');
     }
 
-    // Recursive descendants (for nested structures)
-    public function descendants(): HasMany
-    {
-        return $this->children()->with('descendants');
-    }
-
-    // All products in this category and all descendants
-    public function allProducts()
-    {
-        $ids = collect([$this->id]);
-        $this->collectDescendantIds($ids);
-        return Product::whereIn('category_id', $ids);
-    }
-
-    private function collectDescendantIds(&$ids): void
-    {
-        foreach ($this->children as $child) {
-            $ids->push($child->id);
-            $child->collectDescendantIds($ids);
-        }
-    }
-
-    // Breadcrumb helper
-    public function getBreadcrumb()
-    {
-        $breadcrumb = collect();
-        $current = $this;
-        while ($current) {
-            $breadcrumb->prepend($current);
-            $current = $current->parent;
-        }
-        return $breadcrumb;
-    }
-
-    // Scopes
-
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    public function scopeParent($query)
+    public function allProducts()
     {
-        return $query->whereNull('parent_id');
+        return Product::query()
+            ->where(function ($query) {
+                $query->where('category_id', $this->id) // Products for this category
+                    ->orWhereIn('category_id', $this->children()->pluck('id')); // Products for subcategories
+            });
     }
 
-    public function scopeChild($query)
+    // Return a usable image URL for this category (no parent fallback).
+    // Priority: external URL -> storage key -> placeholder (seeded from top parent)
+    public function getImageUrlAttribute(): string
     {
-        return $query->whereNotNull('parent_id');
+        if (!empty($this->image) && filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        if (!empty($this->image)) {
+            try {
+                // Generate URL for image in public/storage/categories directory
+                return asset('storage/' . $this->image);
+            } catch (\Throwable $e) {
+                // Fall through to placeholder
+            }
+        }
+
+        return \App\Helpers\PlaceholderAvatar::svgDataUri($this->name ?? 'Category', 160, $this->name);
     }
 
-    // Computed: total products including subcategories
-    public function getTotalProductsCountAttribute(): int
+    // Find the top-most parent name (used as color seed)
+    public function topParentName(): ?string
     {
-        return $this->allProducts()->active()->count();
+        $current = $this;
+        // walk up until no parent (avoid endless loops if data is corrupt)
+        $safety = 0;
+        while ($current->parent && $safety++ < 50) {
+            $current = $current->parent;
+        }
+        return $current->name ?? null;
     }
 
-    /**
-     * Get all categories for global search/filter dropdown.
-     */
-    public static function allCategoriesForDropdown()
+    // Returns image for this category or falls back recursively to parent; finally a placeholder.
+    public function getImageUrlWithParentAttribute(): string
     {
-        return static::active()->orderBy('name')->get();
+        if (!empty($this->image) && filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
+
+        if (!empty($this->image)) {
+            try {
+                // Generate URL for image in public/storage/categories directory
+                return asset('storage/' . $this->image);
+            } catch (\Throwable $e) {
+                // ignore and continue
+            }
+        }
+
+        if ($this->parent) {
+            return $this->parent->image_url_with_parent;
+        }
+
+        // final fallback placeholder
+        return \App\Helpers\PlaceholderAvatar::svgDataUri($this->name ?? 'Category');
     }
 }

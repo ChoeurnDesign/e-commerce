@@ -1,9 +1,8 @@
 <x-app-layout>
-    <div class="pt-8 bg-gray-200 dark:bg-gray-900">
+    <div class="p-8 bg-gray-200 dark:bg-gray-900">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8 text-center">
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center justify-center gap-2">
-                    <x-icon-nav name="store" class="w-8 h-8" />
                     Become a Seller
                 </h2>
                 <p class="text-gray-600 dark:text-gray-300">
@@ -13,7 +12,10 @@
             <div class="bg-white dark:bg-[#181b23] rounded-xl shadow-lg p-8 border border-gray-200 dark:border-[#23263a]">
                 <form method="POST" action="{{ route('seller.register') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
-
+                    <a href="{{ route('dashboard') }}" class="text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-full">
+                        <x-icon-nav name="back" class="inline w-4 h-4 mr-1" />
+                        Back
+                    </a>
                     <div>
                         <x-input-label for="store_name" value="Store Name" class="text-gray-700 dark:text-gray-200"/>
                         <x-text-input
@@ -59,9 +61,6 @@
                     </div>
 
                     <div class="flex items-center justify-between mt-8">
-                        <a href="{{ route('dashboard') }}" class="text-sm text-gray-600 dark:text-gray-300 hover:underline">
-                            &larr; Back to Dashboard
-                        </a>
                         <button
                             type="submit"
                             class="px-6 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-lg shadow transition-colors"

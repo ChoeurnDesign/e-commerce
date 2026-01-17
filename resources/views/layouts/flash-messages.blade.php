@@ -24,11 +24,36 @@
 @endif
 
 <script>
-    // Hide all alerts after 3 seconds
-    setTimeout(function() {
-        ['alert-success', 'alert-error', 'alert-warning', 'alert-validation'].forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.style.display = 'none';
-        });
-    }, 3000);
+document.addEventListener('DOMContentLoaded', function () {
+    // IDs of alert elements to auto-hide
+    const ids = ['alert-success', 'alert-error', 'alert-warning', 'alert-validation'];
+
+    // Delay before starting hide (ms)
+    const HIDE_DELAY = 5000; // 5000 ms = 5 seconds
+
+    // Fade duration (ms)
+    const FADE_MS = 400;
+
+    ids.forEach(function(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        // ensure element has starting styles for transition
+        el.style.transition = `opacity ${FADE_MS}ms ease, transform ${FADE_MS}ms ease`;
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+
+        // schedule hide
+        setTimeout(function() {
+            // fade out and slide up a bit
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(-8px)';
+
+            // remove from DOM after transition completes
+            setTimeout(function() {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            }, FADE_MS);
+        }, HIDE_DELAY);
+    });
+});
 </script>

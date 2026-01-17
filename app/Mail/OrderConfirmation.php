@@ -13,12 +13,16 @@ class OrderConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $storeName;
+
     /**
      * Create a new message instance.
+     *
+     * @param string $storeName
      */
-    public function __construct()
+    public function __construct($storeName)
     {
-        //
+        $this->storeName = $storeName;
     }
 
     /**
@@ -27,7 +31,7 @@ class OrderConfirmation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Order Confirmation',
+            subject: "{$this->storeName} - Order Confirmation",
         );
     }
 
@@ -37,7 +41,7 @@ class OrderConfirmation extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.order_confirmation',
         );
     }
 

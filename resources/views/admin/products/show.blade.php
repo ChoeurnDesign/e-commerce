@@ -20,9 +20,10 @@
         <a href="{{ route('admin.products.edit', $product) }}" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition duration-200">Edit Product</a>
         <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
             @csrf
-            @method('DELETE')
+            <input type="hidden" name="_method" value="">
             <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200">Delete Product</button>
         </form>
     </div>
 </div>
 @endsection
+

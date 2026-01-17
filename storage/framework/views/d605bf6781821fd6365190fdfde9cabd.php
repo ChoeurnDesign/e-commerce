@@ -1,7 +1,7 @@
-<div class="bg-white dark:bg-[#23263a] rounded-xl shadow p-6">
+<div class="bg-white dark:bg-[#23263a] shadow p-6">
     <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Recent Orders</h2>
     <div class="overflow-x-auto">
-        <table class="min-w-full rounded-xl overflow-hidden">
+        <table class="min-w-full overflow-hidden">
             <thead>
                 <tr class="bg-gray-300 dark:bg-[#232c47]">
                     <th class="px-5 py-3 text-left text-sm text-gray-900 dark:text-white uppercase tracking-wider">Order #</th>

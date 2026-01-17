@@ -5,7 +5,7 @@
     <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">Edit Review</h2>
     <form action="{{ route('admin.reviews.update', $review->id) }}" method="POST">
         @csrf
-        @method('PUT')
+        <input type="hidden" name="_method" value="">
 
         <div class="mb-4">
             <x-input-label value="Product" />
@@ -46,3 +46,4 @@
     </form>
 </div>
 @endsection
+

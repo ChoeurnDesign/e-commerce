@@ -46,7 +46,7 @@
     @if(auth()->user() && auth()->user()->role === 'admin')
         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')"
             class="text-gray-300 font-medium">
-            <x-icon-nav name="dashboard"/>
+            <x-icon-nav name="dashboard" class="w-5 h-5 mr-1 text-gray-300 dark:text-gray-500"/>
             <span>dashboard</span>
         </x-nav-link>
     @endif
@@ -54,7 +54,7 @@
     @if(auth()->user()->role === 'seller')
         <x-nav-link :href="route('seller.dashboard')"
             class="text-gray-300 hover:text-gray-200 flex items-center font-medium">
-            <x-icon-nav name="dashboard" class="w-5 h-5 mr-2" />
+            <x-icon-nav name="dashboard" class="w-5 h-5 mr-1 text-gray-300 dark:text-gray-500" />
             Seller Dashboard
         </x-nav-link>
     @endif

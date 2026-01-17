@@ -56,7 +56,7 @@ class HomeController extends Controller
                 $query->active()->withCount('products');
             }])
             ->withCount('products')
-            ->take(2)
+            ->take(3)
             ->get();
 
         // Cart & Wishlist Counts for Navbar

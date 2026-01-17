@@ -1,6 +1,6 @@
 <!-- Cart -->
 <a href="{{ route('cart.index') }}"
-    class="relative p-2 mx-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-600 dark:hover:bg-[#2e1065] transition-colors">
+    class="relative p-2 text-gray-400 dark:text-gray-300 rounded-full hover:bg-gray-800 transition-colors">
     <x-icon-nav name="cart" class="w-8 h-8" />
     @auth
     @if(isset($cartCount) && $cartCount > 0)
@@ -11,8 +11,8 @@
 </a>
 <!-- Wishlist -->
 <a href="{{ route('wishlist.index') }}"
-    class="relative p-2 text-gray-400 dark:text-gray-300 hover:text-indigo-600 rounded-lg hover:bg-gray-600 dark:hover:bg-[#2e1065] transition-colors">
-    <x-icon-nav name="wishlist-filled" class="w-8 h-8" />
+    class="relative p-2 text-gray-200 dark:text-gray-300 rounded-full hover:bg-gray-800 transition-colors">
+    <x-icon-nav name="wishlist-filled" class="!text-gray-200 dark:!text-gray-300" />
     @auth
     @if(isset($wishlistCount) && $wishlistCount > 0)
     <span

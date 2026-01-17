@@ -6,7 +6,7 @@
         <h3 class="text-2xl font-bold text-white mb-4">Edit Banner</h3>
         <form action="{{ route('admin.settings.banner.update', $banner) }}" method="POST" enctype="multipart/form-data">
             @csrf
-            @method('PUT')
+            <input type="hidden" name="_method" value="">
             <div class="mb-4">
                 <x-input-label for="current_image" value="Current Image" />
                 <img id="current_image" src="{{ asset('storage/' . $banner->image_path) }}" class="h-24  shadow mb-2" />
@@ -29,3 +29,4 @@
     </div>
 </div>
 @endsection
+

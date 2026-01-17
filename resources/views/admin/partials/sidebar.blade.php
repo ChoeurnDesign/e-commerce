@@ -57,8 +57,8 @@
         </a>
         <a href="{{ route('home') }}"
            class="text-gray-300 dark:text-gray-200 hover:bg-gray-700 dark:hover:bg-[#23263a] hover:text-white flex items-center px-4 py-2 text-sm font-medium rounded-md mt-8 transition-colors">
-            <x-icon-dashboard name="back" class="mr-3 h-5 w-5 text-gray-300 dark:text-gray-200" />
-            Back to Store
+            <x-icon-nav name="back" class="mr-3 h-5 w-5 text-gray-300 dark:text-gray-200" />
+            Visit Store
         </a>
     </nav>
 </div>

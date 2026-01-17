@@ -8,15 +8,19 @@ class AddImagesToReportsTable extends Migration
 {
     public function up()
     {
-        Schema::table('reports', function (Blueprint $table) {
-            $table->json('images')->nullable(); // Removed ->after('image_path')
-        });
+        if (Schema::hasTable('reports')) {
+            Schema::table('reports', function (Blueprint $table) {
+                $table->json('images')->nullable();
+            });
+        }
     }
 
     public function down()
     {
-        Schema::table('reports', function (Blueprint $table) {
-            $table->dropColumn('images');
-        });
+        if (Schema::hasTable('reports')) {
+            Schema::table('reports', function (Blueprint $table) {
+                $table->dropColumn('images');
+            });
+        }
     }
 }

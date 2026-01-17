@@ -16,7 +16,7 @@
             <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Change Seller Status</h2>
             <form method="POST" action="{{ route('admin.sellers.updateStatus', [$seller->id, 'status']) }}">
                 @csrf
-                @method('PATCH')
+                <input type="hidden" name="_method" value="">
                 <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                     Add a comment (optional):
                     <textarea name="admin_comment" rows="2" class="mt-1 block w-full rounded border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200"></textarea>
@@ -33,3 +33,4 @@
     </div>
 </div>
 <!-- Requires Alpine.js for x-data/x-show transitions -->
+

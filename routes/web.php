@@ -15,8 +15,7 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\SocialAuthController;
-use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\UserReportController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\CurrencyController;
@@ -36,11 +35,15 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\HomepageBannerController;
 use App\Http\Controllers\Admin\SellerController as AdminSellerController;
 
-// Seller (vendor) area controllers
+// Seller Controllers
 use App\Http\Controllers\Seller\DashboardController;
 use App\Http\Controllers\Seller\StorefrontController;
 use App\Http\Controllers\Seller\ProductController as SellerProductController;
 use App\Http\Controllers\Seller\SettingsController as SellerSettingsController;
+use App\Http\Controllers\Seller\ImageController as SellerImageController;
+use App\Http\Controllers\Seller\SellerOrderController;
+use App\Http\Controllers\Seller\StoreReviewController;
+use App\Http\Controllers\Seller\SellerChatController;
 
 
 /*
@@ -59,7 +62,7 @@ Route::get('/help', [HelpController::class, 'index'])->name('help');
 Route::get('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 Route::get('currency/{currency}', [CurrencyController::class, 'switch'])->name('currency.switch');
 
-// Admin Banner quick actions (outside admin group originally)
+// Admin Banner quick actions (public endpoints – consider protecting later)
 Route::post('admin/settings/add-banner', [SettingsController::class, 'addBanner'])->name('admin.settings.add_banner');
 Route::delete('admin/settings/delete-banner/{banner}', [SettingsController::class, 'deleteBanner'])->name('admin.settings.delete_banner');
 Route::put('/admin/settings/banner/{banner}/edit', [SettingsController::class, 'editBanner'])->name('admin.settings.edit_banner');
@@ -119,7 +122,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/wishlist', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
-    // Orders (user)
+    // Orders
     Route::get('/my-orders', [OrderController::class, 'userOrders'])->name('orders.history');
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show'])->name('orders.show');
 
@@ -131,12 +134,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/paypal-capture', [CheckoutController::class, 'paypalCapture'])->name('paypal.capture');
     });
 
-    // Profile (original)
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // ALIAS profile routes (account.*) – added fix
+    // Profile alias
     Route::get('/account/profile', [ProfileController::class, 'edit'])->name('account.profile.edit');
     Route::patch('/account/profile', [ProfileController::class, 'update'])->name('account.profile.update');
     Route::delete('/account/profile', [ProfileController::class, 'destroy'])->name('account.profile.destroy');
@@ -144,18 +147,11 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Social Auth & Verification
+| Social Auth (no verification code!)
 |--------------------------------------------------------------------------
 */
-Route::get('auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.login');
-Route::get('auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
-Route::get('/social/confirm', [SocialAuthController::class, 'confirm'])->name('social.confirm');
-Route::post('/social/confirm/proceed', [SocialAuthController::class, 'confirmProceed'])->name('social.confirm.proceed');
-Route::post('/social/confirm/cancel', [SocialAuthController::class, 'confirmCancel'])->name('social.confirm.cancel');
-
-Route::get('/verify', [VerificationController::class, 'showForm'])->name('code.verify.form');
-Route::post('/verify', [VerificationController::class, 'verifyCode'])->name('code.verify');
-Route::get('/send-verification-code', [VerificationController::class, 'sendVerificationCode'])->name('code.send');
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
 
 /*
 |--------------------------------------------------------------------------
@@ -168,12 +164,10 @@ Route::prefix('admin')
     ->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('reports-dash', [ReportDashController::class, 'index'])->name('reports-dash.index');
-
-        // Product import (before resource)
-        Route::get('products/import', [AdminProductController::class, 'showImportForm'])->name('products.import.form');
-        Route::post('products/import', [AdminProductController::class, 'import'])->name('products.import');
+        // Products CRUD
         Route::resource('products', AdminProductController::class);
 
+        // Other admin modules
         Route::resource('categories', AdminCategoryController::class);
         Route::resource('orders', AdminOrderController::class);
         Route::resource('customers', CustomerController::class)
@@ -191,7 +185,6 @@ Route::prefix('admin')
         Route::put('settings/banner/{banner}', [SettingsController::class, 'updateBanner'])->name('settings.banner.update');
         Route::patch('products/{product}/remove-sale', [OnsaleController::class, 'removeFromSale'])->name('products.removeFromSale');
 
-        // Settings sectional saves
         Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::post('settings/policies', [SettingsController::class, 'savePolicies'])->name('settings.savePolicies');
         Route::post('settings/general', [SettingsController::class, 'saveGeneral'])->name('settings.save_general');
@@ -199,19 +192,18 @@ Route::prefix('admin')
         Route::post('settings/payment', [SettingsController::class, 'savePayment'])->name('settings.save_payment');
         Route::post('settings/shipping', [SettingsController::class, 'saveShipping'])->name('settings.save_shipping');
 
-        /*
-         * Seller management (force binding by numeric id using {seller:id})
-         */
+        // Seller management
         Route::get('sellers', [AdminSellerController::class, 'index'])->name('sellers.index');
         Route::get('sellers/{seller:id}', [AdminSellerController::class, 'show'])->name('sellers.show');
         Route::get('sellers/{seller:id}/edit', [AdminSellerController::class, 'edit'])->name('sellers.edit');
         Route::put('sellers/{seller:id}', [AdminSellerController::class, 'update'])->name('sellers.update');
         Route::patch('sellers/{seller:id}/status/{status}', [AdminSellerController::class, 'updateStatus'])->name('sellers.updateStatus');
+        
     });
 
 /*
 |--------------------------------------------------------------------------
-| Become a Seller (user -> seller registration)
+| Become a Seller
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
@@ -227,10 +219,11 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->prefix('seller')->name('seller.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Seller settings routes
     Route::get('settings', [SellerSettingsController::class, 'edit'])->name('settings.edit');
     Route::post('settings', [SellerSettingsController::class, 'update'])->name('settings.update');
 
+    // Seller product import
+    Route::get('products/import/template', [SellerProductController::class, 'downloadTemplate'])->name('products.import.template');
     Route::get('products/import', [SellerProductController::class, 'showImportForm'])->name('products.import.form');
     Route::post('products/import', [SellerProductController::class, 'import'])->name('products.import');
 
@@ -238,16 +231,34 @@ Route::middleware(['auth'])->prefix('seller')->name('seller.')->group(function (
         ->name('products.edit')->where('product', '[0-9]+');
     Route::get('products/{product}', [SellerProductController::class, 'show'])
         ->name('products.show')->where('product', '[0-9]+');
-
     Route::resource('products', SellerProductController::class)->except(['edit', 'show']);
+
+    Route::get('/images', [SellerImageController::class, 'index'])->name('images.index');
+    Route::post('/images/upload-main', [SellerImageController::class, 'uploadMain'])->name('images.uploadMain');
+    Route::post('/images/upload-gallery', [SellerImageController::class, 'uploadGallery'])->name('images.uploadGallery');
+    Route::post('/images/delete', [SellerImageController::class, 'delete'])->name('images.delete');
+    Route::get('images/load', [SellerImageController::class, 'load'])->name('images.load');
+
+    Route::resource('orders', SellerOrderController::class)->only(['index', 'show']);
+
+    // Store reviews
+    Route::get('reviews', [StoreReviewController::class, 'index'])->name('reviews.index');
+    Route::get('reviews/{review}', [StoreReviewController::class, 'show'])->name('reviews.show');
+    Route::get('reviews/{review}/edit', [StoreReviewController::class, 'edit'])->name('reviews.edit');
+    Route::put('reviews/{review}', [StoreReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('reviews/{review}', [StoreReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::post('reviews/{seller}', [StoreReviewController::class, 'store'])->name('store-reviews.store');
+
+    Route::get('/chat', [SellerChatController::class, 'index'])->name('chat.index');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Public Storefront Directory (uses slug)
+| Public Storefront
 |--------------------------------------------------------------------------
 */
-Route::get('/stores', [StorefrontController::class, 'index'])->name('stores.index');
-Route::get('/store/{seller:slug}', [StorefrontController::class, 'show'])->name('store.show');
+Route::get('/stores', [SellerController::class, 'index'])->name('stores.index');
+Route::get('/stores/{seller:slug}', [StorefrontController::class, 'show'])->name('stores.show');
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/chat.php';

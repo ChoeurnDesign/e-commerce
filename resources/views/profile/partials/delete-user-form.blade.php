@@ -17,7 +17,7 @@
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
             @csrf
-            @method('delete')
+            <input type="hidden" name="_method" value="">
 
             <h2 class="text-lg font-medium text-gray-900 dark:text-white">
                 {{ __('Are you sure you want to delete your account?') }}
@@ -53,3 +53,4 @@
         </form>
     </x-modal>
 </section>
+

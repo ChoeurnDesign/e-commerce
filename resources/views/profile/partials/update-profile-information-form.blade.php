@@ -10,7 +10,7 @@
 
     <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6" id="profile-info-form">
         @csrf
-        @method('patch')
+        <input type="hidden" name="_method" value="">
 
         <div>
             <x-input-label for="name" :value="__('Name')" class="text-gray-200"/>
@@ -68,3 +68,4 @@
         </div>
     </form>
 </section>
+

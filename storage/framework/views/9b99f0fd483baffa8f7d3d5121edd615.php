@@ -1,5 +1,5 @@
 <!-- Featured Products Section -->
-<div id="featured-products" class="py-16 bg-gray-300 dark:bg-gray-800">
+<div id="featured-products" class="py-16 bg-gray-300 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">

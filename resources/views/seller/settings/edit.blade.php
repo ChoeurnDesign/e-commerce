@@ -160,73 +160,105 @@
             </div>
         </section>
 
-        {{-- STORE LOGO & BANNER (combined container as requested) --}}
+        {{-- STORE LOGO & BANNER --}}
         <section class="bg-white dark:bg-[#23263a] p-6 rounded border border-gray-200 dark:border-gray-700 space-y-5">
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Store Logo & Banner</h2>
 
             <div class="grid gap-6 grid-cols-1 md:grid-cols-3 items-start">
-                {{-- Left column: Logo preview and controls --}}
+                {{-- Left column: Logo preview --}}
                 <div class="flex flex-col items-center gap-3">
-                    {{-- This is the fixed block --}}
-                    <div class="w-28 h-28 rounded-full overflow-hidden border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                        @if($seller->store_logo_url)
-                            <img src="{{ $seller->store_logo_url }}" alt="Store Logo" class="w-full h-full object-cover">
+                    @php
+                        $storeLogo = $seller->store_logo_url;
+                        $storeName = $seller->store_name;
+                        
+                        $storeInitials = 'S';
+                        if ($storeName) {
+                            $words = explode(' ', $storeName);
+                            $initialsArray = array_map(fn($word) => mb_substr($word, 0, 1), $words);
+                            $storeInitials = strtoupper(implode('', $initialsArray));
+                        }
+                    @endphp
+
+                    <div class="w-28 h-28 rounded-full overflow-hidden border border-indigo-500 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                        @if($storeLogo)
+                            <img src="{{ $storeLogo }}" 
+                                alt="Store Logo" 
+                                class="w-full h-full object-cover"
+                                onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+                            <div class="w-full h-full bg-indigo-600 text-white hidden flex items-center justify-center font-bold text-2xl">
+                                {{ $storeInitials }}
+                            </div>
                         @else
-                            <div class="w-full h-full flex items-center justify-center text-gray-500 text-center p-2">
-                                <span>No logo uploaded</span>
+                            <div class="w-full h-full bg-indigo-600 text-white flex items-center justify-center font-bold text-2xl">
+                                {{ $storeInitials }}
                             </div>
                         @endif
                     </div>
-                    {{-- End of the fixed block --}}
 
                     <span class="text-[11px] text-gray-500">Store Logo (square)</span>
 
-                    <label class="inline-flex items-center gap-2 text-sm mt-2">
+                    <label class="inline-flex items-center gap-2 text-sm mt-2 cursor-pointer">
                         <input type="checkbox" name="remove_logo" value="1"
                             class="rounded border-gray-500 text-red-600 focus:ring-red-500">
-                        <span>Remove current logo</span>
+                        <span class="dark:text-gray-300 text-gray-700">Remove current logo</span>
                     </label>
 
                     <div class="w-full">
                         <input type="file" name="store_logo" accept=".jpg,.jpeg,.png,.webp"
-                            class="block w-full text-sm text-gray-300 dark:text-gray-300
+                            class="block w-full text-sm text-gray-500 dark:text-gray-300
                             file:bg-gray-700 file:dark:bg-gray-600 file:text-gray-100 file:border-0 file:px-3 file:py-2 file:rounded
                             file:hover:bg-gray-600 mt-2">
-                        <p class="text-xs text-gray-500 mt-1">Accepted: JPG / PNG / WEBP (max 3MB, recommended 256×256)</p>
                         @error('store_logo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
-                {{-- Middle & right columns: Banner preview and controls (no changes needed) --}}
+                {{-- Middle & right columns: Banner preview --}}
                 <div class="md:col-span-2">
                     <div class="flex flex-col gap-3">
-                        <div class="w-full rounded overflow-hidden border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
+                        <div class="w-full rounded overflow-hidden border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800">
                             @if($seller->store_banner_url)
-                                <img src="{{ $seller->store_banner_url }}" alt="Store Banner" class="w-full h-40 object-cover"
-                                    onerror="this.onerror=null;this.src='{{ asset('images/default-banner.png') }}';">
+                                <img src="{{ $seller->store_banner_url }}" 
+                                    alt="Store Banner" 
+                                    class="w-full h-40 object-cover"
+                                    onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+                                {{-- This placeholder shows if the image link is broken --}}
+                                <div class="w-full h-40 hidden flex items-center justify-center bg-gray-200 dark:bg-gray-800 text-gray-500">
+                                    <div class="flex flex-col items-center">
+                                        <svg class="w-12 h-12 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span class="text-sm font-medium">Banner could not be loaded</span>
+                                    </div>
+                                </div>
                             @else
-                                <div class="w-full h-40 flex items-center justify-center text-gray-500">
-                                    <span>No banner uploaded</span>
+                                {{-- This placeholder shows if no banner is uploaded --}}
+                                <div class="w-full h-40 flex items-center justify-center bg-gray-200 dark:bg-gray-800 text-gray-500">
+                                    <div class="flex flex-col items-center">
+                                        <svg class="w-12 h-12 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span class="text-sm font-medium">No banner uploaded</span>
+                                    </div>
                                 </div>
                             @endif
                         </div>
 
                         <div class="flex items-center gap-4">
-                            <span class="text-[11px] text-gray-500">Store Banner (recommended wide)</span>
+                            <span class="text-[11px] text-gray-500">Store Banner (1500×500)</span>
 
-                            <label class="inline-flex items-center gap-2 text-sm">
+                            <label class="inline-flex items-center gap-2 text-sm cursor-pointer">
                                 <input type="checkbox" name="remove_banner" value="1"
                                     class="rounded border-gray-500 text-red-600 focus:ring-red-500">
-                                <span>Remove current banner</span>
+                                <span class="dark:text-gray-300 text-gray-700">Remove current banner</span>
                             </label>
                         </div>
 
                         <div>
                             <input type="file" name="store_banner" accept=".jpg,.jpeg,.png,.webp"
-                                class="block w-full text-sm text-gray-300 dark:text-gray-300
+                                class="block w-full text-sm text-gray-500 dark:text-gray-300
                                 file:bg-gray-700 file:dark:bg-gray-600 file:text-gray-100 file:border-0 file:px-3 file:py-2 file:rounded
                                 file:hover:bg-gray-600">
-                            <p class="text-xs text-gray-500 mt-1">Accepted: JPG / PNG / WEBP (recommended 1500×500, max 5MB)</p>
+                            <p class="text-xs text-gray-500 mt-1">Accepted: JPG / PNG / WEBP (max 5MB)</p>
                             @error('store_banner') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>

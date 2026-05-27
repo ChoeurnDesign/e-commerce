@@ -1,6 +1,6 @@
 <script>
 window.chatComponent = function() {
-    return {
+    return { 
         chatId: null,
         messageText: '',
         messages: [],
@@ -28,7 +28,9 @@ window.chatComponent = function() {
                 setTimeout(() => this.scrollToBottom(true), 60);
             });
 
-            this.setupEchoListeners();
+            if (window.Echo) {
+                this.setupEchoListeners();
+            }
             setTimeout(() => this.markChatAsRead(), 200);
 
             // Refresh activity labels if client helper exists

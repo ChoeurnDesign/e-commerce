@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Events\NewChatMessage;
 use App\Models\Chat;
 use App\Models\ChatMessage;
+use App\Models\User;
+use App\Notifications\NewChatMessageNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -48,6 +50,30 @@ class ChatMessageController extends Controller
             }
         } catch (\Throwable $e) {
             Log::warning('Broadcast NewChatMessage failed: ' . $e->getMessage());
+        }
+
+        // Notify other participants via database notification (deduped per sender per chat)
+        try {
+            $otherParticipants = $chat->participants()
+                ->where('user_id', '!=', $user->id)
+                ->pluck('user_id');
+
+            foreach ($otherParticipants as $recipientId) {
+                $recipient = User::find($recipientId);
+                if (!$recipient) continue;
+
+                $alreadyNotified = $recipient->unreadNotifications()
+                    ->where('type', NewChatMessageNotification::class)
+                    ->where('data->chat_id', $message->chat_id)
+                    ->where('data->sender_id', $user->id)
+                    ->exists();
+
+                if (!$alreadyNotified) {
+                    $recipient->notify(new NewChatMessageNotification($message));
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Chat notification failed: ' . $e->getMessage());
         }
 
         return response()->json([

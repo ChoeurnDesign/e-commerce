@@ -26,6 +26,7 @@ export default {
             lg: '1042px',
             xl: '1280px',
             '2xl': '1536px',
+            'xl5': '1146px',
         },
     },
 

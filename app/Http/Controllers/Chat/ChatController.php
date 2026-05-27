@@ -10,6 +10,7 @@ use App\Events\UserTyping;
 use App\Events\UserStoppedTyping;
 use App\Models\Chat;
 use App\Models\User;
+use App\Notifications\NewChatMessageNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -120,6 +121,19 @@ class ChatController extends Controller
             }
         } catch (\Throwable $e) {
             Log::warning('Broadcast MessageRead failed: ' . $e->getMessage());
+        }
+
+        // Clear unread chat notifications for this conversation
+        try {
+            $authUser = Auth::user();
+            if ($authUser) {
+                $authUser->unreadNotifications()
+                    ->where('type', NewChatMessageNotification::class)
+                    ->where('data->chat_id', $chat->id)
+                    ->update(['read_at' => now()]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Failed clearing chat notifications: ' . $e->getMessage());
         }
     }
 

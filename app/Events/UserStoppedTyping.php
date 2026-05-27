@@ -29,14 +29,9 @@ class UserStoppedTyping implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'chat_id' => $this->chat_id,
-            'user_id' => $this->user_id,
+            'chat_id'   => $this->chat_id,
+            'user_id'   => $this->user_id,
             'user_name' => $this->user_name,
         ];
-    }
-
-    public function broadcastAs(): string
-    {
-        return 'UserStoppedTyping';
     }
 }

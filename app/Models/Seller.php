@@ -5,37 +5,96 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage; // <-- Add this line
+use Illuminate\Support\Facades\Storage;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string $store_name
+ * @property string $slug
+ * @property string|null $description
+ * @property string|null $business_document
+ * @property string $status
+ * @property string|null $admin_comment
+ * @property string|null $store_logo
+ * @property string|null $store_banner
+ * @property string|null $contact_email
+ * @property string|null $address
+ * @property string|null $phone
+ * @property string|null $website
+ * @property string|null $facebook
+ * @property string|null $instagram
+ * @property string|null $tiktok
+ * @property bool $ships_worldwide
+ * @property int|null $returns_days
+ * @property string|null $shipping_summary
+ * @property string|null $response_time
+ * @property \Illuminate\Support\Carbon|null $verified_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read int|null $followers_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Category> $categories
+ * @property-read int|null $categories_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $followers
+ * @property-read string|null $business_document_url
+ * @property-read string $store_banner_url
+ * @property-read string $store_logo_url
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
+ * @property-read int|null $orders_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
+ * @property-read int|null $products_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreReview> $receivedStoreReviews
+ * @property-read int|null $received_store_reviews_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreReview> $storeReviews
+ * @property-read int|null $store_reviews_count
+ * @property-read \App\Models\User $user
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorOrder> $vendorOrders
+ * @property-read int|null $vendor_orders_count
+ * @property-read \App\Models\Wallet|null $wallet
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller approved()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereAdminComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereBusinessDocument($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereContactEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereFacebook($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereFollowersCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereInstagram($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereResponseTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereReturnsDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereShippingSummary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereShipsWorldwide($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereStoreBanner($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereStoreLogo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereStoreName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereTiktok($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereWebsite($value)
+ * @mixin \Eloquent
+ */
 class Seller extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'store_name',
-        'slug',
-        'description',
-        'business_document',
-        'status',
-        'admin_comment',
-        'store_logo',
-        'store_banner',
-        'contact_email',
-        'address',
-        'phone',
-        'website',
-        'facebook',
-        'instagram',
-        'tiktok',
-        'ships_worldwide',
-        'returns_days',
-        'shipping_summary',
-        'response_time',
-        'verified_at',
+        'user_id', 'store_name', 'slug', 'description', 'business_document',
+        'status', 'admin_comment', 'store_logo', 'store_banner', 'contact_email',
+        'address', 'phone', 'website', 'facebook', 'instagram', 'tiktok',
+        'ships_worldwide', 'returns_days', 'shipping_summary', 'response_time', 'verified_at',
+        'commission_rate', 'stripe_account_id',
     ];
 
-    // The accessor names are correct here
     protected $appends = ['store_logo_url', 'store_banner_url', 'business_document_url'];
 
     protected $casts = [
@@ -56,12 +115,18 @@ class Seller extends Model
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'user_id', 'user_id');
+        return $this->hasMany(Product::class, 'seller_id', 'id');
     }
 
     public function orders()
     {
-        return $this->hasMany(Order::class, 'user_id', 'user_id');
+        // This connects the orders table to the seller for your dashboard
+        return $this->hasMany(Order::class, 'seller_id', 'id');
+    }
+
+    public function vendorOrders()
+    {
+        return $this->hasMany(VendorOrder::class);
     }
 
     public function categories()
@@ -83,6 +148,11 @@ class Seller extends Model
     {
         return $this->belongsToMany(User::class, 'seller_followers', 'seller_id', 'user_id')
                     ->withTimestamps();
+    }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class, 'seller_id');
     }
 
     public function isFollowedBy(?\App\Models\User $user): bool
@@ -113,9 +183,32 @@ class Seller extends Model
         return $this->storeReviews()->count();
     }
 
+    // --- Scopes for easier querying ---
+
     public function scopeApproved($q)
     {
         return $q->where('status', 'approved');
+    }
+
+    public function scopePending($q)
+    {
+        return $q->where('status', 'pending');
+    }
+
+    // --- Helper Methods for Approval Workflow ---
+
+    /**
+     * Check if the seller is currently pending approval.
+     * Used for the Sidebar Badge logic.
+     */
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
     }
 
     protected static function booted()
@@ -140,7 +233,7 @@ class Seller extends Model
         return $slug;
     }
 
-    // Mutators (no changes needed here)
+    // Mutators
     public function setContactEmailAttribute($value)
     {
         $value = is_null($value) ? null : trim((string) $value);
@@ -183,8 +276,7 @@ class Seller extends Model
         $this->attributes['tiktok'] = $value === '' ? null : $value;
     }
 
-    // Accessors - optional fallback to user when seller value empty
-    // (no changes needed here, they are fine)
+    // Accessors
     public function getContactEmailAttribute($value)
     {
         if (!empty($value)) {
@@ -237,7 +329,7 @@ class Seller extends Model
         return $this->user ? $this->user->website : null;
     }
 
-    // Helpers (no changes needed here)
+    // Helpers
     public function hasOwnContactEmail(): bool
     {
         return !empty($this->getAttributes()['contact_email'] ?? null);
@@ -276,46 +368,33 @@ class Seller extends Model
         return $links;
     }
 
-    /**
-     * Get the URL for the store's logo.
-     * Use this accessor to get the full URL to the logo file.
-     * @return string|null
-     */
-    public function getStoreLogoUrlAttribute(): ?string
+    public function getStoreLogoUrlAttribute(): string
     {
-        // Check if a logo path exists and the file is present on the 'public' disk.
-        if ($this->store_logo && Storage::disk('public')->exists($this->store_logo)) {
-            return Storage::disk('public')->url($this->store_logo);
+        if ($this->store_logo) {
+            if (filter_var($this->store_logo, FILTER_VALIDATE_URL)) {
+                return $this->store_logo;
+            }
+            return asset('storage/' . ltrim($this->store_logo, '/'));
         }
-        
-        // Return null or a default path if the logo doesn't exist.
-        // Returning null allows the blade file to handle the placeholder logic.
-        return null;
+        return asset('images/default-store.png');
     }
     
-    /**
-     * Get the URL for the store's banner.
-     * @return string|null
-     */
-    public function getStoreBannerUrlAttribute(): ?string
+    public function getStoreBannerUrlAttribute(): string
     {
-        if ($this->store_banner && Storage::disk('public')->exists($this->store_banner)) {
-            return Storage::disk('public')->url($this->store_banner);
+        if ($this->store_banner) {
+            if (filter_var($this->store_banner, FILTER_VALIDATE_URL)) {
+                return $this->store_banner;
+            }
+            return asset('storage/' . ltrim($this->store_banner, '/'));
         }
-
-        return null;
+        return asset('images/default-banner.png');
     }
     
-    /**
-     * Get the URL for the business document.
-     * @return string|null
-     */
     public function getBusinessDocumentUrlAttribute(): ?string
     {
-        if ($this->business_document && Storage::disk('public')->exists($this->business_document)) {
-            return Storage::disk('public')->url($this->business_document);
+        if ($this->business_document) {
+            return asset('storage/' . ltrim($this->business_document, '/'));
         }
-
         return null;
     }
 

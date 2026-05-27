@@ -4,8 +4,6 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -31,22 +29,12 @@ class MessageRead implements ShouldBroadcast
         return new Channel('chat.' . $this->chatId);
     }
     
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return [
             'chat_id' => $this->chatId,
             'user_id' => $this->userId,
             'read_at' => $this->readAt,
         ];
-    }
-    
-    /**
-     * Get the broadcast event name.
-     *
-     * @return string
-     */
-    public function broadcastAs()
-    {
-        return 'message.read';
     }
 }

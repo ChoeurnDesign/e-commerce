@@ -35,24 +35,42 @@
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Order Items</h3> {{-- Added dark:text-gray-100 --}}
                         <div class="space-y-4">
                             @foreach($order->orderItems as $item)
-                                <div class="flex items-center space-x-4 py-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"> {{-- Added dark:border-gray-700 --}}
-                                    {{-- {{ dd($item->product_image) }} --}}
-                                    <img src="{{ asset('img/products/' . $item->product->image) }}"
-                                        alt="{{ $item->product_name }}"
-                                        class="w-16 h-16 object-cover rounded-lg">
-                                    <div class="flex-1">
-                                        <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $item->product_name }}</h4> {{-- Added dark:text-gray-100 --}}
-                                        @if($item->product_sku)
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">SKU: {{ $item->product_sku }}</p> {{-- Added dark:text-gray-400 --}}
-                                        @endif
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">Quantity: {{ $item->quantity }}</p> {{-- Added dark:text-gray-400 --}}
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">${{ number_format($item->total, 2) }}</p> {{-- Added dark:text-gray-100 --}}
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">${{ number_format($item->price, 2) }} each</p> {{-- Added dark:text-gray-400 --}}
-                                    </div>
+                            <div class="flex items-center space-x-4 py-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                                @php
+                                    $image = $item->product->image ?? '';
+                                    
+                                    if (filter_var($image, FILTER_VALIDATE_URL)) {
+                                        // Case 1: Image is a full URL (API Call)
+                                        $imgSrc = $image;
+                                    } elseif (!empty($image)) {
+                                        // Case 2: Image is a local path (Seller Upload)
+                                        // Check if the string already includes 'storage/' to avoid double-prefixing
+                                        $imgSrc = str_starts_with($image, 'storage/') ? asset($image) : asset('storage/' . $image);
+                                    } else {
+                                        // Case 3: No image found
+                                        $imgSrc = asset('images/product-placeholder.png');
+                                    }
+                                @endphp
+
+                                <img src="{{ $imgSrc }}"
+                                    alt="{{ $item->product_name }}"
+                                    class="w-16 h-16 object-cover rounded-lg border border-gray-100 dark:border-gray-700"
+                                    {{-- Final safety fallback --}}
+                                    onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.png') }}'">
+                                    
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $item->product_name }}</h4>
+                                    @if($item->product_sku)
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">SKU: {{ $item->product_sku }}</p>
+                                    @endif
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Quantity: {{ $item->quantity }}</p>
                                 </div>
-                            @endforeach
+                                <div class="text-right">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">${{ number_format($item->total, 2) }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">${{ number_format($item->price, 2) }} each</p>
+                                </div>
+                            </div>
+                        @endforeach
                         </div>
                     </div>
 

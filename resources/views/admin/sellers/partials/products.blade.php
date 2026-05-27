@@ -28,13 +28,15 @@
                                 ${{ number_format($product->price, 2) }}
                             </td>
                             <td class="px-6 py-4">
-                                <span class="inline-block px-2 py-1 rounded-full text-xs
-                                    @if($product->status === 'active') bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300
-                                    @elseif($product->status === 'inactive') bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300
-                                    @elseif($product->status === 'banned') bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300
-                                    @else bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 @endif">
-                                    {{ ucfirst($product->status) }}
-                                </span>
+                                @if($product->is_active)
+                                    <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="inline-block px-2 py-1 rounded-full text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300">
+                                        Inactive
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-200">
                                 {{ $product->created_at->format('Y-m-d H:i') }}
@@ -44,7 +46,7 @@
                                    class="inline-flex items-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded transition"
                                    title="View Product"
                                    target="_blank">
-                                    View
+                                   View
                                 </a>
                             </td>
                         </tr>

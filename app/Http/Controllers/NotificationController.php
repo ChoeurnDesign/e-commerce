@@ -44,10 +44,7 @@ class NotificationController extends Controller
             $notification->markAsRead();
         }
 
-        // If your notification has an action URL, you can redirect:
-        // $redirectUrl = $notification->data['action_url'] ?? null;
-        // return $redirectUrl ? redirect($redirectUrl) : back()->with('status', 'Notification marked as read.');
-
-        return back()->with('status', 'Notification marked as read.');
+        $url = $notification->data['url'] ?? null;
+        return $url ? redirect($url) : back()->with('status', 'Notification marked as read.');
     }
 }

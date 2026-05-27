@@ -6,14 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('store_reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('seller_id')->constrained('sellers')->onDelete('cascade'); // if you want review linked to seller
+            $table->foreignId('seller_id')->constrained('sellers')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->text('review');
+            $table->text('comment'); // <-- Was review. Now use comment!
             $table->unsignedTinyInteger('rating');
+            $table->boolean('on_sale')->default(false)->comment('Indicates if the product is on sale');
+            $table->boolean('is_approved')->default(1);
             $table->timestamps();
         });
     }

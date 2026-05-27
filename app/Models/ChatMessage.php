@@ -98,9 +98,7 @@ class ChatMessage extends Model
         return round($bytes, 2) . ' ' . $units[$pow];
     }
 
-    /**
-     * Count unread chat messages for a given user.
-     */
+    
     public static function unreadCountForUser(int $userId): int
     {
         return (int) DB::table('chat_messages')

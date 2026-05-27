@@ -30,21 +30,18 @@ class SettingsController extends Controller
     public function updateBanner(Request $request, HomepageBanner $banner)
     {
         $data = $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'title' => 'nullable|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'order' => 'nullable|integer',
         ]);
-
         if ($request->hasFile('image')) {
             if ($banner->image_path) {
                 Storage::disk('public')->delete($banner->image_path);
             }
             $data['image_path'] = $request->file('image')->store('banners', 'public');
         }
-
         $banner->update($data);
-
         return redirect()->route('admin.settings.index')->with('success', 'Banner updated!');
     }
 
@@ -181,7 +178,7 @@ class SettingsController extends Controller
             Storage::disk('public')->delete($banner->image_path);
         }
         $banner->delete();
-        return redirect()->back()->with('success', 'Banner deleted.');
+        return redirect()->route('admin.settings.index')->with('success', 'Banner deleted.');
     }
 
     public function editBanner(Request $request, HomepageBanner $banner)

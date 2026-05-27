@@ -1,70 +1,89 @@
 <x-slot name="trigger">
-    @auth
-    <button class="flex items-center bg-transparent hover:bg-transparent ml-2 py-0 transition-colors focus:outline-none">
-        @php
-        $user = Auth::user();
-        @endphp
-        @if($user && $user->profile_image && file_exists(public_path('storage/' . $user->profile_image)))
-        <img src="{{ asset('storage/' . $user->profile_image) }}" alt="Avatar"
-            class="w-10 h-10 rounded-full object-cover border-indigo-500 shadow" />
-        @else
-        <span class="w-8 h-8 flex items-center justify-center rounded-full bg-[#8b5cf6] text-white text-base font-normal">
-            {{ strtoupper($user->name[0] ?? 'U') }}
-        </span>
-        @endif
-    </button>
-    @else
-    <button class="flex items-center bg-transparent hover:bg-transparent px-0 py-0 transition-colors focus:outline-none">
-        <x-icon-nav name="user" class="w-8 h-8 text-gray-700 dark:text-gray-300" />
-    </button>
-    @endauth
-</x-slot>
-<x-slot name="content">
-    <div
-        class="bg-[#181f31] dark:bg-[#181b23] text-gray-300 border border-[#23283a] rounded shadow-md py-1">
+    <div class="flex items-center ml-2 cursor-pointer">
         @auth
-        <x-dropdown-link :href="route('profile.edit')"
-            class="text-gray-300 hover:text-white flex items-center">
-            <x-icon-nav name="profile" class="text-gray-300" />
-            Profile
+            @php $user = Auth::user(); @endphp
+            @if($user && $user->profile_image && file_exists(public_path('storage/' . $user->profile_image)))
+                <img src="{{ asset('storage/' . $user->profile_image) }}" 
+                     class="w-9 h-9 rounded-full object-cover border-2 border-indigo-500 shadow-sm" alt="Profile" />
+            @else
+                <span class="w-9 h-9 flex items-center justify-center rounded-full bg-[#8b5cf6] text-white text-base font-medium shadow-sm">
+                    {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                </span>
+            @endif
+        @else
+            <x-icon-dashboard name="user" class="w-8 h-8 text-gray-400 dark:text-gray-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors" />
+        @endauth
+    </div>
+</x-slot>
+
+<x-slot name="content">
+    @auth
+        {{-- Authenticated User Options --}}
+         <x-dropdown-link :href="route('profile.edit')">
+            <div class="flex items-center">
+                <x-icon-dashboard name="profile" class="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500" />
+                <span>Profile</span>
+            </div>
         </x-dropdown-link>
 
-        {{-- Become a Seller link for users who are not yet sellers --}}
+        <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+
+        <x-dropdown-link :href="route('chat.index')">
+            <div class="flex items-center">
+                <x-icon-dashboard name="chat" class="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500" />
+                <span>Chat</span>
+            </div>
+        </x-dropdown-link>
+
         @if(auth()->user()->role !== 'seller')
-            <x-dropdown-link :href="route('seller.register.form')"
-                class="text-gray-300 hover:text-white flex items-center">
-                <x-icon-nav name="store" class="text-gray-300" />
-                Become a Seller
+            <x-dropdown-link :href="route('seller.landing')">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span class="font-semibold text-indigo-600 dark:text-indigo-400">Sell on {{ setting('store_name', 'ShopExpress') }}</span>
+                </div>
             </x-dropdown-link>
         @endif
 
-        @if(auth()->user()->role === 'seller')
-            <x-dropdown-link :href="route('seller.dashboard')"
-                class="text-gray-300 hover:text-white flex items-center">
-                <x-icon-nav name="dashboard" class="h-5 w-5 mr-2 text-gray-300 dark:text-gray-500" />
-                Seller Dashboard
-            </x-dropdown-link>
-        @endif
+        <x-dropdown-link :href="route('about')">
+            <div class="flex items-center">
+                <x-icon-dashboard name="about" class="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500" />
+                <span>About Us</span>
+            </div>
+        </x-dropdown-link>
+
+        <x-dropdown-link :href="route('contact')">
+            <div class="flex items-center">
+                <x-icon-dashboard name="contact" class="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500" />
+                <span>Contact</span>
+            </div>
+        </x-dropdown-link>
+
+        <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();"
-                class="text-gray-300 hover:text-white flex items-center">
-                <x-icon-nav name="signout" class="text-gray-300" />
-                Sign Out
+            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                <div class="flex items-center">
+                    <x-icon-dashboard name="signout" class="w-5 h-5 mr-3 text-red-500 dark:text-red-400" />
+                    <span>Sign Out</span>
+                </div>
             </x-dropdown-link>
         </form>
-        @else
-        <x-dropdown-link :href="route('login')"
-            class="text-gray-300 hover:text-white flex items-center">
-            <x-icon-nav name="login" class="text-gray-300" />
-            Login
+
+    @else
+        {{-- Guest Options --}}
+        <x-dropdown-link :href="route('login')">
+            <div class="flex items-center text-indigo-600 dark:text-indigo-400 font-medium">
+                <x-icon-dashboard name="login" class="w-5 h-5 mr-3" />
+                <span>Login</span>
+            </div>
         </x-dropdown-link>
-        <x-dropdown-link :href="route('register')"
-            class="text-gray-300 hover:text-white flex items-center">
-            <x-icon-nav name="register" class="text-gray-300" />
-            Register
+
+        <x-dropdown-link :href="route('register')">
+            <div class="flex items-center text-gray-700 dark:text-gray-200">
+                <x-icon-dashboard name="register" class="w-5 h-5 mr-3 text-gray-400 dark:text-gray-500" />
+                <span>Create Account</span>
+            </div>
         </x-dropdown-link>
-        @endauth    
-    </div>
+    @endauth
 </x-slot>

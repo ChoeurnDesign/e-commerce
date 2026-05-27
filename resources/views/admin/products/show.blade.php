@@ -18,10 +18,15 @@
     <!-- Product Actions -->
     <div class="flex space-x-4">
         <a href="{{ route('admin.products.edit', $product) }}" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition duration-200">Edit Product</a>
-        <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
+        <form action="{{ route('admin.products.destroy', $product) }}" method="POST">
             @csrf
-            <input type="hidden" name="_method" value="">
-            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200">Delete Product</button>
+            @method('DELETE')
+            <button type="button"
+                    onclick="confirmDelete(event, this)"
+                    data-confirm="This product will be permanently deleted."
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200">
+                Delete Product
+            </button>
         </form>
     </div>
 </div>

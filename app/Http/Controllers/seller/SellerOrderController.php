@@ -4,47 +4,106 @@ namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Order;
+use App\Models\VendorOrder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SellerOrderController extends Controller
 {
-    /**
-     * Display a listing of the seller's orders.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
-        // Fetch orders for the authenticated seller
-        $sellerId = Auth::id(); // Assuming `seller_id` exists in the `orders` table
-        $orders = Order::where('seller_id', $sellerId)
-            ->with(['customer', 'items.product']) // Eager load relationships
-            ->orderBy('created_at', 'desc')
+        $seller = Auth::user()->seller;
+
+        if (!$seller) {
+            return redirect()->route('home')->with('error', 'Seller profile not found.');
+        }
+
+        $search = $request->input('search');
+
+        $orders = VendorOrder::where('seller_id', $seller->id)
+            ->with(['order.customer'])  
+            ->when($search, function($query) use ($search) {
+                $query->whereHas('order', function($q) use ($search) {
+                    $q->where('order_number', 'like', "%{$search}%")
+                      ->orWhere('customer_name', 'like', "%{$search}%")
+                      ->orWhere('customer_email', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
             ->paginate(10);
 
-        // Return the view with the orders
         return view('seller.orders.index', compact('orders'));
     }
 
-    /**
-     * Display the specified order details.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        $sellerId = Auth::id();
-        
-        // Fetch the order and ensure it belongs to the authenticated seller
-        $order = Order::where('id', $id)
-            ->where('seller_id', $sellerId)
-            ->with(['customer', 'items.product']) // Eager load relationships
+        $seller = Auth::user()->seller;
+
+        $vendorOrder = VendorOrder::where('id', $id)
+            ->where('seller_id', $seller->id)
+            ->with(['order.customer']) 
             ->firstOrFail();
 
-        // Return the view with order details
-        return view('seller.orders.show', compact('order'));
+        $items = DB::table('order_items')
+            ->leftJoin('products', 'order_items.product_id', '=', 'products.id')
+            ->where('order_items.order_id', $vendorOrder->order_id)
+            ->where('order_items.seller_id', $seller->id)
+            ->select('order_items.*', 'products.image as fallback_image')
+            ->get();
+
+        $vendorOrder->setRelation('items', $items);
+
+        return view('seller.orders.show', compact('vendorOrder'));
+    }
+
+    public function confirm(VendorOrder $vendorOrder)
+    {
+        $seller = Auth::user()->seller;
+        if (!$seller || $vendorOrder->seller_id !== $seller->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $allowedStatuses = ['pending', 'processing'];
+        
+        if (!in_array($vendorOrder->status, $allowedStatuses)) {
+            return back()->with('error', 'This order is already confirmed or completed.');
+        }
+
+        // 1. Update Vendor Order (Seller side)
+        $vendorOrder->update([
+            'status' => 'confirmed'
+        ]);
+
+        // 2. Update Parent Order (Customer side)
+        // This removes the "Processing" label the customer sees
+        $parentOrder = $vendorOrder->order;
+        if ($parentOrder && $parentOrder->status === 'processing') {
+            $parentOrder->update(['status' => 'confirmed']);
+        }
+
+        return back()->with('success', "Order #{$parentOrder->order_number} confirmed. Prepare for shipping!");
+    }
+
+    /**
+     * Final step: Order is marked as completed.
+     * This is the status your Dashboard/Earnings queries should filter for.
+     */
+    public function complete(VendorOrder $vendorOrder)
+    {
+        $seller = Auth::user()->seller;
+        if (!$seller || $vendorOrder->seller_id !== $seller->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Only a 'confirmed' (shipped) order can be marked as 'completed'
+        if ($vendorOrder->status !== 'confirmed') {
+            return back()->with('error', 'Only confirmed orders can be marked as completed.');
+        }
+
+        $vendorOrder->update([
+            'status' => 'completed'
+        ]);
+
+        return back()->with('success', "Order marked as completed. Funds are now available in your balance.");
     }
 }

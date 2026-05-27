@@ -13,6 +13,7 @@
 
     <div class="bg-white dark:bg-[#23263a] rounded-lg shadow p-6 border border-gray-100 dark:border-[#23263a]">
         @include('products.partials._form', [
+            'title' => 'Edit Product',  // ← ADD THIS LINE
             'formAction' => route('admin.products.update', $product),
             'formMethod' => 'PUT',
             'categories' => $categories,

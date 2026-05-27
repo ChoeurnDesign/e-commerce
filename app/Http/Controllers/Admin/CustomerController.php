@@ -10,29 +10,25 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $q = trim((string)$request->input('q'));
-
+        $searchTerm = $request->input('q');
+        
+        if ($searchTerm) {
+            $searchTerm = urldecode($searchTerm);
+        }
+        
         $customers = User::query()
-            ->where('role', 'user')  // keep limiting to regular users
-            ->when($q !== '', function ($query) use ($q) {
-                $query->where(function ($sub) use ($q) {
-                    // Numeric id direct match
-                    if (ctype_digit($q)) {
-                        $sub->orWhere('id', (int)$q);
-                    }
-                    // Name / email partial
-                    $sub->orWhere('name', 'like', "%{$q}%")
-                        ->orWhere('email', 'like', "%{$q}%");
-                });
+            ->where('role', 'user')
+            ->when($searchTerm, function($query, $searchTerm) {
+                return $query->search($searchTerm);
             })
-            ->latest()
+            ->orderBy('id', 'asc')  // ← Change this from latest() to orderBy id
             ->paginate(10)
-            ->appends(['q' => $q]);
+            ->withQueryString();
 
         return view('admin.customers.index', compact('customers'));
     }
 
-    public function show($id)
+    public function show(int $id)
     {
         $customer = User::findOrFail($id);
         return view('admin.customers.show', compact('customer'));
@@ -56,28 +52,59 @@ class CustomerController extends Controller
         return redirect()->route('admin.customers.index')->with('success', 'Customer added!');
     }
 
-    public function edit($id)
+    public function edit(int $id)
     {
         $customer = User::findOrFail($id);
         return view('admin.customers.edit', compact('customer'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $customer = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $customer->id,
-            'role'  => 'required|in:user,admin',
+            'role' => 'required|in:user,admin,seller',
+            'phone' => 'nullable|string|max:20',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'password' => 'nullable|string|min:8|confirmed',
+            'shipping_address' => 'nullable|string',
+            'billing_address' => 'nullable|string',
+            'preferred_currency' => 'nullable|string|size:3',
+            'preferred_language' => 'nullable|string|size:2',
+            'timezone' => 'nullable|string',
+            'status' => 'nullable|in:active,suspended,banned',
+            'suspension_reason' => 'nullable|string|required_if:status,suspended,banned',
         ]);
+
+        // Handle profile image
+        if ($request->hasFile('profile_image')) {
+            if ($customer->profile_image && file_exists(storage_path('app/public/' . $customer->profile_image))) {
+                unlink(storage_path('app/public/' . $customer->profile_image));
+            }
+            $validated['profile_image'] = $request->file('profile_image')->store('profile_images', 'public');
+        }
+
+        // Handle password
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($request->password);
+        } else {
+            unset($validated['password']);
+        }
+
+        // Handle same as shipping
+        if ($request->has('same_as_shipping')) {
+            $validated['billing_address'] = $request->shipping_address;
+        }
 
         $customer->update($validated);
 
-        return redirect()->route('admin.customers.index')->with('success', 'Customer updated!');
+        return redirect()->route('admin.customers.index')
+            ->with('success', 'Customer updated successfully!');
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $customer = User::findOrFail($id);
         $customer->delete();

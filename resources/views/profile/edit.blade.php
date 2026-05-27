@@ -8,14 +8,14 @@
     {{-- Cropper.js CSS --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css"/>
 
-    <div class="py-12 bg-gray-300 dark:bg-[#101624] min-h-screen flex justify-center items-start">
-        <div class="w-full max-w-2xl border-2 border-gray-300 bg-white dark:bg-[#181f31] rounded-2xl shadow-xl p-8 space-y-10">
+    <div class="py-8 sm:py-12 bg-gray-50 dark:bg-gray-950 min-h-screen flex justify-center items-start px-3 sm:px-6">
+        <div class="w-full max-w-2xl border border-gray-200 dark:border-gray-700/60 bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-5 sm:p-8 space-y-8">
             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" id="profile-update-form" class="space-y-10">
                 @csrf
                 @method('PATCH') {{-- <-- Method spoofing so Laravel treats this as PATCH (matches your route) --}}
                 <div class="flex items-center space-x-6">
                     <div class="relative group block">
-                        <div id="profile-image-preview" class="h-24 w-24 rounded-full overflow-hidden border-gray-300 dark:border-gray-400 border-2 shadow-lg object-cover transition-shadow group-hover:shadow-xl bg-gray-300 dark:bg-[#181f31] flex items-center justify-center">
+                        <div id="profile-image-preview" class="h-24 w-24 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-600 shadow-md object-cover transition-shadow group-hover:shadow-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                             @if($user->profile_image && file_exists(public_path('storage/' . $user->profile_image)))
                                 <img src="{{ asset('storage/' . $user->profile_image) }}"
                                      alt="Avatar"
@@ -73,7 +73,7 @@
                                         id="name"
                                         name="name"
                                         type="text"
-                                        class="mt-1 block w-full bg-gray-300 dark:bg-[#181f31] text-gray-900 dark:text-gray-100"
+                                        class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-600"
                                         :value="old('name', $user->name)"
                                         required autofocus autocomplete="name"
                                     />
@@ -85,7 +85,7 @@
                                         id="email"
                                         name="email"
                                         type="email"
-                                        class="mt-1 block w-full bg-gray-300 dark:bg-[#181f31] text-gray-900 dark:text-gray-100"
+                                        class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-600"
                                         :value="old('email', $user->email)"
                                         required autocomplete="username"
                                     />
@@ -138,7 +138,7 @@
 
     <!-- Crop Modal -->
     <div id="cropper-modal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70 hidden">
-        <div class="bg-white dark:bg-[#23263a] p-6 rounded-xl shadow-xl w-full max-w-md">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md mx-3">
             <div class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Crop Your Image</div>
             <div>
                 <img id="cropper-image" src="" class="max-w-full max-h-96 mx-auto rounded-lg">

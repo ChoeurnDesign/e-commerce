@@ -31,9 +31,7 @@ class ChatParticipant extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Mark all unread messages as read
-     */
+    
     public function markAsRead()
     {
         $this->update(['last_read_at' => now()]);
@@ -55,9 +53,7 @@ class ChatParticipant extends Model
         return $this;
     }
 
-    /**
-     * Get unread message count for this participant - FIXED THE LOGIC
-     */
+    
     public function getUnreadCountAttribute()
     {
         // Get the other participant
@@ -83,9 +79,7 @@ class ChatParticipant extends Model
             ->count();
     }
 
-    /**
-     * Get the last message this participant has read
-     */
+    
     public function getLastReadMessageAttribute()
     {
         if (!$this->last_read_at) {
@@ -98,9 +92,7 @@ class ChatParticipant extends Model
             ->first();
     }
 
-    /**
-     * Check if this participant has read a specific message
-     */
+    
     public function hasReadMessage($messageId)
     {
         $message = ChatMessage::find($messageId);
@@ -116,9 +108,7 @@ class ChatParticipant extends Model
         return $message->created_at <= $this->last_read_at;
     }
 
-    /**
-     * Get the other participant in the chat (for 1-on-1 chats)
-     */
+    
     public function getOtherParticipantAttribute()
     {
         return $this->chat->participants()
@@ -126,9 +116,7 @@ class ChatParticipant extends Model
             ->first();
     }
 
-    /**
-     * Get the other user in the chat (for 1-on-1 chats)
-     */
+    
     public function getOtherUserAttribute()
     {
         $otherParticipant = $this->otherParticipant;

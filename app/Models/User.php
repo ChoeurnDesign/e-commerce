@@ -10,29 +10,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder; // Ensure this is imported
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'profile_image',
-        'role',
-        'preferred_currency',
-        'preferred_language',
-        'slug',
-        'last_active_at',
-        'timezone',
-        'timezone_offset',
+        'name', 'email', 'password', 'profile_image', 'role', 
+        'preferred_currency', 'preferred_language', 'slug', 
+        'last_active_at', 'timezone', 'timezone_offset',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -40,6 +30,48 @@ class User extends Authenticatable
         'last_active_at' => 'datetime',
         'timezone_offset' => 'integer',
     ];
+
+    public function scopeSearch(Builder $query, ?string $term)
+{
+    $term = trim((string)$term);
+
+    if ($term === '') {
+        return $query;
+    }
+
+    $term = urldecode($term);
+    
+    return $query->where(function($q) use ($term) {
+        // Check if it's an ID search (with or without #)
+        $isIdSearch = false;
+        $searchId = null;
+        
+        if (str_starts_with($term, '#')) {
+            $isIdSearch = true;
+            $searchId = (int) substr($term, 1);
+        } elseif (is_numeric($term)) {
+            $isIdSearch = true;
+            $searchId = (int) $term;
+        }
+        
+        if ($isIdSearch && $searchId) {
+            $q->where('id', $searchId);
+        }
+        
+        // Always search by name and email for text matches
+        $q->orWhere('name', 'like', "%{$term}%")
+          ->orWhere('email', 'like', "%{$term}%");
+    });
+}
+
+    // --- All your other existing methods ---
+
+    public function wallet()
+    {
+        return $this->hasOneThrough(
+            Wallet::class, Seller::class, 'user_id', 'seller_id', 'id', 'id'
+        );
+    }
 
     public function getTimezone()
     {
@@ -49,10 +81,7 @@ class User extends Authenticatable
     public function formatInTimezone($datetime, $format = 'H:i')
     {
         if (!$datetime) return '';
-        
-        return Carbon::parse($datetime)
-            ->setTimezone($this->getTimezone())
-            ->format($format);
+        return Carbon::parse($datetime)->setTimezone($this->getTimezone())->format($format);
     }
 
     public function getCurrentTime($format = 'H:i')
@@ -63,7 +92,6 @@ class User extends Authenticatable
     public function toUserTimezone($datetime)
     {
         if (!$datetime) return null;
-        
         return Carbon::parse($datetime)->setTimezone($this->getTimezone());
     }
 
@@ -294,7 +322,6 @@ class User extends Authenticatable
         $diff = $lastActive->diffInMinutes($now);
         
         if ($diff < 60) {
-            // Round to nearest whole minute
             return "Active " . round($diff) . "m ago";
         }
         
@@ -346,19 +373,12 @@ class User extends Authenticatable
         return $messageTime->format('M j, Y g:i a');
     }
 
-
-    /**
-     * Sellers followed by this user.
-     */
     public function followedSellers()
     {
         return $this->belongsToMany(\App\Models\Seller::class, 'seller_followers', 'user_id', 'seller_id')
                     ->withTimestamps();
     }
 
-    /**
-     * Check if user is following given seller.
-     */
     public function isFollowingSeller(\App\Models\Seller $seller): bool
     {
         return $this->followedSellers()->where('seller_id', $seller->id)->exists();

@@ -39,7 +39,6 @@
                                                     <div class="flex items-center mb-1">
                                                         <span class="text-xs bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-full mr-2">{{ $item->quantity }}x</span>
                                                         <span class="truncate">{{ $item->product_name }}</span>
-                                                        {{-- Price per item --}}
                                                         <span class="ml-2 text-xs text-gray-600 dark:text-gray-400">
                                                             {{ \App\Helpers\CurrencyHelper::format($item->price) }}
                                                         </span>
@@ -71,11 +70,23 @@
                                                 {{ ucfirst($order->status) }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex flex-col gap-2">
                                             <a href="{{ route('orders.show', $order->order_number) }}"
                                                class="text-indigo-600 hover:text-indigo-900 hover:underline transition-colors duration-200 dark:text-indigo-400 dark:hover:text-indigo-200">
                                                 View Details
                                             </a>
+
+                                            {{-- New Confirm Receipt Action --}}
+                                            @if($order->status === 'shipped')
+                                                <form action="{{ route('orders.confirm', $order->id) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" 
+                                                        onclick="return confirm('Confirm that you have received this order?')"
+                                                        class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs font-bold uppercase tracking-tight">
+                                                        Confirm Receipt
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

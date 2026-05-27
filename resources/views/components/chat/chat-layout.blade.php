@@ -4,7 +4,8 @@
     'isSellerDashboard' => false, 
 ])
 
-<div class="max-w-full h-[calc(92vh-64px)] border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+<div class="max-w-full border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800"
+     style="height: calc(100svh - 4rem)">
     <div class="flex rounded-xl overflow-hidden bg-white dark:bg-gray-800 h-full">
         
         <div class="w-full md:w-80 bg-white dark:bg-gray-800 flex flex-col border-r border-gray-300 dark:border-gray-700 {{ isset($currentChat) && $currentChat ? 'hidden md:flex' : 'flex' }} h-full">

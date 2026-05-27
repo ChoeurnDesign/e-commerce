@@ -67,12 +67,17 @@
                             {{ $product->category->name ?? 'No Category' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap justify-center text-sm text-gray-800 dark:text-gray-100">
-                            @if($product->creator)
+                            @if($product->seller)
                                 <span class="flex items-center">
-                                    <span class="inline-block px-2 py-1 rounded-full shadow text-xs font-semibold
-                                        {{ $product->creator->role == 'admin' ? 'bg-blue-900 text-blue-200' :
-                                           ($product->creator->role == 'seller' ? 'bg-yellow-500 text-white' : 'bg-gray-400 text-white') }}">
-                                        {{ ucfirst($product->creator->role) }}
+                                    <span class="inline-block px-2 py-1 rounded-full shadow text-xs font-semibold bg-yellow-500 text-white">
+                                        Seller
+                                    </span>
+                                    <span class="ml-2">{{ $product->seller->store_name ?? $product->seller->user->name }}</span>
+                                </span>
+                            @elseif($product->creator)
+                                <span class="flex items-center">
+                                    <span class="inline-block px-2 py-1 rounded-full shadow text-xs font-semibold bg-blue-900 text-blue-200">
+                                        Admin
                                     </span>
                                     <span class="ml-2">{{ $product->creator->name }}</span>
                                 </span>

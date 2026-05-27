@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="space-y-6 min-h-screen">
-    <!-- Header -->
     <div class="flex justify-between items-center">
         <div class="flex items-center">
             <span class="mr-2">
@@ -21,12 +20,11 @@
         </a>
     </div>
 
-    <!-- Categories Table -->
     <div class="bg-white dark:bg-[#23263a] shadow overflow-hidden border border-gray-300 dark:border-[#23263a]">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-[#23263a]">
                 <thead>
-                    <tr class="bg-gray-300 dark:bg-[#232c47]">
+                    <tr class="bg-gray-100 dark:bg-[#232c47] border-b border-gray-200 dark:border-[#23263a]">
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Image</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Category Name</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Description</th>
@@ -37,7 +35,8 @@
                 </thead>
                 <tbody class="bg-white dark:bg-[#23263a] divide-y divide-gray-200 dark:divide-[#23263a]">
                     @forelse($categories as $category)
-                        <tr class="hover:bg-gray-300 dark:hover:bg-[#262c47]">
+                        {{-- Fixed: Changed harsh hover:bg-gray-300 to subtle hover:bg-gray-50 for light mode --}}
+                        <tr class="hover:bg-gray-50 dark:hover:bg-[#262c47] transition-colors duration-150">
                             <td class="px-6 py-4">
                                 @php
                                     // Use PlaceholderAvatar for SVG placeholders
@@ -45,16 +44,16 @@
                                     $alt = $category->image_alt ?? $category->name;
                                 @endphp
 
-                                <!-- Ensure consistent circular appearance -->
-                                <div class="h-20 w-20 rounded-full overflow-hidden border border-indigo-200 dark:border-indigo-700">
+                                <div class="h-20 w-20 rounded-full overflow-hidden border border-indigo-200 dark:border-indigo-700 bg-gray-100 dark:bg-gray-800">
                                     <img src="{{ $imgSrc }}"
                                         alt="{{ $alt }}"
                                         class="h-full w-full object-cover"
                                         loading="lazy"
-                                        onerror="this.onerror=null;this.src='{{ asset('/img/default-category.png') }}';">
+                                        {{-- Fixed: Changed static asset call to your dynamic fallback method to remove extension warnings --}}
+                                        onerror="this.onerror=null;this.src='{{ \App\Helpers\PlaceholderAvatar::svgDataUri($category->name) }}';">
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-gray-900 dark:text-gray-100">
+                            <td class="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
                                 {{ $category->name }}
                             </td>
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-300">
@@ -64,7 +63,7 @@
                                 {{ $category->parent?->name ?? '-' }}
                             </td>
                             <td class="px-6 py-4">
-                                <span class="inline-block bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded-full text-xs">{{ $category->products_count ?? 0 }}</span>
+                                <span class="inline-block bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded-full text-xs font-semibold">{{ $category->products_count ?? 0 }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center justify-center space-x-3">
@@ -84,7 +83,6 @@
                 </tbody>
             </table>
         </div>
-        <!-- Pagination -->
         <div class="px-6 py-4 border-t border-gray-200 dark:border-[#23263a] bg-white dark:bg-[#23263a]">
             {{ $categories->links() }}
         </div>

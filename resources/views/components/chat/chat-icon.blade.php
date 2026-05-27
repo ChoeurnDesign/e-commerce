@@ -10,7 +10,7 @@
 
 <a href="{{ $route ?? '#' }}" class="relative group" aria-label="{{ $label ?? 'Chat' }}">
     <!-- Chat SVG -->
-    <x-icon-nav name="chat" class="w-6 h-6 text-gray-400 group-hover:text-indigo-500 transition"/>
+    <x-icon-dashboard name="chat" class="w-6 h-6 text-gray-400 group-hover:text-indigo-500 transition"/>
 
     <!-- Server-rendered badge: hidden when 0 -->
     <span class="chat-unread-badge absolute -top-3 -right-2 bg-red-500 text-xs text-white rounded-full w-5 h-5 inline-flex items-center justify-center leading-none {{ $initial === 0 ? 'hidden' : '' }}"

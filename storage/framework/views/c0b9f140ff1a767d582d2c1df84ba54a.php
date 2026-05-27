@@ -1,0 +1,12 @@
+
+<?php if(setting('store_logo')): ?>
+    <div class="flex justify-center mb-4">
+        <div class="w-20 h-20 rounded-full overflow-hidden border border-gray-200 dark:border-gray-800 bg-white">
+            <img
+                src="<?php echo e(asset(setting('store_logo'))); ?>"
+                alt="Logo"
+                class="w-full h-full object-cover"
+            />
+        </div>
+    </div>
+<?php endif; ?><?php /**PATH D:\Year_IV\Semester II\pp\ShopExpress\resources\views/components/application-logo.blade.php ENDPATH**/ ?>

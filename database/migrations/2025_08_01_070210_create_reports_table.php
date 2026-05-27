@@ -12,10 +12,15 @@ class CreateReportsTable extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('status')->default('open');
             $table->json('images')->nullable();
             $table->boolean('is_read')->default(false);
             $table->timestamps();
+
+            // Foreign key constraint
+            // Uncomment if you want to enforce referential integrity:
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

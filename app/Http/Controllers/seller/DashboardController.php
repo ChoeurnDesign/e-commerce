@@ -60,6 +60,8 @@ class DashboardController extends Controller
             'productsCount'     => $data['products_count'],
             'ordersCount'       => $data['orders_count'],
             'averageRating'     => $data['average_rating'],
+            'totalEarnings'     => $data['total_earnings'] ?? 0, // From Service
+            'pendingPayout'     => $data['pending_payout'] ?? 0,
             'unreadSellerChats' => (int) $unreadSellerChats,
         ]);
     }

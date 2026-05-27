@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["resources/js/*"]
     },
     "target": "ES2020",
     "module": "ES2020",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": true,
@@ -17,10 +18,5 @@
     "vite.config.js",
     "tailwind.config.js"
   ],
-  "exclude": [
-    "node_modules",
-    "vendor",
-    "public",
-    "public/build"
-  ]
+  "exclude": ["node_modules", "vendor", "public", "public/build"]
 }

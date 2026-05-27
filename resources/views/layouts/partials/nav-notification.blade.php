@@ -1,36 +1,101 @@
-<div x-data="{ open: false }" class="relative group">
+<div x-data="{ open: false }" class="relative flex items-center justify-center">
     <button type="button" @click="open = !open"
-        class="relative p-2 text-gray-400 transition-colors duration-150 focus:outline-none focus-visible:ring focus-visible:ring-indigo-300">
-        <x-icon-nav name="notification" class="inline w-6 h-6 text-gray-400 group-hover:text-indigo-500 transition-colors duration-150" />
+        class="relative p-2 text-gray-400 transition-colors duration-150 focus:outline-none focus-visible:ring focus-visible:ring-indigo-300 group">
+        <x-icon-dashboard name="notification" class="inline w-6 h-6 dark:text-gray-400 text-gray-700 group-hover:text-indigo-500 transition-colors duration-150" />
+
         @php
-        $unreadCount = auth()->check() ? auth()->user()->unreadNotifications->count() : 0;
+            $unreadCount = auth()->check() ? auth()->user()->unreadNotifications->count() : 0;
         @endphp
+
         @if($unreadCount > 0)
-        <span
-            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center leading-none">
-            {{ $unreadCount }}
+        <span class="absolute top-1.5 right-1.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center leading-none ring-2 ring-white dark:ring-gray-900">
+            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
         </span>
         @endif
     </button>
-    <!-- Dropdown content -->
-    <div x-show="open" x-cloak @click.away="open = false"
-        class="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white dark:bg-[#181b23] ring-1 ring-black ring-opacity-5 z-50"
-        x-cloak>
-        <div class="py-2 px-4 max-h-96 overflow-y-auto">
-            @if(auth()->check())
-            @forelse(auth()->user()->unreadNotifications->take(10) as $notification)
-            <form action="{{ route('notifications.markAsRead', $notification->id) }}" method="POST" class="mb-2">
+
+    <div x-show="open"
+        x-cloak
+        @click.away="open = false"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 translate-y-1"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        class="absolute top-full right-0 mt-2 w-80 rounded-xl shadow-xl bg-white dark:bg-gray-900 ring-1 ring-black/10 dark:ring-white/10 z-[100]"
+    >
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Notifications</span>
+            @if(auth()->check() && $unreadCount > 0)
+            <form action="{{ route('notifications.markAllAsRead') }}" method="POST">
                 @csrf
-                <button type="submit" class="w-full text-left bg-transparent px-2 py-1 rounded cursor-pointer">
-                    {{ $notification->data['message'] }}
+                <button type="submit" class="text-xs text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition-colors">
+                    Mark all read
                 </button>
             </form>
-            @empty
-            <div class="text-gray-500 py-4 text-center">No new notifications</div>
-            @endforelse
-            @else
-            <div class="text-gray-500 py-4 text-center">Please log in to see your notifications.</div>
             @endif
         </div>
+
+        {{-- Notification list --}}
+        <div class="max-h-80 overflow-y-auto divide-y divide-gray-50 dark:divide-gray-800">
+            @if(auth()->check())
+                @forelse(auth()->user()->unreadNotifications->take(10) as $notification)
+                @php
+                    $nData    = $notification->data;
+                    $isChat   = ($nData['type'] ?? '') === 'chat_message';
+                    $label    = $nData['message'] ?? 'New notification';
+                    $preview  = $nData['preview'] ?? null;
+                @endphp
+                <form action="{{ route('notifications.markAsRead', $notification->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors flex items-start gap-3 group">
+                        {{-- Icon badge --}}
+                        <div class="flex-shrink-0 mt-0.5">
+                            @if($isChat)
+                            <div class="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
+                                <x-icon-dashboard name="chat" class="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                            </div>
+                            @else
+                            <div class="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
+                                <x-icon-dashboard name="notification" class="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                            </div>
+                            @endif
+                        </div>
+                        {{-- Text --}}
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{{ $label }}</p>
+                            @if($preview)
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5 italic">"{{ $preview }}"</p>
+                            @endif
+                            <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
+                        </div>
+                        {{-- Unread dot --}}
+                        <div class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-2"></div>
+                    </button>
+                </form>
+                @empty
+                <div class="flex flex-col items-center py-10">
+                    <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
+                        <x-icon-dashboard name="notification" class="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">All caught up!</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">No new notifications</p>
+                </div>
+                @endforelse
+            @else
+            <div class="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                Please log in to see your notifications.
+            </div>
+            @endif
+        </div>
+
+        {{-- Footer --}}
+        @if(auth()->check())
+        <div class="px-4 py-2.5 border-t border-gray-100 dark:border-gray-800">
+            <a href="{{ route('notifications.index') }}"
+               class="text-xs text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 font-medium transition-colors">
+                View all notifications →
+            </a>
+        </div>
+        @endif
     </div>
 </div>

@@ -15,10 +15,20 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone')->nullable();
             $table->enum('role', ['user', 'admin', 'seller'])->default('user');
+            $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->string('profile_image')->nullable();
+            $table->string('preferred_currency', 3)->default('USD');
+            $table->string('preferred_language', 2)->default('en');
+            $table->string('timezone')->nullable();
+            $table->integer('timezone_offset')->nullable();
+            $table->timestamp('last_active_at')->nullable();
+            $table->text('shipping_address')->nullable();
+            $table->text('billing_address')->nullable();
             $table->timestamps();
         });
 
@@ -43,8 +53,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

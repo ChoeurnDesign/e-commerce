@@ -31,6 +31,7 @@ return new class extends Migration
             $table->text('body');
             $table->string('type')->default('text'); // text, image, etc.
             $table->boolean('is_read')->default(false);
+            $table->softDeletes(); // Adds deleted_at column for soft deletes
             $table->timestamps();
         });
     }

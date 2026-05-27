@@ -90,7 +90,7 @@
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <div class="mb-4">
                         <label for="rating" class="block font-semibold mb-2">Rating</label>
-                        <select name="rating" id="rating" required class="w-full rounded border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100">
+                        <select name="rating" id="rating" required class="w-50 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 appearance-none">
                             <option value="">Select rating</option>
                             @for($i=5; $i>=1; $i--)
                                 <option value="{{ $i }}" {{ old('rating') == $i ? 'selected' : '' }}>{{ $i }}</option>

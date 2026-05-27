@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use App\Traits\HasImageHelper;
 use App\Traits\HasStockHelper;
 use App\Traits\HasPriceHelper;
@@ -14,27 +15,11 @@ class Product extends Model
 {
     use HasFactory, HasImageHelper, HasStockHelper, HasPriceHelper, HasProductScopes;
 
-    protected $fillable = [
-        'name',
-        'slug',
-        'user_id',
-        'description',
-        'short_description',
-        'price',
-        'compare_price',
-        'sale_price',
-        'on_sale',
-        'sku',
-        'stock_quantity',
-        'image',
-        'specifications',
-        'gallery',
-        'is_featured',
-        'is_active',
-        'category_id',
-        'meta_title',
-        'meta_description',
-        'page_views'
+    protected $fillable = [ 
+        'name', 'slug', 'user_id', 'seller_id', 'description', 'short_description', 
+        'price', 'compare_price', 'sale_price', 'on_sale', 'sku', 'stock_quantity', 
+        'image', 'images', 'specifications', 'gallery', 'is_featured', 'is_active', 
+        'category_id', 'meta_title', 'meta_description', 'page_views'
     ];
 
     protected $casts = [
@@ -49,75 +34,40 @@ class Product extends Model
     ];
 
     // Relationships
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
-
-    public function approvedReviews()
-    {
-        return $this->hasMany(Review::class)->where('is_approved', true);
-    }
-
-    public function wishlistItems()
-    {
-        return $this->hasMany(Wishlist::class);
-    }
-
-    public function wishlistedByUsers()
-    {
-        return $this->belongsToMany(User::class, 'wishlists');
-    }
-
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /**
-     * Seller relationship.
-     * Assumes the seller's user_id is the same as the product's user_id.
-     * This is correct and will always fetch the right seller even if store_names repeat.
-     */
-    public function seller()
-    {
-        return $this->belongsTo(Seller::class, 'user_id', 'user_id');
-    }
+    public function category() { return $this->belongsTo(Category::class); }
+    public function reviews() { return $this->hasMany(Review::class); }
+    public function approvedReviews() { return $this->hasMany(Review::class)->where('is_approved', true); }
+    public function wishlistItems() { return $this->hasMany(Wishlist::class); }
+    public function wishlistedByUsers() { return $this->belongsToMany(User::class, 'wishlists'); }
+    public function orderItems() { return $this->hasMany(OrderItem::class); }
+    public function creator() { return $this->belongsTo(User::class, 'user_id'); }
+    public function seller() { return $this->belongsTo(Seller::class, 'seller_id'); }
 
     // Accessors
     public function getAverageRatingAttribute()
     {
-        // Use eager loaded value if present, otherwise calculate
         return $this->attributes['average_rating'] ?? $this->approvedReviews()->avg('rating');
     }
 
     public function getImageUrlAttribute()
     {
-        if ($this->image && file_exists(public_path($this->image))) {
-            return asset($this->image);
+        if ($this->image) {
+            if (filter_var($this->image, FILTER_VALIDATE_URL)) return $this->image;
+            if (file_exists(public_path($this->image))) return asset($this->image);
+            if (Storage::disk('public')->exists($this->image)) return Storage::disk('public')->url($this->image);
         }
-        return 'https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=' . urlencode($this->name ?? 'No Image');
+        return asset('images/product-placeholder.png');
     }
 
     public function getGalleryUrlsAttribute()
     {
         if (is_array($this->gallery) && count($this->gallery)) {
-            return array_map(
-                fn($img) => file_exists(public_path($img))
-                    ? asset($img)
-                    : 'https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=No+Image',
-                $this->gallery
-            );
+            return array_map(function($img) {
+                if (filter_var($img, FILTER_VALIDATE_URL)) return $img;
+                if (file_exists(public_path($img))) return asset($img);
+                if (Storage::disk('public')->exists($img)) return Storage::disk('public')->url($img);
+                return 'https://placehold.co/400x400?text=No+Image';
+            }, $this->gallery);
         }
         return [];
     }
@@ -132,11 +82,7 @@ class Product extends Model
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = $value;
-        if (
-            !isset($this->attributes['slug'])
-            || empty($this->attributes['slug'])
-            || $this->attributes['slug'] === Str::slug($this->getOriginal('name'))
-        ) {
+        if (!isset($this->attributes['slug']) || empty($this->attributes['slug']) || $this->attributes['slug'] === Str::slug($this->getOriginal('name'))) {
             $this->attributes['slug'] = self::generateUniqueSlug($value, $this->id ?? null);
         }
     }
@@ -147,9 +93,7 @@ class Product extends Model
         $slug = Str::slug($base);
         $original = $slug;
         $count = 2;
-        while (self::where('slug', $slug)
-            ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
-            ->exists()) {
+        while (self::where('slug', $slug)->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))->exists()) {
             $slug = "{$original}-{$count}";
             $count++;
         }
@@ -161,13 +105,10 @@ class Product extends Model
         $sku = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $base));
         $original = $sku;
         do {
-            $exists = self::where('sku', $sku)
-                ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
-                ->exists();
-            if ($exists) {
-                $sku = "{$original}-" . strtoupper(Str::random(4));
-            }
+            $exists = self::where('sku', $sku)->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))->exists();
+            if ($exists) $sku = "{$original}-" . strtoupper(Str::random(4));
         } while ($exists);
         return $sku;
     }
+    
 }

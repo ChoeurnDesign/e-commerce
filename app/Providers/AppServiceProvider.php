@@ -14,6 +14,7 @@ use App\View\Composers\CartComposer;
 use App\Services\CurrencyService;
 use App\Models\Report;
 use App\Models\Setting;
+use App\Models\Seller; // 🚀 Added this
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -89,7 +90,26 @@ class AppServiceProvider extends ServiceProvider
                 ->with('unreadCount', $unreadCount);
         });
 
-        // Provide unreadSellerChats to the seller header so the chat icon is correct on every seller page
+        // 🚀 NEW: Provide pendingSellersCount to the admin sidebar
+        View::composer('admin.partials.sidebar', function ($view) {
+            try {
+                // Count Pending Sellers
+                $pendingSellersCount = \App\Models\Seller::where('status', 'pending')->count();
+                
+                // Count Unread Reports (Using the same model from your noti composer)
+                $unreadReportsCount = \App\Models\UserReport::where('is_read', false)->count();
+
+                $view->with([
+                    'pendingSellersCount' => $pendingSellersCount,
+                    'unreadReportsCount' => $unreadReportsCount
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning('Sidebar counts failed: ' . $e->getMessage());
+                $view->with(['pendingSellersCount' => 0, 'unreadReportsCount' => 0]);
+            }
+        });
+
+        // Provide unreadSellerChats to the seller header
         View::composer('seller.partials.header', function ($view) {
             $user = Auth::user();
             $count = 0;
@@ -126,7 +146,7 @@ class AppServiceProvider extends ServiceProvider
             App::setLocale(Session::get('lang', 'en'));
         }
 
-        // Restore settings composer (your original settings code)
+        // Restore settings composer
         View::composer('*', function ($view) {
             $settings = Setting::pluck('value', 'key')->toArray();
             $view->with('settings', $settings);

@@ -85,18 +85,21 @@ class CategoryController extends Controller
             ->with('success', 'Category updated successfully!');
     }
 
-    public function show(Category $category)
+   public function show(Category $category)
     {
         $category->load(['products', 'children']);
-        $allCategories = Category::allCategoriesForDropdown();
-        return view('admin.categories.show', compact('category', 'allCategories', 'categories'));
+        
+        // Define the variable if you MUST use it in the view
+        $categories = Category::all(); 
+        
+        return view('admin.categories.show', compact('category', 'categories'));
     }
 
     public function edit(Category $category)
     {
         $parentCategories = Category::whereNull('parent_id')
-            ->where('id', '!=', $category->id)
-            ->get();
+        ->where('id', '!=', $category->id)
+        ->get();
         return view('admin.categories.edit', compact('category', 'parentCategories'));
     }
 

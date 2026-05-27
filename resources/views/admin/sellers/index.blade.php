@@ -10,12 +10,12 @@
     @include('admin.sellers.partials.filters')
     @includeWhen(isset($stats), 'admin.sellers.partials.statistics', ['stats' => $stats])
 
-    <!-- Sellers Table -->
     <div class="bg-white dark:bg-[#23263a] shadow overflow-hidden border border-gray-300 dark:border-[#23263a]">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-[#23263a]">
                 <thead>
-                    <tr class="bg-gray-300 dark:bg-[#232c47]">
+                    {{-- Fixed: Changed harsh bg-gray-300 to clean bg-gray-100 for light mode --}}
+                    <tr class="bg-gray-100 dark:bg-[#232c47] border-b border-gray-200 dark:border-[#23263a]">
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">#</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Seller</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Email</th>
@@ -27,9 +27,10 @@
                 </thead>
                 <tbody class="bg-white dark:bg-[#23263a] divide-y divide-gray-200 dark:divide-[#23263a]">
                     @forelse($sellers as $seller)
-                        <tr class="hover:bg-gray-200 dark:hover:bg-[#262c47]">
+                        {{-- Fixed: Changed harsh hover:bg-gray-200 to smooth hover:bg-gray-50 for light mode --}}
+                        <tr class="hover:bg-gray-50 dark:hover:bg-[#262c47] transition-colors duration-150">
                             <td class="px-6 py-4 text-gray-900 dark:text-gray-100 font-semibold">#{{ $seller->id }}</td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-200">{{ $seller->user?->name ?? '-' }}</td>
+                            <td class="px-6 py-4 text-gray-700 dark:text-gray-200 font-medium">{{ $seller->user?->name ?? '-' }}</td>
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-200">{{ $seller->user?->email ?? '-' }}</td>
                             <td class="px-6 py-4 text-gray-700 dark:text-gray-200">{{ $seller->store_name ?? '-' }}</td>
                             <td class="px-6 py-4">
@@ -42,7 +43,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="py-12 text-center text-gray-500 dark:text-gray-300 text-lg">
+                            <td colspan="7" class="py-12 text-center text-gray-500 dark:text-gray-300 text-lg">
                                 No sellers found.
                             </td>
                         </tr>

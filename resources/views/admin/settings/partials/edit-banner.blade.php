@@ -1,32 +1,45 @@
 @extends('layouts.admin')
 
+@section('title', 'Edit Banner')
+
 @section('content')
-<div class="container min-h-screen font-sans">
-    <div class="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-full mx-auto">
-        <h3 class="text-2xl font-bold text-white mb-4">Edit Banner</h3>
+<div class="p-4 md:p-6 w-full">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Banner</h2>
+        <a href="{{ route('admin.settings.index') }}" class="text-sm bg-white dark:bg-[#23263a] border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-[#2c324a] transition">
+            &larr; Back to Settings
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-[#23263a] rounded-xl shadow-sm border border-gray-200 dark:border-[#23263a] p-6">
         <form action="{{ route('admin.settings.banner.update', $banner) }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <input type="hidden" name="_method" value="">
-            <div class="mb-4">
-                <x-input-label for="current_image" value="Current Image" />
-                <img id="current_image" src="{{ asset('storage/' . $banner->image_path) }}" class="h-24  shadow mb-2" />
+            @method('PUT')
+            
+            <div class="mb-6">
+                <x-input-label for="current_image" value="Current Image" class="mb-2" />
+                <img id="current_image" src="{{ asset('storage/' . $banner->image_path) }}" class="h-32 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700" alt="Current banner image" />
             </div>
-            <div class="mb-4">
-                <x-input-label for="banner_image" value="New Image (leave blank to keep current)" />
-                {{-- If you have a file input component, use it here. Otherwise, use your text-input with type="file" --}}
-                <x-text-input
-                    id="banner_image"
-                    name="image"
-                    type="file"
-                    class="bg-gray-700 border-none text-gray-100 px-2 py-1  w-full"
-                />
+
+            <div class="mb-6">
+                <x-input-label for="banner_image" value="Replace Image" />
+                <input type="file" id="banner_image" name="image" class="mt-2 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/50 file:text-indigo-700 dark:file:text-indigo-300" />
+                <p class="text-xs text-gray-500 mt-2">Leave blank to keep existing image.</p>
             </div>
-            <div class="flex gap-2">
+
+            <div class="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-[#181f31]">
                 <x-admin.btn-submit>Save Changes</x-admin.btn-submit>
-                <a href="{{ route('admin.settings.index') }}" class="bg-gray-700 text-white -full px-5 py-2 font-bold">Cancel</a>
+                <a href="{{ route('admin.settings.index') }}" class="px-4 py-2 bg-gray-100 dark:bg-[#1f2336] text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-[#2c324a] transition">Cancel</a>
             </div>
         </form>
+
+        <div class="mt-8 pt-6 border-t border-gray-100 dark:border-[#181f31]">
+            <form action="{{ route('admin.settings.banner.destroy', $banner) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-700 text-sm font-semibold">Delete Banner</button>
+            </form>
+        </div>
     </div>
 </div>
 @endsection
-

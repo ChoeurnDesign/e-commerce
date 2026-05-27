@@ -5,7 +5,7 @@
             <span class="mr-2">
                 <x-icon-dashboard name="products" class="w-7 h-7 text-indigo-600 dark:text-yellow-400" />
             </span>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{$title}}</h1>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $title ?? ($product->name ?? 'Product Details') }}</h1>
         </div>
     </div>
 
@@ -261,8 +261,8 @@
 @if($internal)
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const img    = document.getElementById('prodMainImg');
-        const wrap   = document.getElementById('prodImgWrap');
+        const img   = document.getElementById('prodMainImg');
+        const wrap  = document.getElementById('prodImgWrap');
         const toggle = document.getElementById('prodFitToggle');
 
         if (!img) return; // guard

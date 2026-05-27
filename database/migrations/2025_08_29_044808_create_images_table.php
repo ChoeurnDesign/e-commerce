@@ -11,6 +11,7 @@ class CreateImagesTable extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->id();
             $table->string('path'); // storage path
+            $table->string('original_filename')->nullable(); // original file name
             $table->unsignedBigInteger('user_id')->index(); // uploader (admin/seller)
             $table->unsignedBigInteger('product_id')->nullable()->index(); // related product if any
             $table->string('alt')->nullable();

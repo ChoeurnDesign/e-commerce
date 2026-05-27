@@ -2,28 +2,31 @@
 
 @php
     use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Storage;
+
     $raw = $image ?? ($product->image ?? null);
     $name = $product->name ?? 'Product';
-    $placeholder = 'https://via.placeholder.com/800x800?text=' . urlencode(Str::limit($name, 12, ''));
+    
+    // Define your default placeholder image
+    $placeholder = asset('images/default-product.png');
     $src = $placeholder;
 
-    if (is_string($raw) && trim($raw) !== '') {
-        $p = trim($raw, "\"' \t\n\r\0\x0B");
-        $p = str_replace('\\', '/', $p);
-        $p = ltrim($p, './');
-        if (preg_match('#^https?://#i', $p)) {
-            $src = $p; // remote image
-        } elseif (str_starts_with($p, 'storage/')) {
-            $relative = Str::after($p, 'storage/');
-            // ✅ Accept either the public disk (storage/app/public) OR the public symlink (public/storage)
-            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($relative) || file_exists(public_path($p))) {
-                $src = asset($p);
-            }
-        } else {
-            if (file_exists(public_path($p))) {
-                $src = asset($p);
-            } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($p)) {
-                $src = asset('storage/'.$p);
+    if ($raw && is_string($raw) && trim($raw) !== '') {
+        $path = trim($raw);
+
+        // 1. If it's a full URL (e.g., from an API or remote source)
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            $src = $path;
+        } 
+        // 2. Check Storage/Public paths
+        else {
+            // Remove 'storage/' prefix if present to check the disk correctly
+            $cleanPath = Str::startsWith($path, 'storage/') ? Str::after($path, 'storage/') : $path;
+
+            if (Storage::disk('public')->exists($cleanPath)) {
+                $src = asset('storage/' . $cleanPath);
+            } elseif (file_exists(public_path($path))) {
+                $src = asset($path);
             }
         }
     }
@@ -35,5 +38,5 @@
     alt="{{ $alt ?? $name }}"
     class="{{ $class ?: 'h-10 w-10 rounded-lg object-cover border border-gray-100 dark:border-[#23263a]' }}"
     loading="lazy"
-    onerror="this.onerror=null;this.src='{{ $placeholder }}';"
+    onerror="this.onerror=null; this.src='{{ $placeholder }}';"
 />

@@ -17,11 +17,12 @@
             <span>Edit</span>
         </a>
 
-        <form action="{{ route('seller.products.destroy', $product) }}" method="POST"
-              onsubmit="return confirm('Are you sure you want to delete this product?')">
+        <form action="{{ route('seller.products.destroy', $product) }}" method="POST">
             @csrf
             @method('DELETE')
-            <button type="submit"
+            <button type="button"
+                    onclick="confirmDelete(event, this)"
+                    data-confirm="This product will be permanently deleted."
                     class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200">
                 <x-icon-nav name="delete" class="w-4 h-4" />
                 <span>Delete</span>

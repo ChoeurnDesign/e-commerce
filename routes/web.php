@@ -44,6 +44,7 @@ use App\Http\Controllers\Seller\ImageController as SellerImageController;
 use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\StoreReviewController;
 use App\Http\Controllers\Seller\SellerChatController;
+use App\Http\Controllers\Seller\EarningsController;
 
 
 /*
@@ -61,11 +62,6 @@ Route::get('/help', [HelpController::class, 'index'])->name('help');
 // Language & Currency
 Route::get('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 Route::get('currency/{currency}', [CurrencyController::class, 'switch'])->name('currency.switch');
-
-// Admin Banner quick actions (public endpoints – consider protecting later)
-Route::post('admin/settings/add-banner', [SettingsController::class, 'addBanner'])->name('admin.settings.add_banner');
-Route::delete('admin/settings/delete-banner/{banner}', [SettingsController::class, 'deleteBanner'])->name('admin.settings.delete_banner');
-Route::put('/admin/settings/banner/{banner}/edit', [SettingsController::class, 'editBanner'])->name('admin.settings.edit_banner');
 
 // Catalog
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -122,9 +118,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/wishlist', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
+    // Store reviews (posted by customers — must NOT be behind SellerMiddleware)
+    Route::post('seller/reviews/{seller}', [StoreReviewController::class, 'store'])->name('seller.store-reviews.store');
+
     // Orders
     Route::get('/my-orders', [OrderController::class, 'userOrders'])->name('orders.history');
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/confirm', [OrderController::class, 'confirmReceipt'])->name('orders.confirm');
 
     // Checkout
     Route::prefix('checkout')->name('checkout.')->group(function () {
@@ -183,6 +183,9 @@ Route::prefix('admin')
 
         Route::get('settings/banner/{banner}/edit', [SettingsController::class, 'showEditBanner'])->name('settings.banner.edit');
         Route::put('settings/banner/{banner}', [SettingsController::class, 'updateBanner'])->name('settings.banner.update');
+        Route::post('settings/add-banner', [SettingsController::class, 'addBanner'])->name('settings.add_banner');
+        Route::delete('settings/delete-banner/{banner}', [SettingsController::class, 'deleteBanner'])->name('settings.delete_banner');
+        Route::put('settings/banner/{banner}/edit', [SettingsController::class, 'editBanner'])->name('settings.edit_banner');
         Route::patch('products/{product}/remove-sale', [OnsaleController::class, 'removeFromSale'])->name('products.removeFromSale');
 
         Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
@@ -206,6 +209,10 @@ Route::prefix('admin')
 | Become a Seller
 |--------------------------------------------------------------------------
 */
+Route::get('/sell', function () {
+    return view('seller.landing');
+})->name('seller.landing');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/become-seller', [SellerController::class, 'showRegistrationForm'])->name('seller.register.form');
     Route::post('/become-seller', [SellerController::class, 'register'])->name('seller.register');
@@ -216,7 +223,7 @@ Route::middleware(['auth'])->group(function () {
 | Seller (Vendor) Dashboard & Product Management
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->prefix('seller')->name('seller.')->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefix('seller')->name('seller.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('settings', [SellerSettingsController::class, 'edit'])->name('settings.edit');
@@ -239,7 +246,11 @@ Route::middleware(['auth'])->prefix('seller')->name('seller.')->group(function (
     Route::post('/images/delete', [SellerImageController::class, 'delete'])->name('images.delete');
     Route::get('images/load', [SellerImageController::class, 'load'])->name('images.load');
 
-    Route::resource('orders', SellerOrderController::class)->only(['index', 'show']);
+    Route::get('orders', [SellerOrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{id}', [SellerOrderController::class, 'show'])->name('orders.show');
+    Route::patch('orders/{vendorOrder}/confirm', [SellerOrderController::class, 'confirm'])->name('orders.confirm');
+    Route::patch('orders/{vendorOrder}/complete', [SellerOrderController::class, 'complete'])->name('orders.complete');
+    Route::post('/orders/{order}/confirm', [App\Http\Controllers\OrderController::class, 'confirmReceipt'])->name('orders.confirm');
 
     // Store reviews
     Route::get('reviews', [StoreReviewController::class, 'index'])->name('reviews.index');
@@ -247,9 +258,10 @@ Route::middleware(['auth'])->prefix('seller')->name('seller.')->group(function (
     Route::get('reviews/{review}/edit', [StoreReviewController::class, 'edit'])->name('reviews.edit');
     Route::put('reviews/{review}', [StoreReviewController::class, 'update'])->name('reviews.update');
     Route::delete('reviews/{review}', [StoreReviewController::class, 'destroy'])->name('reviews.destroy');
-    Route::post('reviews/{seller}', [StoreReviewController::class, 'store'])->name('store-reviews.store');
 
     Route::get('/chat', [SellerChatController::class, 'index'])->name('chat.index');
+
+    Route::get('/earnings', [EarningsController::class, 'index'])->name('earnings');
 });
 
 /*

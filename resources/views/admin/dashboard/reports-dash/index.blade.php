@@ -3,8 +3,9 @@
 @section('title', 'Reports Management')
 
 @section('content')
-<div class="p-8 bg-gray-300 dark:bg-[#181f31] min-h-screen">
-    <h1 class="text-3xl mb-2 text-gray-900 dark:text-gray-100">Market Report for Ecommerce Website</h1>
+{{-- Fixed: Changed harsh background bg-gray-300 to standard dashboard bg-gray-50 for light mode --}}
+<div class="p-8 bg-gray-50 dark:bg-[#181f31] min-h-screen transition-colors duration-150">
+    <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Market Report for Ecommerce Website</h1>
     <p class="mb-8 text-gray-600 dark:text-gray-300">
         This dashboard highlights site activity and conversion stats with analytics charts based on your real store data.
     </p>

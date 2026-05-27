@@ -41,20 +41,23 @@ class SellerController extends Controller
 
     public function show(Seller $seller)
     {
-        $seller->loadMissing([
-            'user',
-            'products',
-            'orders.user', // use orders.user (not orders.customer unless you added alias)
-        ]);
+        // 1. Load basic relations
+        $seller->loadMissing(['user', 'products']);
+        $seller->loadCount(['products']);
 
-        $seller->loadCount(['products', 'orders']);
+        // 2. Fetch data through the vendorOrders relationship
+        // This solves the "empty orders" issue
+        $vendorOrders = $seller->vendorOrders()->with('order')->latest()->get();
+        
+        // 3. Map to get the actual Order models for the table
+        $orders = $vendorOrders->map(fn($vo) => $vo->order);
 
-        $seller->total_sales = $seller->orders
-            ? $seller->orders->sum(fn($o) => (float) ($o->total_price ?? 0))
-            : 0;
+        // 4. Calculate stats manually since the relationship is bridged
+        $seller->orders_count = $vendorOrders->count();
+        $seller->total_sales = $vendorOrders->sum('seller_earnings');
 
+        // 5. Fetch products
         $products = $seller->products ? $seller->products->sortByDesc('created_at') : collect();
-        $orders   = $seller->orders ? $seller->orders->sortByDesc('created_at') : collect();
 
         return view('admin.sellers.show', compact('seller', 'products', 'orders'));
     }
@@ -72,7 +75,7 @@ class SellerController extends Controller
             'email'             => 'required|email|max:255',
             'store_name'        => 'required|string|max:255',
             'status'            => 'required|in:pending,approved,rejected',
-            'business_document' => 'nullable|file|max:2048', // adjust mimes if needed
+            'business_document' => 'nullable|file|max:2048',
         ]);
 
         if ($seller->user) {

@@ -11,8 +11,9 @@
     <div class="p-6">
         <form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
+            {{-- Fixed Code --}}
             @if (isset($formMethod) && strtoupper($formMethod) === 'PUT')
-                <input type="hidden" name="_method" value="">
+                @method('PUT')
             @endif
 
             {{-- Product Name --}}
@@ -204,7 +205,7 @@
                         <x-icon-nav name="back" />
                         Back
                     </a>
-                @endif
+                @endif 
             </div>
         </form>
     </div>

@@ -1,37 +1,40 @@
-<div class="bg-white dark:bg-[#23263a] shadow p-6">
-    <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Recent Orders</h2>
+<div class="bg-white dark:bg-[#23263a] shadow p-6 rounded-xl border border-gray-200 dark:border-transparent">
+    <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Recent Orders</h2>
     <div class="overflow-x-auto">
         <table class="min-w-full overflow-hidden">
             <thead>
-                <tr class="bg-gray-300 dark:bg-[#232c47]">
-                    <th class="px-5 py-3 text-left text-sm text-gray-900 dark:text-white uppercase tracking-wider">Order #</th>
-                    <th class="px-5 py-3 text-left text-sm text-gray-900 dark:text-white uppercase tracking-wider">Customer</th>
-                    <th class="px-5 py-3 text-left text-sm text-gray-900 dark:text-white uppercase tracking-wider">Total</th>
-                    <th class="px-5 py-3 text-left text-sm text-gray-900 dark:text-white uppercase tracking-wider">Status</th>
-                    <th class="px-5 py-3 text-left text-sm text-gray-900 dark:text-white uppercase tracking-wider">Order Date</th>
+                {{-- Fixed: Changed harsh bg-gray-300 to clean bg-gray-100 for light mode --}}
+                <tr class="bg-gray-100 dark:bg-[#232c47] border-b border-gray-200 dark:border-[#23263a]">
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order #</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order Date</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 dark:divide-[#232c47]">
                 @forelse ($recentOrders->take(5) as $order)
-                    <tr class="hover:bg-gray-300 dark:hover:bg-[#222842] transition-colors">
-                        <td class="px-5 py-3 text-gray-900 dark:text-white font-mono">{{ $order->order_number }}</td>
-                        <td class="px-5 py-3 text-gray-700 dark:text-gray-200">{{ $order->customer_name ?? ($order->user->name ?? '-') }}</td>
+                    {{-- Fixed: Changed harsh hover:bg-gray-300 to smooth hover:bg-gray-50 for light mode --}}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-[#222842] transition-colors duration-150">
+                        <td class="px-5 py-3 text-gray-900 dark:text-white font-mono font-medium">{{ $order->order_number }}</td>
+                        <td class="px-5 py-3 text-gray-700 dark:text-gray-200 font-medium">{{ $order->customer_name ?? ($order->user->name ?? '-') }}</td>
                         <td class="px-5 py-3 text-gray-700 dark:text-gray-200">${{ number_format($order->total_price, 2) }}</td>
                         <td class="px-5 py-3">
-                            <span class="
-                                inline-block px-3 py-1 rounded-lg text-xs font-semibold
-                                bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700
-                                dark:bg-{{ $order->status_color }}-600 dark:text-white
-                                border border-transparent dark:border-{{ $order->status_color }}-400
-                            ">
-                                {{ ucfirst($order->status) }}
-                            </span>
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
+    {{ $order->payment_status == 'paid' 
+        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+        : ($order->payment_status == 'pending' 
+            ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' 
+            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400') }}">
+    {{ ucfirst($order->payment_status) }}
+</span>
                         </td>
                         <td class="px-5 py-3 text-gray-700 dark:text-gray-200">{{ $order->created_at->format('Y-m-d') }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-gray-100 dark:text-gray-300 py-8">No recent orders.</td>
+                        {{-- Fixed: Changed text-gray-100 to text-gray-500 so text isn't hidden on white background --}}
+                        <td colspan="5" class="text-center text-gray-500 dark:text-gray-300 py-8 italic">No recent orders.</td>
                     </tr>
                 @endforelse
             </tbody>

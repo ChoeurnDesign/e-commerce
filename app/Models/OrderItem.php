@@ -11,9 +11,11 @@ class OrderItem extends Model
 
     protected $fillable = [
         'order_id',
+        'seller_id',
         'product_id',
         'product_name',
         'product_sku',
+        'product_image',
         'quantity',
         'price',
         'total'
@@ -32,5 +34,11 @@ class OrderItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    // ✅ seller relationship
+    public function seller()
+    {
+        return $this->belongsTo(Seller::class);
     }
 }

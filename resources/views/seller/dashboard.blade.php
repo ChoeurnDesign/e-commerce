@@ -23,7 +23,7 @@
     {{-- Header --}}
     <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
-            <x-icon-nav name="dashboard" class="w-8 h-8 text-indigo-600" />
+            <x-icon-dashboard name="dashboard" class="w-8 h-8 text-indigo-600" />
             Dashboard
         </h1>
 
@@ -37,20 +37,31 @@
     </div>
 
     {{-- Metrics --}}
-    <section aria-label="Key metrics" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<section aria-label="Key metrics" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    
+    {{-- NEW: Total Earnings Card (Now Clickable) --}}
+    <a href="{{ route('seller.earnings') }}" class="block transition transform hover:scale-105">
         <x-seller.metric-card
-            label="Active Products"
-            :value="$productsCount"
-            color="indigo" />
-        <x-seller.metric-card
-            label="Total Orders"
-            :value="$ordersCount"
+            label="Total Earnings"
+            :value="'$ ' . number_format(auth()->user()->wallet->balance ?? 0, 2)"
             color="green" />
-        <x-seller.metric-card
-            label="Average Rating"
-            :value="$averageRating !== null ? number_format($averageRating,2) : '—'"
-            color="yellow" />
-    </section>
+    </a>
+
+    <x-seller.metric-card
+        label="Active Products"
+        :value="$productsCount"
+        color="indigo" />
+        
+    <x-seller.metric-card
+        label="Total Orders"
+        :value="$ordersCount"
+        color="indigo" />
+        
+    <x-seller.metric-card
+        label="Average Rating"
+        :value="$averageRating !== null ? number_format($averageRating,2) : '—'"
+        color="yellow" />
+</section>
 
     {{-- Store Status --}}
     <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-8">

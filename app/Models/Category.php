@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,28 +15,27 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'image',
-        'image_alt',
-        'parent_id',
-        'sort_order',
-        'is_active',
+        'name', 'slug', 'description', 'image', 'image_alt', 'parent_id', 'sort_order', 'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
 
-    // Include image_url in arrays/JSON for easy use in views
     protected $appends = [
         'image_url',
+        'image_url_with_parent',
     ];
 
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    // THIS METHOD WAS MISSING, CAUSING YOUR 500 ERROR
+    public static function allCategoriesForDropdown()
+    {
+        return self::all()->pluck('name', 'id');
     }
 
     protected static function boot(): void
@@ -48,11 +48,10 @@ class Category extends Model
             }
         });
 
-        // Ensure slug uniqueness on save
         static::saving(function ($category) {
             $originalSlug = $category->slug;
             $counter = 2;
-            while (static::where('slug', $category->slug)
+            while (static::query()->where('slug', $category->slug)
                 ->where('id', '!=', $category->id)
                 ->exists()
             ) {
@@ -60,104 +59,66 @@ class Category extends Model
             }
         });
 
-        // Delete stored image when category deleted (if not an external URL)
         static::deleting(function (Category $category) {
-            if (!empty($category->image) && !filter_var($category->image, FILTER_VALIDATE_URL)) {
+            if (!empty($category->image) && !filter_var($category->image, FILTER_VALIDATE_URL) && !str_starts_with($category->image, 'http')) {
                 try {
                     $disk = config('filesystems.default', 'public');
                     if (Storage::disk($disk)->exists($category->image)) {
                         Storage::disk($disk)->delete($category->image);
                     }
                 } catch (\Throwable $e) {
-                    // ignore storage errors (do not block deletion)
+                    // ignore storage errors
                 }
             }
         });
     }
 
-    // Relationships
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class);
-    }
+    public function products(): HasMany { return $this->hasMany(Product::class); }
+    public function parent(): BelongsTo { return $this->belongsTo(Category::class, 'parent_id'); }
+    public function children(): HasMany { return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order', 'asc'); }
 
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(Category::class, 'parent_id');
-    }
-
-    public function children(): HasMany
-    {
-        return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order');
-    }
-
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
+    public function scopeActive(Builder $query) { return $query->where('is_active', true); }
 
     public function allProducts()
     {
-        return Product::query()
-            ->where(function ($query) {
-                $query->where('category_id', $this->id) // Products for this category
-                    ->orWhereIn('category_id', $this->children()->pluck('id')); // Products for subcategories
-            });
+        return Product::query()->where(function ($query) {
+            $query->where('category_id', $this->id)
+                  ->orWhereIn('category_id', $this->children()->pluck('id'));
+        });
     }
 
-    // Return a usable image URL for this category (no parent fallback).
-    // Priority: external URL -> storage key -> placeholder (seeded from top parent)
     public function getImageUrlAttribute(): string
     {
-        if (!empty($this->image) && filter_var($this->image, FILTER_VALIDATE_URL)) {
-            return $this->image;
+        if (empty($this->image)) {
+            return \App\Helpers\PlaceholderAvatar::svgDataUri($this->name ?? 'Category', 160, $this->name);
         }
 
-        if (!empty($this->image)) {
-            try {
-                // Generate URL for image in public/storage/categories directory
-                return asset('storage/' . $this->image);
-            } catch (\Throwable $e) {
-                // Fall through to placeholder
-            }
+        $path = trim($this->image);
+        if (str_starts_with($path, 'http') || filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
         }
 
-        return \App\Helpers\PlaceholderAvatar::svgDataUri($this->name ?? 'Category', 160, $this->name);
+        return asset('storage/' . $path);
     }
 
-    // Find the top-most parent name (used as color seed)
-    public function topParentName(): ?string
-    {
-        $current = $this;
-        // walk up until no parent (avoid endless loops if data is corrupt)
-        $safety = 0;
-        while ($current->parent && $safety++ < 50) {
-            $current = $current->parent;
-        }
-        return $current->name ?? null;
-    }
-
-    // Returns image for this category or falls back recursively to parent; finally a placeholder.
     public function getImageUrlWithParentAttribute(): string
     {
-        if (!empty($this->image) && filter_var($this->image, FILTER_VALIDATE_URL)) {
-            return $this->image;
-        }
-
         if (!empty($this->image)) {
-            try {
-                // Generate URL for image in public/storage/categories directory
-                return asset('storage/' . $this->image);
-            } catch (\Throwable $e) {
-                // ignore and continue
-            }
+            return $this->image_url;
         }
 
         if ($this->parent) {
             return $this->parent->image_url_with_parent;
         }
 
-        // final fallback placeholder
         return \App\Helpers\PlaceholderAvatar::svgDataUri($this->name ?? 'Category');
+    }
+
+    public function topParentName(): ?string
+    {
+        $current = $this;
+        $safety = 0;
+        while ($current->parent && $safety++ < 50) { $current = $current->parent; }
+        return $current->name ?? null;
     }
 }

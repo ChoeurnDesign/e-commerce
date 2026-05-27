@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -31,24 +32,29 @@ class ProductController extends Controller
         ]);
 
         $user = Auth::user();
-        $query = Product::with('category')->where('user_id', $user->id);
+        
+        // Eager load 'seller' and 'category' to ensure the store identity is available
+        $query = Product::with(['category', 'seller'])->where('user_id', $user->id);
 
         if ($search = $request->q) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                ->orWhere('sku', 'like', "%{$search}%")
+                ->orWhere('slug', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
             });
         }
+
         if ($cid = $request->category_id) {
             $query->where('category_id', $cid);
         }
+
         foreach (['is_active','on_sale','is_featured'] as $flag) {
             if ($request->has($flag) && $request->$flag !== '') {
                 $query->where($flag, (int)$request->$flag);
             }
         }
+
         if ($request->filled('price_min'))  $query->where('price', '>=', $request->price_min);
         if ($request->filled('price_max'))  $query->where('price', '<=', $request->price_max);
         if ($request->filled('stock_min'))  $query->where('stock_quantity', '>=', $request->stock_min);
@@ -61,16 +67,15 @@ class ProductController extends Controller
         $dirInput  = $request->query('dir');
         $sort = in_array($sortInput, $allowedSorts, true) ? $sortInput : 'id';
         $dir  = in_array(strtolower((string)$dirInput), ['asc','desc'], true) ? strtolower($dirInput) : 'desc';
+        
         $query->orderBy($sort, $dir);
 
         $products = $query->paginate(15)->appends($request->query());
+
+        // Populate categories for the filter dropdown in the view
         $categories = Category::orderBy('name')->get(['id','name']);
 
-        $filterFields = [
-            // ... your filter fields ...
-        ];
-
-        return view('seller.products.index', compact('products','filterFields'));
+        return view('seller.products.index', compact('products', 'categories'));
     }
 
     public function create()
@@ -83,23 +88,32 @@ class ProductController extends Controller
     {
         $validated = $this->validateProduct($request);
         $data = $this->extractBaseData($validated);
-        $data['user_id'] = Auth::id();
+
+        // FIX 1: Access 'id' as a property, not a method
+        $user = Auth::user();
+        $data['user_id'] = $user->id; 
+
+        // FIX 2: Ensure seller_id is assigned (Requires the seller relationship in User.php)
+        if ($user->seller) {
+            $data['seller_id'] = $user->seller->id;
+        } else {
+            return redirect()->back()->with('error', 'Seller profile not found.');
+        }
 
         $data['slug'] = Product::generateUniqueSlug(
             $request->filled('slug') ? $request->slug : $data['name']
         );
+        
         $data['sku'] = $request->filled('sku')
             ? Product::generateUniqueSku($request->sku)
             : Product::generateUniqueSku($data['name']);
 
         $this->applyFlags($request, $data);
 
-        // Main image upload for seller folder
         if ($request->hasFile('image')) {
             $data['image'] = $this->handleMainImageUpload($request);
         }
 
-        // Gallery upload for seller folder
         if ($request->hasFile('gallery')) {
             $data['gallery'] = $this->handleGalleryUpload($request);
         } else {
@@ -239,7 +253,7 @@ class ProductController extends Controller
         return $request->validate([
             'name'              => 'required|string|max:255',
             'slug'              => 'nullable|alpha_dash',
-            'description'       => 'nullable|string',
+            'description'       => 'required|string', 
             'short_description' => 'nullable|string',
             'price'             => 'required|numeric|min:0',
             'sale_price'        => [
@@ -247,8 +261,8 @@ class ProductController extends Controller
                 Rule::requiredIf($request->boolean('on_sale'))
             ],
             'compare_price'     => 'nullable|numeric|min:0|gt:price',
-            'sku'               => 'nullable|string|max:100',
-            'stock_quantity'    => 'nullable|integer|min:0',
+            'sku'               => 'required|string|max:100',
+            'stock_quantity'    => 'required|integer|min:0',
             'category_id'       => 'required|exists:categories,id',
             'image'             => 'nullable|image|max:2048',
             'gallery'           => 'nullable',

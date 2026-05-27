@@ -1,0 +1,14 @@
+
+{
+    "Electronics": ["Mobile Phones", "Laptops", "Cameras", "Wearables", "Audio", "Gaming Consoles"],
+    "Fashion": ["Women's Clothing", "Men's Clothing", "Shoes", "Accessories", "Watches", "Jewelry"],
+    "Home & Living": ["Furniture", "Home Decor", "Kitchen & Dining", "Bedding", "Lighting"],
+    "Beauty & Personal Care": ["Skincare", "Haircare", "Makeup", "Fragrances", "Bath & Body"],
+    "Health & Wellness": ["Supplements", "Personal Care", "Medical Devices", "Fitness Gear"],
+    "Sports & Outdoors": ["Camping Gear", "Bicycles", "Sportswear", "Hiking", "Team Sports"],
+    "Toys & Baby": ["Baby Gear", "Educational Toys", "Feeding", "Action Figures", "Puzzles"],
+    "Grocery": ["Pantry", "Beverages", "Snacks", "Coffee & Tea", "Gourmet Food"],
+    "Automotive": ["Car Accessories", "Tools", "Motorcycle Parts", "Car Care"],
+    "Pets": ["Pet Food", "Pet Accessories", "Health & Grooming", "Aquarium"],
+    "Garden & DIY": ["Gardening Tools", "Plants", "Power Tools", "Building Materials"]
+}

@@ -41,25 +41,41 @@
                         <x-products.product-card :product="$product" />
                     @endforeach
                 </div>
-                <div class="flex justify-center">
+
+                <div class="product-pagination-container mt-12 mb-10 border-t border-gray-200 dark:border-gray-700 pt-8">
                     {{ $products->links() }}
                 </div>
-            @else
-                <div class="text-center py-16 bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-300 dark:border-gray-700">
-                    <div class="text-6xl mb-4 text-gray-400 dark:text-gray-600">📦</div>
-                    <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-4">
-                        No Available Products Found
-                    </h3>
-                    <p class="text-gray-500 dark:text-gray-400 mb-6">
-                        Try adjusting your filters or search terms.
-                    </p>
-                    <a href="{{ route('products.index') }}"
-                       class="bg-indigo-600 hover:bg-indigo-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white px-8 py-3 rounded-full font-medium transition-all shadow-md hover:shadow-lg">
-                        View All Products
-                    </a>
-                </div>
-            @endif
 
+                <style>
+                    /* Compact Premium Design */
+                    .product-pagination-container nav { 
+                        @apply flex flex-col items-center gap-6 sm:flex-row sm:justify-between !important; 
+                    }
+
+                    /* The Number Pill */
+                    .product-pagination-container a, 
+                    .product-pagination-container span[aria-disabled="true"] span,
+                    .product-pagination-container span[aria-current="page"] span {
+                        @apply inline-flex items-center justify-center min-w-[2.5rem] h-10 mx-0.5 rounded-full text-sm font-semibold transition-all duration-200 border-none !important;
+                    }
+
+                    /* Normal State */
+                    .product-pagination-container a {
+                        @apply bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-indigo-600 hover:text-white hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30;
+                    }
+
+                    /* Active State */
+                    .product-pagination-container span[aria-current="page"] span {
+                        @apply bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-lg shadow-indigo-500/40 !important;
+                    }
+
+                    /* The Margin Gap you asked for */
+                    @media (min-width: 640px) {
+                        .product-pagination-container nav > div:last-child { @apply ml-16 !important; }
+                    }
+                </style>
+                @else
+            @endif
         </div>
     </div>
-</x-app-layout>
+</x-app-layout> 

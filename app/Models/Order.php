@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB; // Required for transactions
 
 class Order extends Model
 {
@@ -14,6 +15,7 @@ class Order extends Model
     protected $fillable = [
         'order_number',
         'user_id',
+        'seller_id',
         'subtotal',
         'tax_amount',
         'total_price',
@@ -36,7 +38,8 @@ class Order extends Model
         'billing_country',
         'notes',
         'shipped_at',
-        'delivered_at'
+        'delivered_at',
+        'payout_released' // Added for security
     ];
 
     protected $casts = [
@@ -45,6 +48,7 @@ class Order extends Model
         'total_price'  => 'decimal:2',
         'shipped_at'   => 'datetime',
         'delivered_at' => 'datetime',
+        'payout_released' => 'boolean', // Added for security
     ];
 
     protected static function boot()
@@ -60,31 +64,67 @@ class Order extends Model
 
     /* ---------------- Relationships ---------------- */
 
-    public function user()
+    public function user() { return $this->belongsTo(User::class); }
+    public function customer() { return $this->belongsTo(User::class, 'user_id'); }
+    public function orderItems() { return $this->hasMany(OrderItem::class); }
+    public function vendorOrders() { return $this->hasMany(VendorOrder::class); }
+
+    // WARNING: This is problematic for multi-vendor orders. 
+    // It is safer to use orderItems()->seller_id instead.
+    public function seller() { return $this->belongsTo(Seller::class); }
+
+    /* ---------------- Logic ---------------- */
+
+    public function distributeVendorEarnings()
     {
-        return $this->belongsTo(User::class);
+        // 1. SAFETY GUARD: If funds are already released, stop immediately!
+        if ($this->payout_released) {
+            return; 
+        }
+
+        // 2. TRANSACTION: Ensures all or nothing is processed
+        DB::transaction(function () {
+            $itemsBySeller = $this->orderItems->groupBy('seller_id');
+
+            foreach ($itemsBySeller as $sellerId => $items) {
+                $subtotal = $items->sum('total'); 
+                $commissionRate = 10.00; 
+                $commissionAmount = ($subtotal * $commissionRate) / 100;
+                $sellerEarnings = $subtotal - $commissionAmount;
+
+                $this->vendorOrders()->updateOrCreate(
+                    ['seller_id' => $sellerId],
+                    [
+                        'subtotal'          => $subtotal,
+                        'commission_rate'   => $commissionRate,
+                        'commission_amount' => $commissionAmount,
+                        'seller_earnings'   => $sellerEarnings,
+                        'status'            => 'pending',
+                        'payout_status'     => 'pending',
+                        'stripe_account_id' => $items->first()->product->seller->stripe_account_id ?? null,
+                    ]
+                );
+
+                $seller = \App\Models\Seller::find($sellerId);
+                if ($seller && $seller->user) {
+                    \App\Models\Wallet::firstOrCreate(['seller_id' => $seller->user->id])
+                        ->increment('balance', $sellerEarnings);
+                }
+            }
+
+            // 3. Update the flag to TRUE so it can never run again for this order
+            $this->update(['payout_released' => true]);
+        });
     }
 
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
+    /* ---------------- Helpers & Scopes ---------------- */
 
-    // alias so $order->customer works (registered user)
-    public function customer()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /* ---------------- Accessors / Helpers ---------------- */
-
-    // Adjusted: removed 'paid' (belongs to payment_status) and added 'confirmed' if you use it.
     public function getStatusColorAttribute()
     {
         return match ($this->status) {
             'pending'    => 'yellow',
             'processing' => 'indigo',
-            'confirmed'  => 'gray',      // choose color you like
+            'confirmed'  => 'gray',
             'shipped'    => 'purple',
             'delivered'  => 'green',
             'cancelled'  => 'red',
@@ -109,35 +149,16 @@ class Order extends Model
         return "{$this->shipping_address}, {$this->shipping_city}, {$this->shipping_state} {$this->shipping_postal_code}, {$this->shipping_country}";
     }
 
-    // Unified display name (registered user OR stored customer_name OR 'Guest')
     public function getDisplayNameAttribute(): string
     {
-        return $this->user?->name
-            ?? ($this->customer_name ?: 'Guest');
+        return $this->user?->name ?? ($this->customer_name ?: 'Guest');
     }
 
-    // Unified display email
     public function getDisplayEmailAttribute(): ?string
     {
         return $this->user?->email ?? $this->customer_email;
     }
 
-    /* ---------------- Scopes ---------------- */
-
-    public function scopeForUser($query, $userId)
-    {
-        return $query->where('user_id', $userId);
-    }
-
-    public function scopeWithStatus($query, $status)
-    {
-        return $query->where('status', $status);
-    }
-
-    /**
-     * Minimal search scope used by admin order listing.
-     * Matches id (numeric), order_number, customer_name, customer_email, and related user name/email.
-     */
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         $term = trim((string)$term);
@@ -145,17 +166,22 @@ class Order extends Model
             return $query;
         }
 
-        return $query->where(function (Builder $q) use ($term) {
-            if (ctype_digit($term)) {
-                $q->orWhere('id', (int)$term);
+        // If the term starts with # (e.g., "#3"), remove the # to get just the ID (3)
+        $cleanTerm = str_starts_with($term, '#') ? substr($term, 1) : $term;
+
+        return $query->where(function (Builder $q) use ($term, $cleanTerm) {
+            // Now check if $cleanTerm is numeric (works for "3" or "#3")
+            if (is_numeric($cleanTerm)) {
+                $q->orWhere('id', (int)$cleanTerm);
             }
+            
             $q->orWhere('order_number', 'like', "%{$term}%")
-                ->orWhere('customer_name', 'like', "%{$term}%")
-                ->orWhere('customer_email', 'like', "%{$term}%")
-                ->orWhereHas('user', function (Builder $u) use ($term) {
-                    $u->where('name', 'like', "%{$term}%")
-                        ->orWhere('email', 'like', "%{$term}%");
-                });
+            ->orWhere('customer_name', 'like', "%{$term}%")
+            ->orWhere('customer_email', 'like', "%{$term}%")
+            ->orWhereHas('user', function (Builder $u) use ($term) {
+                $u->where('name', 'like', "%{$term}%")
+                    ->orWhere('email', 'like', "%{$term}%");
+            });
         });
     }
 }

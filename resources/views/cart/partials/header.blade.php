@@ -3,12 +3,12 @@
         Cart ({{ $cartTotals['total_quantity'] ?? 0 }} items)
     </h2>
     <form action="{{ route('cart.clear') }}" method="POST" class="inline">
-        @csrf <input type="hidden" name="_method" value="">
+        @csrf
+        @method('DELETE')
         <button type="submit"
             class="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-600 font-medium px-3 py-1 rounded transition"
-            onclick="return confirm('Clear your cart?')">
+            onclick="confirmClear(event, this)">
             Clear All
         </button>
     </form>
 </div>
-

@@ -1,0 +1,708 @@
+[
+  {
+    "id": 1,
+    "name": "Automotive",
+    "slug": "automotive",
+    "description": "Everything for your vehicle - car accessories, tools, motorcycle parts, and car care products. From performance upgrades to maintenance essentials.",
+    "image": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format",
+    "icon": "car",
+    "sort_order": 1,
+    "is_active": true,
+    "meta_title": "Automotive Parts & Accessories | Car Care & Tools",
+    "meta_description": "Find premium automotive products including car accessories, tools, motorcycle parts, and car care essentials. Quality parts for all vehicles.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 101,
+        "category_id": 1,
+        "name": "Car Accessories",
+        "slug": "car-accessories",
+        "description": "Enhance your vehicle with premium accessories including floor mats, roof racks, lighting upgrades, and interior enhancements.",
+        "image": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 5
+      },
+      {
+        "id": 102,
+        "category_id": 1,
+        "name": "Tools",
+        "slug": "tools",
+        "description": "Professional automotive tools for maintenance, repair, and diagnostics. From socket sets to diagnostic scanners.",
+        "image": "https://images.unsplash.com/photo-1581235720842-4e3ea3c87b3c?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 5
+      },
+      {
+        "id": 103,
+        "category_id": 1,
+        "name": "Motorcycle Parts",
+        "slug": "motorcycle-parts",
+        "description": "Performance parts, accessories, and maintenance products for motorcycles. Chains, exhausts, lights, and more.",
+        "image": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 5
+      },
+      {
+        "id": 104,
+        "category_id": 1,
+        "name": "Car Care",
+        "slug": "car-care",
+        "description": "Keep your vehicle looking its best with car care products. Ceramic coatings, wash supplies, polishers, and detailing tools.",
+        "image": "https://images.unsplash.com/photo-1566474591181-2d7394a9213f?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 5
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Beauty & Personal Care",
+    "slug": "beauty-personal-care",
+    "description": "Premium skincare, haircare, makeup, fragrances, and bath products. Professional quality for your personal care routine.",
+    "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=800&auto=format",
+    "icon": "sparkles",
+    "sort_order": 2,
+    "is_active": true,
+    "meta_title": "Beauty & Personal Care Products | Skincare & Makeup",
+    "meta_description": "Discover premium beauty and personal care products. Skincare, haircare, makeup, fragrances, and bath essentials for your daily routine.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 201,
+        "category_id": 2,
+        "name": "Skincare",
+        "slug": "skincare",
+        "description": "Face and body skincare products. Serums, moisturizers, cleansers, and treatments for all skin types.",
+        "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 202,
+        "category_id": 2,
+        "name": "Haircare",
+        "slug": "haircare",
+        "description": "Professional haircare products. Shampoos, conditioners, treatments, and styling products for healthy hair.",
+        "image": "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 203,
+        "category_id": 2,
+        "name": "Makeup",
+        "slug": "makeup",
+        "description": "Cosmetics and makeup products. Foundations, lipsticks, eyeshadows, and beauty essentials.",
+        "image": "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 204,
+        "category_id": 2,
+        "name": "Fragrances",
+        "slug": "fragrances",
+        "description": "Premium perfumes, colognes, and body sprays. Luxury scents for men and women.",
+        "image": "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 205,
+        "category_id": 2,
+        "name": "Bath & Body",
+        "slug": "bath-body",
+        "description": "Body care products for shower and bath. Body butters, scrubs, lotions, and bath essentials.",
+        "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Electronics",
+    "slug": "electronics",
+    "description": "Latest technology and electronics. Smartphones, laptops, cameras, wearables, and audio devices.",
+    "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format",
+    "icon": "cpu-chip",
+    "sort_order": 3,
+    "is_active": true,
+    "meta_title": "Electronics Store | Smartphones, Laptops & Cameras",
+    "meta_description": "Shop the latest electronics including smartphones, laptops, cameras, wearables, and audio devices. Best prices on technology products.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 301,
+        "category_id": 3,
+        "name": "Mobile Phones",
+        "slug": "mobile-phones",
+        "description": "Smartphones from leading brands. Latest models with advanced features, cameras, and performance.",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 302,
+        "category_id": 3,
+        "name": "Laptops",
+        "slug": "laptops",
+        "description": "Laptops for work, gaming, and everyday use. Ultrabooks, gaming laptops, and business notebooks.",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 303,
+        "category_id": 3,
+        "name": "Cameras",
+        "slug": "cameras",
+        "description": "Photography and video cameras. DSLR, mirrorless, action cameras, and accessories.",
+        "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 304,
+        "category_id": 3,
+        "name": "Wearables",
+        "slug": "wearables",
+        "description": "Smart watches, fitness trackers, and wearable technology for health and connectivity.",
+        "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 305,
+        "category_id": 3,
+        "name": "Audio",
+        "slug": "audio",
+        "description": "Headphones, earbuds, speakers, and audio equipment for immersive sound experience.",
+        "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 2
+      },
+      {
+        "id": 306,
+        "category_id": 3,
+        "name": "Gaming Consoles",
+        "slug": "gaming-consoles",
+        "description": "Video game consoles, controllers, and gaming accessories for the ultimate gaming experience.",
+        "image": "https://images.unsplash.com/photo-1605906302474-f60df68a64dd?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Fashion",
+    "slug": "fashion",
+    "description": "Trendy clothing, shoes, accessories, watches, and jewelry for men and women. Latest styles and classic pieces.",
+    "image": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=800&auto=format",
+    "icon": "shopping-bag",
+    "sort_order": 4,
+    "is_active": true,
+    "meta_title": "Fashion Store | Clothing, Shoes & Accessories",
+    "meta_description": "Discover the latest fashion trends. Clothing, shoes, accessories, watches, and jewelry for men and women.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 401,
+        "category_id": 4,
+        "name": "Women's Clothing",
+        "slug": "womens-clothing",
+        "description": "Women's apparel including dresses, tops, bottoms, and outerwear for all occasions.",
+        "image": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 402,
+        "category_id": 4,
+        "name": "Men's Clothing",
+        "slug": "mens-clothing",
+        "description": "Men's fashion including shirts, pants, suits, jackets, and casual wear.",
+        "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 403,
+        "category_id": 4,
+        "name": "Shoes",
+        "slug": "shoes",
+        "description": "Footwear for men and women. Casual shoes, formal shoes, sneakers, and boots.",
+        "image": "https://images.unsplash.com/photo-1533867617858-e7b97e060509?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 404,
+        "category_id": 4,
+        "name": "Accessories",
+        "slug": "accessories",
+        "description": "Fashion accessories including bags, belts, wallets, and other style essentials.",
+        "image": "https://images.unsplash.com/photo-1624222247344-550fb80544d0?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 405,
+        "category_id": 4,
+        "name": "Watches",
+        "slug": "watches",
+        "description": "Timepieces and watches for men and women. Luxury, sport, and casual styles.",
+        "image": "https://images.unsplash.com/photo-1524805444758-09911d436a99?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 406,
+        "category_id": 4,
+        "name": "Jewelry",
+        "slug": "jewelry",
+        "description": "Fine jewelry including necklaces, earrings, bracelets, rings, and pendants.",
+        "image": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Garden & DIY",
+    "slug": "garden-diy",
+    "description": "Gardening tools, plants, power tools, and building materials for your home improvement projects.",
+    "image": "https://images.unsplash.com/photo-1589152121593-944a10f745b0?q=80&w=800&auto=format",
+    "icon": "home-modern",
+    "sort_order": 5,
+    "is_active": true,
+    "meta_title": "Garden & DIY Supplies | Tools & Building Materials",
+    "meta_description": "Everything for gardening and DIY projects. Tools, plants, power tools, and building materials for home improvement.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 501,
+        "category_id": 5,
+        "name": "Gardening Tools",
+        "slug": "gardening-tools",
+        "description": "Hand tools and equipment for gardening. Pruners, shovels, rakes, and gardening accessories.",
+        "image": "https://images.unsplash.com/photo-1589152121593-944a10f745b0?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 502,
+        "category_id": 5,
+        "name": "Plants",
+        "slug": "plants",
+        "description": "Indoor and outdoor plants, flowers, seeds, and gardening supplies for your green space.",
+        "image": "https://images.unsplash.com/photo-1614594975525-e45190c55d0b?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 503,
+        "category_id": 5,
+        "name": "Power Tools",
+        "slug": "power-tools",
+        "description": "Electric and cordless power tools for construction, woodworking, and home improvement.",
+        "image": "https://images.unsplash.com/photo-1504148455328-c376907d081c?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 504,
+        "category_id": 5,
+        "name": "Building Materials",
+        "slug": "building-materials",
+        "description": "Construction materials including lumber, fasteners, adhesives, and hardware for building projects.",
+        "image": "https://images.unsplash.com/photo-1589939705384-5185138a047a?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Grocery",
+    "slug": "grocery",
+    "description": "High-quality food and beverages. Pantry staples, snacks, coffee, tea, and gourmet food items.",
+    "image": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=800&auto=format",
+    "icon": "shopping-cart",
+    "sort_order": 6,
+    "is_active": true,
+    "meta_title": "Grocery Store | Food, Beverages & Pantry Staples",
+    "meta_description": "Shop premium grocery items including pantry staples, beverages, snacks, coffee, tea, and gourmet foods.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 601,
+        "category_id": 6,
+        "name": "Pantry",
+        "slug": "pantry",
+        "description": "Pantry staples including oils, spices, grains, pasta, and cooking essentials.",
+        "image": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 602,
+        "category_id": 6,
+        "name": "Beverages",
+        "slug": "beverages",
+        "description": "Drinks including juices, sodas, water, and non-alcoholic beverages.",
+        "image": "https://images.unsplash.com/photo-1613478223719-2ab802602423?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 603,
+        "category_id": 6,
+        "name": "Snacks",
+        "slug": "snacks",
+        "description": "Sweet and savory snacks including chips, nuts, cookies, and candy.",
+        "image": "https://images.unsplash.com/photo-1599490659223-e1539775935d?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 604,
+        "category_id": 6,
+        "name": "Coffee & Tea",
+        "slug": "coffee-tea",
+        "description": "Premium coffee beans, ground coffee, tea leaves, and brewing accessories.",
+        "image": "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 605,
+        "category_id": 6,
+        "name": "Gourmet Food",
+        "slug": "gourmet-food",
+        "description": "Specialty and gourmet food items including cheeses, chocolates, and imported delicacies.",
+        "image": "https://images.unsplash.com/photo-1485962391905-dc37bb3ac4d4?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Health & Wellness",
+    "slug": "health-wellness",
+    "description": "Supplements, personal care, medical devices, and fitness gear for your health and wellness journey.",
+    "image": "https://images.unsplash.com/photo-1593094859945-83e079717088?q=80&w=800&auto=format",
+    "icon": "heart",
+    "sort_order": 7,
+    "is_active": true,
+    "meta_title": "Health & Wellness Products | Supplements & Fitness",
+    "meta_description": "Support your health with supplements, personal care products, medical devices, and fitness equipment.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 701,
+        "category_id": 7,
+        "name": "Supplements",
+        "slug": "supplements",
+        "description": "Vitamins, minerals, protein powders, and dietary supplements for health support.",
+        "image": "https://images.unsplash.com/photo-1593094859945-83e079717088?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 702,
+        "category_id": 7,
+        "name": "Personal Care",
+        "slug": "personal-care",
+        "description": "Health and personal care products including essential oils, hygiene items, and wellness tools.",
+        "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 703,
+        "category_id": 7,
+        "name": "Medical Devices",
+        "slug": "medical-devices",
+        "description": "Home medical equipment including blood pressure monitors, thermometers, and first aid.",
+        "image": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 704,
+        "category_id": 7,
+        "name": "Fitness Gear",
+        "slug": "fitness-gear",
+        "description": "Exercise equipment, weights, yoga mats, and fitness accessories for home workouts.",
+        "image": "https://images.unsplash.com/photo-1583454110551-21f2fa2ec617?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Home & Living",
+    "slug": "home-living",
+    "description": "Furniture, home decor, kitchenware, bedding, and lighting to create your perfect living space.",
+    "image": "https://images.unsplash.com/photo-1505797149-43b0ad766207?q=80&w=800&auto=format",
+    "icon": "home",
+    "sort_order": 8,
+    "is_active": true,
+    "meta_title": "Home & Living | Furniture, Decor & Kitchenware",
+    "meta_description": "Furnish and decorate your home with our furniture, home decor, kitchenware, bedding, and lighting products.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 801,
+        "category_id": 8,
+        "name": "Furniture",
+        "slug": "furniture",
+        "description": "Home and office furniture including chairs, tables, sofas, and storage solutions.",
+        "image": "https://images.unsplash.com/photo-1505797149-43b0ad766207?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 802,
+        "category_id": 8,
+        "name": "Home Decor",
+        "slug": "home-decor",
+        "description": "Wall art, decorative items, vases, and home accessories to personalize your space.",
+        "image": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 803,
+        "category_id": 8,
+        "name": "Kitchen & Dining",
+        "slug": "kitchen-dining",
+        "description": "Cookware, dinnerware, kitchen tools, and dining accessories for your culinary needs.",
+        "image": "https://images.unsplash.com/photo-1584990344619-3ee4c286eca2?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 804,
+        "category_id": 8,
+        "name": "Bedding",
+        "slug": "bedding",
+        "description": "Bed sheets, duvet covers, pillows, and bedroom linens for comfortable sleep.",
+        "image": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 805,
+        "category_id": 8,
+        "name": "Lighting",
+        "slug": "lighting",
+        "description": "Indoor and outdoor lighting including lamps, fixtures, and smart lighting solutions.",
+        "image": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Pets",
+    "slug": "pets",
+    "description": "Everything for your furry friends. Pet food, accessories, health products, and aquarium supplies.",
+    "image": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?q=80&w=800&auto=format",
+    "icon": "paw-print",
+    "sort_order": 9,
+    "is_active": true,
+    "meta_title": "Pet Supplies | Food, Accessories & Health Products",
+    "meta_description": "Shop premium pet supplies including food, accessories, health products, and aquarium equipment for all your pets.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 901,
+        "category_id": 9,
+        "name": "Pet Food",
+        "slug": "pet-food",
+        "description": "Nutritious food for dogs, cats, birds, and small animals. Dry, wet, and specialty diets.",
+        "image": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 902,
+        "category_id": 9,
+        "name": "Pet Accessories",
+        "slug": "pet-accessories",
+        "description": "Toys, beds, collars, leashes, bowls, and other accessories for pets.",
+        "image": "https://images.unsplash.com/photo-1544567905-cc10c775e1f3?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 903,
+        "category_id": 9,
+        "name": "Health & Grooming",
+        "slug": "health-grooming",
+        "description": "Pet grooming supplies, health supplements, medications, and hygiene products.",
+        "image": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 904,
+        "category_id": 9,
+        "name": "Aquarium",
+        "slug": "aquarium",
+        "description": "Aquarium tanks, filters, decorations, fish food, and aquatic plant supplies.",
+        "image": "https://images.unsplash.com/photo-1518834103328-93d45986dce1?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Sports & Outdoors",
+    "slug": "sports-outdoors",
+    "description": "Equipment and gear for sports, camping, hiking, cycling, and outdoor activities.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=800&auto=format",
+    "icon": "trophy",
+    "sort_order": 10,
+    "is_active": true,
+    "meta_title": "Sports & Outdoors Equipment | Camping & Fitness Gear",
+    "meta_description": "Gear up for adventure with sports equipment, camping gear, bicycles, sportswear, and outdoor essentials.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 1001,
+        "category_id": 10,
+        "name": "Camping Gear",
+        "slug": "camping-gear",
+        "description": "Tents, sleeping bags, camping furniture, and outdoor cooking equipment.",
+        "image": "https://images.unsplash.com/photo-1504851149312-7a075b496cc7?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 1002,
+        "category_id": 10,
+        "name": "Bicycles",
+        "slug": "bicycles",
+        "description": "Mountain bikes, road bikes, hybrid bikes, and cycling accessories.",
+        "image": "https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 1003,
+        "category_id": 10,
+        "name": "Sportswear",
+        "slug": "sportswear",
+        "description": "Activewear, running shoes, fitness clothing, and performance apparel.",
+        "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 1004,
+        "category_id": 10,
+        "name": "Hiking",
+        "slug": "hiking",
+        "description": "Hiking boots, backpacks, trekking poles, and outdoor navigation equipment.",
+        "image": "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 1005,
+        "category_id": 10,
+        "name": "Team Sports",
+        "slug": "team-sports",
+        "description": "Equipment for soccer, basketball, volleyball, and other team sports.",
+        "image": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Toys & Baby",
+    "slug": "toys-baby",
+    "description": "Toys, baby gear, educational products, and essentials for children of all ages.",
+    "image": "https://images.unsplash.com/photo-1578774680093-2c4d2c2b4a6e?q=80&w=800&auto=format",
+    "icon": "rocking-horse",
+    "sort_order": 11,
+    "is_active": true,
+    "meta_title": "Toys & Baby Products | Kids Gear & Educational Toys",
+    "meta_description": "Find toys, baby gear, educational products, and essentials for children. Safe and engaging products for all ages.",
+    "created_at": "2024-01-01T08:00:00Z",
+    "updated_at": "2024-03-20T10:00:00Z",
+    "subcategories": [
+      {
+        "id": 1101,
+        "category_id": 11,
+        "name": "Baby Gear",
+        "slug": "baby-gear",
+        "description": "Strollers, car seats, cribs, high chairs, and other baby essentials.",
+        "image": "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 1102,
+        "category_id": 11,
+        "name": "Educational Toys",
+        "slug": "educational-toys",
+        "description": "Learning toys, STEM kits, puzzles, and educational games for children.",
+        "image": "https://images.unsplash.com/photo-1594787318281-6d5c8c7945e4?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 1103,
+        "category_id": 11,
+        "name": "Feeding",
+        "slug": "feeding",
+        "description": "Baby bottles, sippy cups, feeding utensils, and nutritional products.",
+        "image": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 1104,
+        "category_id": 11,
+        "name": "Action Figures",
+        "slug": "action-figures",
+        "description": "Action figures, dolls, collectibles, and role-playing toys.",
+        "image": "https://images.unsplash.com/photo-1599623560574-39d4d6360c31?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      },
+      {
+        "id": 1105,
+        "category_id": 11,
+        "name": "Puzzles",
+        "slug": "puzzles",
+        "description": "Jigsaw puzzles, brain teasers, logic games, and construction sets.",
+        "image": "https://images.unsplash.com/photo-1587654780298-8c6d6b2c8b2a?q=80&w=800&auto=format",
+        "is_active": true,
+        "product_count": 0
+      }
+    ]
+  }
+]

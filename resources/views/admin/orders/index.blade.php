@@ -23,7 +23,7 @@
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-[#23263a]">
                 <thead>
-                <tr class="bg-gray-300 dark:bg-[#232c47]">
+                <tr class="bg-gray-100 dark:bg-[#232c47] border-b border-gray-200 dark:border-[#23263a]">
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Order #</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Customer</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Total Price</th>
@@ -35,8 +35,9 @@
                 </thead>
                 <tbody class="bg-white dark:bg-[#23263a] divide-y divide-gray-200 dark:divide-[#23263a]">
                 @forelse($orders as $order)
-                    <tr class="hover:bg-gray-300 dark:hover:bg-[#262c47]">
-                        <td class="px-6 py-4 text-gray-900 dark:text-gray-100">#{{ $order->id }}</td>
+                    {{-- Fixed: Changed harsh hover:bg-gray-300 to smooth hover:bg-gray-50 for light mode --}}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-[#262c47] transition-colors duration-150">
+                        <td class="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">#{{ $order->id }}</td>
                         <td class="px-6 py-4 text-gray-700 dark:text-gray-200">
                             {{ $order->display_name }}
                             <br>
@@ -44,11 +45,10 @@
                                 {{ $order->display_email }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-indigo-700 dark:text-indigo-300">
+                        <td class="px-6 py-4 text-indigo-700 dark:text-indigo-300 font-medium">
                             ${{ number_format($order->total_price, 2) }}
                         </td>
                         <td class="px-6 py-4">
-                            {{-- If using helper: <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold {{ $order->paymentBadgeClasses }}">{{ ucfirst($order->payment_status) }}</span> --}}
                             <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold
                                 {{ $order->payment_status == 'paid'
                                     ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
@@ -59,15 +59,15 @@
                             </span>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
                                 @class([
-                                    'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300' => $order->status === 'pending',
-                                    'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300' => $order->status === 'processing',
-                                    'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200'        => $order->status === 'confirmed',
-                                    'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300'=> $order->status === 'shipped',
-                                    'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'    => $order->status === 'delivered' || $order->status === 'completed',
-                                    'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'            => $order->status === 'cancelled',
-                                    'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200'        => ! in_array($order->status, ['pending','processing','confirmed','shipped','delivered','completed','cancelled']),
+                                    'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' => $order->status === 'pending',
+                                    'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400' => $order->status === 'processing',
+                                    'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300' => $order->status === 'confirmed',
+                                    'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400' => $order->status === 'shipped',
+                                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' => $order->status === 'delivered' || $order->status === 'completed',
+                                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' => $order->status === 'cancelled',
+                                    'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' => !in_array($order->status, ['pending','processing','confirmed','shipped','delivered','completed','cancelled']),
                                 ])">
                                 {{ ucfirst($order->status) }}
                             </span>

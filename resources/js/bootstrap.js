@@ -3,11 +3,9 @@ import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 
 window.axios = axios;
-window.Pusher = Pusher;
-
 window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
-// Add CSRF token setup
+// CSRF token setup
 const token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
     window.axios.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
@@ -16,6 +14,9 @@ if (token) {
         "CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token"
     );
 }
+
+// Pusher / Laravel Echo setup
+window.Pusher = Pusher;
 
 window.Echo = new Echo({
     broadcaster: "pusher",

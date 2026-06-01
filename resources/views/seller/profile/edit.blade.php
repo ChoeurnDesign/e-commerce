@@ -21,7 +21,7 @@
 
         {{-- Add more seller-specific fields here --}}
 
-        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">
+        <button type="submit" class="bg-pink-600 text-white px-4 py-2 rounded">
             Save Changes
         </button>
     </form>

@@ -6,7 +6,7 @@
 <div class="container mx-auto">
     <a href="{{ route('seller.reviews.index') }}" class="text-sm text-gray-600 hover:underline mb-4 inline-block">← Back to reviews</a>
 
-    <div class="bg-white dark:bg-gray-800 rounded p-6">
+    <div class="bg-white rounded p-6">
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-xl font-semibold">{{ $review->user->name ?? 'Anonymous' }}</h2>
@@ -15,7 +15,7 @@
             <div class="text-lg font-bold text-yellow-500">{{ number_format($review->rating, 1) }}</div>
         </div>
 
-        <div class="mt-4 text-gray-800 dark:text-gray-200">
+        <div class="mt-4 text-gray-800">
             {{ $review->comment }}
         </div>
 

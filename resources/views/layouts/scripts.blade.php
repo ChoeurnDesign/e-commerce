@@ -3,6 +3,58 @@
 window.Laravel = { csrfToken: '{{ csrf_token() }}' };
 window.IS_AUTH = {{ auth()->check() ? 'true' : 'false' }};
 
+/* ════════════════════════════════════════════════════════════════
+   Global SweetAlert2 confirm — replaces native confirm() everywhere
+   Usage: <form data-confirm="Are you sure?"> ... </form>
+          <a   data-confirm="Delete this item?" href="...">Delete</a>
+   Optional: data-confirm-title, data-confirm-ok, data-confirm-type
+════════════════════════════════════════════════════════════════ */
+window.shopConfirm = function (opts = {}) {
+    return Swal.fire({
+        title: opts.title || 'Are you sure?',
+        text:  opts.text  || '',
+        icon:  opts.icon  || 'warning',
+        showCancelButton: true,
+        confirmButtonText: opts.ok || 'Yes, confirm',
+        cancelButtonText:  opts.cancel || 'Cancel',
+        confirmButtonColor: '#EC4899',
+        cancelButtonColor:  '#9CA3AF',
+        reverseButtons: true,
+        focusCancel: true,
+    });
+};
+
+document.addEventListener('submit', function (e) {
+    const el = e.target.closest('[data-confirm]');
+    if (!el || el.dataset._confirmed === '1') return;
+    e.preventDefault();
+    window.shopConfirm({
+        text:  el.dataset.confirm,
+        title: el.dataset.confirmTitle,
+        ok:    el.dataset.confirmOk,
+        icon:  el.dataset.confirmType,
+    }).then(r => {
+        if (r.isConfirmed) { el.dataset._confirmed = '1'; el.submit(); }
+    });
+}, true);
+
+document.addEventListener('click', function (e) {
+    const el = e.target.closest('a[data-confirm], button[data-confirm]:not([type=submit])');
+    if (!el || el.dataset._confirmed === '1') return;
+    e.preventDefault();
+    window.shopConfirm({
+        text:  el.dataset.confirm,
+        title: el.dataset.confirmTitle,
+        ok:    el.dataset.confirmOk,
+        icon:  el.dataset.confirmType,
+    }).then(r => {
+        if (r.isConfirmed) {
+            if (el.tagName === 'A') { window.location.href = el.href; }
+            else { el.dataset._confirmed = '1'; el.click(); }
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // ─── Search suggestions ────────────────────────────────────────
@@ -22,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!suggestionsDiv) return;
                 if (data.length > 0) {
                     suggestionsDiv.innerHTML = data.map(p => `
-                        <div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 border-b cursor-pointer transition-colors"
+                        <div class="p-3 hover:bg-gray-100 border-b cursor-pointer transition-colors"
                              onclick="window.location.href='/products/${p.slug}'">
                             <div class="flex items-center gap-3">
                                 <img src="${p.image}" alt="${p.name}" class="w-10 h-10 object-cover rounded">

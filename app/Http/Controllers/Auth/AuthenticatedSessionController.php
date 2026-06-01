@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +28,14 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        // Merge any guest cart items into the now-authenticated user's cart
+        try {
+            app(CartService::class)->mergeSessionCartWithUserCart(Auth::id());
+        } catch (\Exception $e) {
+            // Non-fatal — log and continue
+            \Illuminate\Support\Facades\Log::warning('Cart merge failed on login: ' . $e->getMessage());
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

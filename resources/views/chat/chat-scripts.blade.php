@@ -166,11 +166,11 @@ window.chatComponent = function() {
 
                 const bubbleClasses = message.sender_id === this.currentUserId
                     ? 'shadow-sm cursor-pointer hover:shadow-md transition-all px-3 py-2 bg-blue-500 text-white rounded-2xl rounded-br-lg'
-                    : 'shadow-sm cursor-pointer hover:shadow-md transition-all px-3 py-2 bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-600 rounded-2xl rounded-bl-lg';
+                    : 'shadow-sm cursor-pointer hover:shadow-md transition-all px-3 py-2 bg-white text-gray-900 border border-gray-200 rounded-2xl rounded-bl-lg';
 
                 const senderBlock = message.sender_id !== this.currentUserId ? `
                     <div class="flex-shrink-0 mr-2">
-                        <div class="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center overflow-hidden"></div>
+                        <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden"></div>
                     </div>` : '';
 
                 const shouldShowStatus = (message.sender_id === this.currentUserId) && (String(message.id) === String(this.lastSentMessageId));

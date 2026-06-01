@@ -19,6 +19,9 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            maxWidth: {
+                '8xl': '88rem',   // 1408px — homepage wide layout
+            },
         },
         screens: {
             sm: '640px',

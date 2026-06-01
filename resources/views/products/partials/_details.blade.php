@@ -3,9 +3,9 @@
     <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
         <div class="flex items-center justify-between">
             <span class="mr-2">
-                <x-icon-dashboard name="products" class="w-7 h-7 text-indigo-600 dark:text-yellow-400" />
+                <x-icon-dashboard name="products" class="w-7 h-7 text-pink-600" />
             </span>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $title ?? ($product->name ?? 'Product Details') }}</h1>
+            <h1 class="text-2xl font-bold text-gray-900">{{ $title ?? ($product->name ?? 'Product Details') }}</h1>
         </div>
     </div>
 
@@ -47,11 +47,11 @@
     $routePrefix = $isAdmin ? 'admin' : ($context === 'seller' ? 'seller' : null);
 @endphp
 
-<div class="bg-white dark:bg-[#23263a] rounded-lg shadow border border-gray-100 dark:border-[#23263a] p-6 flex flex-col lg:flex-row gap-8">
+<div class="bg-white rounded-lg shadow border border-pink-100 p-6 flex flex-col lg:flex-row gap-8">
     {{-- LEFT: Image + Badges + Thumbnails --}}
     <div class="w-full lg:w-1/3">
         <div id="prodImgWrap"
-             class="relative aspect-square w-full rounded-xl overflow-hidden bg-gray-100 dark:bg-[#1f2333] flex items-center justify-center">
+             class="relative aspect-square w-full rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
             @include('products.partials.image-seller', [
                 'product' => $product,
                 'image' => $mainImage ?? null,
@@ -87,7 +87,7 @@
             <div class="mt-4 grid grid-cols-6 gap-2">
                 @foreach($thumbs as $t)
                     <button type="button"
-                            class="group aspect-square rounded border border-gray-200 dark:border-[#2f3650] overflow-hidden bg-gray-50 dark:bg-[#262d42] focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            class="group aspect-square rounded border border-gray-200 overflow-hidden bg-gray-50 focus:outline-none focus:ring-2 focus:ring-pink-500"
                             data-full="{{ $t }}">
                         <img src="{{ $t }}" alt="Thumb"
                              class="w-full h-full object-cover transition-transform group-hover:scale-105">
@@ -102,22 +102,22 @@
 
         {{-- Header / Basic Info --}}
         <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $product->name }}</h1>
-            <div class="mt-2 flex flex-wrap gap-6 text-xs text-gray-600 dark:text-gray-400">
+            <h1 class="text-2xl font-semibold text-gray-900">{{ $product->name }}</h1>
+            <div class="mt-2 flex flex-wrap gap-6 text-xs text-gray-600">
                 <span>SKU:
-                    <span class="font-medium text-gray-800 dark:text-gray-200">{{ $product->sku }}</span>
+                    <span class="font-medium text-gray-800">{{ $product->sku }}</span>
                 </span>
                 <span>Category:
-                    <span class="font-medium text-gray-800 dark:text-gray-200">{{ $product->category->name ?? 'No Category' }}</span>
+                    <span class="font-medium text-gray-800">{{ $product->category->name ?? 'No Category' }}</span>
                 </span>
                 <span>Status:
-                    <span class="font-medium {{ $product->is_active ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                    <span class="font-medium {{ $product->is_active ? 'text-green-600' : 'text-red-600' }}">
                         {{ $product->is_active ? 'Active' : 'Inactive' }}
                     </span>
                 </span>
                 @if($isAdmin && $product->relationLoaded('creator') && $product->creator)
                     <span>Owner:
-                        <span class="font-medium text-gray-800 dark:text-gray-200">{{ $product->creator->name }}</span>
+                        <span class="font-medium text-gray-800">{{ $product->creator->name }}</span>
                     </span>
                 @endif
             </div>
@@ -125,7 +125,7 @@
 
         {{-- Short Description --}}
         @if($product->short_description)
-            <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p class="text-sm text-gray-700 leading-relaxed">
                 {{ $product->short_description }}
             </p>
         @endif
@@ -134,34 +134,34 @@
         <div class="space-y-1">
             <div class="flex items-baseline flex-wrap gap-4">
                 @if($onSale)
-                    <span class="text-3xl font-bold text-green-600 dark:text-green-400">
+                    <span class="text-3xl font-bold text-green-600">
                         ${{ number_format($product->sale_price,2) }}
                     </span>
-                    <span class="text-lg line-through text-gray-500 dark:text-gray-400">
+                    <span class="text-lg line-through text-gray-500">
                         ${{ number_format($product->price,2) }}
                     </span>
                 @else
-                    <span class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                    <span class="text-3xl font-bold text-gray-900">
                         ${{ number_format($product->price,2) }}
                     </span>
                 @endif
                 @if($showCompare)
-                    <span class="text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                    <span class="text-xs font-medium text-pink-600">
                         Compare: ${{ number_format($product->compare_price,2) }}
                     </span>
                 @endif
             </div>
-            <div class="text-xs text-gray-600 dark:text-gray-400">
-                Stock: <span class="font-medium text-gray-800 dark:text-gray-200">{{ (int)$product->stock_quantity }}</span>
+            <div class="text-xs text-gray-600">
+                Stock: <span class="font-medium text-gray-800">{{ (int)$product->stock_quantity }}</span>
             </div>
         </div>
 
         {{-- Flags --}}
         <div class="flex flex-wrap gap-2 text-[10px]">
-            <span class="px-2 py-1 rounded bg-gray-100 dark:bg-[#2f3650] text-gray-700 dark:text-gray-200">
+            <span class="px-2 py-1 rounded bg-gray-100 text-gray-700">
                 {{ $product->is_featured ? 'Featured' : 'Standard' }}
             </span>
-            <span class="px-2 py-1 rounded bg-gray-100 dark:bg-[#2f3650] text-gray-700 dark:text-gray-200">
+            <span class="px-2 py-1 rounded bg-gray-100 text-gray-700">
                 {{ $onSale ? 'On Sale' : 'Regular Price' }}
             </span>
         </div>
@@ -169,8 +169,8 @@
         {{-- Description --}}
         @if($product->description)
             <div>
-                <h2 class="text-xs font-semibold uppercase tracking-wide mb-1 text-gray-800 dark:text-gray-200">Description</h2>
-                <div class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+                <h2 class="text-xs font-semibold uppercase tracking-wide mb-1 text-gray-800">Description</h2>
+                <div class="text-sm text-gray-800 leading-relaxed">
                     {!! nl2br(e($product->description)) !!}
                 </div>
             </div>
@@ -179,14 +179,14 @@
         {{-- SEO Meta (internal only) --}}
         @if($internal && ($product->meta_title || $product->meta_description))
             <div>
-                <h2 class="text-xs font-semibold uppercase tracking-wide mb-1 text-gray-800 dark:text-gray-200">SEO Meta</h2>
+                <h2 class="text-xs font-semibold uppercase tracking-wide mb-1 text-gray-800">SEO Meta</h2>
                 @if($product->meta_title)
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
+                    <p class="text-xs text-gray-600">
                         <strong>Title:</strong> {{ $product->meta_title }}
                     </p>
                 @endif
                 @if($product->meta_description)
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
+                    <p class="text-xs text-gray-600">
                         <strong>Description:</strong> {{ $product->meta_description }}
                     </p>
                 @endif
@@ -196,8 +196,8 @@
         {{-- Admin-only stats --}}
         @if($isAdmin && isset($product->page_views))
             <div>
-                <h2 class="text-xs font-semibold uppercase tracking-wide mb-1 text-gray-800 dark:text-gray-200">Stats</h2>
-                <p class="text-xs text-gray-600 dark:text-gray-400">
+                <h2 class="text-xs font-semibold uppercase tracking-wide mb-1 text-gray-800">Stats</h2>
+                <p class="text-xs text-gray-600">
                     <strong>Views:</strong> {{ (int)$product->page_views }}
                 </p>
             </div>
@@ -206,10 +206,10 @@
         {{-- Specifications --}}
         @if(!empty($specs))
             <div>
-                <h2 class="text-xs font-semibold uppercase tracking-wide mb-2 text-gray-800 dark:text-gray-200">Specifications</h2>
+                <h2 class="text-xs font-semibold uppercase tracking-wide mb-2 text-gray-800">Specifications</h2>
                 <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 text-[11px]">
                     @foreach($specs as $k=>$v)
-                        <li class="bg-gray-50 dark:bg-[#2a3146] border border-gray-100 dark:border-[#2f3650] rounded px-2 py-1">
+                        <li class="bg-gray-50 border border-gray-100 rounded px-2 py-1">
                             <span class="font-semibold">{{ $k }}:</span>
                             <span>{{ is_scalar($v) ? $v : json_encode($v) }}</span>
                         </li>
@@ -221,13 +221,13 @@
         {{-- Gallery --}}
         @if(!empty($gallery))
             <div>
-                <h2 class="text-xs font-semibold uppercase tracking-wide mb-2 text-gray-800 dark:text-gray-200">Gallery</h2>
+                <h2 class="text-xs font-semibold uppercase tracking-wide mb-2 text-gray-800">Gallery</h2>
                 <div class="flex flex-wrap gap-3">
                     @foreach($gallery as $g)
                         @include('products.partials.image-seller', [
                             'product' => $product,
                             'image' => $g,
-                            'class' => 'h-24 w-24 object-cover rounded border border-gray-200 dark:border-[#2f3650]',
+                            'class' => 'h-24 w-24 object-cover rounded border border-gray-200',
                             'isGallery' => true,
                         ])
                     @endforeach
@@ -240,12 +240,12 @@
             <div class="flex flex-wrap gap-3 pt-2">
                 @can('update',$product)
                     <a href="{{ route($routePrefix.'.products.edit',$product) }}"
-                       class="px-4 py-2 text-sm font-medium rounded bg-indigo-600 hover:bg-indigo-700 text-white shadow">
+                       class="px-4 py-2 text-sm font-medium rounded bg-pink-600 hover:bg-pink-700 text-white shadow">
                         Edit
                     </a>
                 @endcan
                 @can('delete',$product)
-                    <form method="POST" action="{{ route($routePrefix.'.products.destroy',$product) }}" onsubmit="return confirm('Delete this product?')">
+                    <form method="POST" action="{{ route($routePrefix.'.products.destroy',$product) }}" data-confirm="Delete this product?">
                         @csrf <input type="hidden" name="_method" value="">
                         <button type="submit" class="px-4 py-2 text-sm font-medium rounded bg-red-600 hover:bg-red-700 text-white shadow">
                             Delete

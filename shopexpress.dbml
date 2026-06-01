@@ -1,0 +1,562 @@
+// ShopExpress — Database Schema (DBML for dbdiagram.io)
+
+Table cart_items {
+  id bigint [pk]
+  user_id bigint
+  product_id bigint
+  quantity int
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table categories {
+  id bigint [pk]
+  parent_id bigint
+  name varchar
+  slug varchar
+  description text
+  image varchar
+  is_active int
+  sort_order int
+  commission_rate decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table chat_messages {
+  id bigint [pk]
+  chat_id bigint
+  sender_id bigint
+  body text
+  type varchar
+  is_read int
+  deleted_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table chat_participants {
+  id bigint [pk]
+  chat_id bigint
+  user_id bigint
+  last_read_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table chats {
+  id bigint [pk]
+  type varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table coupons {
+  id bigint [pk]
+  code varchar
+  discount_type varchar
+  discount_value decimal
+  funded_by varchar
+  min_order_amount decimal
+  max_uses int
+  used_count int
+  is_active int
+  discount varchar
+  expiry_date timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table currencies {
+  id bigint [pk]
+  code varchar
+  name varchar
+  symbol varchar
+  active int
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table customer_wallets {
+  id bigint [pk]
+  user_id bigint
+  balance decimal
+  lifetime_credit decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table customers {
+  id bigint [pk]
+  name varchar
+  email varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table exchange_rates {
+  id bigint [pk]
+  code varchar
+  rate decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table homepage_banners {
+  id bigint [pk]
+  image_path varchar
+  title varchar
+  subtitle varchar
+  button_text varchar
+  button_link varchar
+  order int
+  enabled int
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table images {
+  id bigint [pk]
+  path varchar
+  original_filename varchar
+  user_id bigint
+  product_id bigint
+  alt varchar
+  type varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table model_has_permissions {
+  permission_id bigint
+  model_type varchar
+  model_id bigint
+}
+
+Table model_has_roles {
+  role_id bigint
+  model_type varchar
+  model_id bigint
+}
+
+Table notifications {
+  id char(36) [pk]
+  type varchar
+  notifiable_type varchar
+  notifiable_id bigint
+  data text
+  read_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table order_items {
+  id bigint [pk]
+  order_id bigint
+  seller_id bigint
+  product_id bigint
+  product_name varchar
+  product_sku varchar
+  product_image varchar
+  quantity int
+  price decimal
+  total decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table orders {
+  id bigint [pk]
+  order_number varchar
+  user_id bigint
+  seller_id bigint
+  subtotal decimal
+  tax_amount decimal
+  total_price decimal
+  payment_fee_amount decimal
+  status varchar
+  payment_status varchar
+  payment_method varchar
+  payment_proof varchar
+  payment_reference varchar
+  payment_verified_by bigint
+  payment_verified_at timestamp
+  payment_verification_note text
+  payment_id varchar
+  customer_name varchar
+  customer_email varchar
+  customer_phone varchar
+  shipping_address text
+  shipping_city varchar
+  shipping_state varchar
+  shipping_postal_code varchar
+  shipping_country varchar
+  billing_address text
+  billing_city varchar
+  billing_state varchar
+  billing_postal_code varchar
+  billing_country varchar
+  payout_released int
+  notes text
+  coupon_code varchar
+  discount_amount decimal
+  shipped_at timestamp
+  delivered_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table payout_requests {
+  id bigint [pk]
+  seller_id bigint
+  amount decimal
+  bank_name varchar
+  account_name varchar
+  account_number varchar
+  phone varchar
+  seller_note text
+  status varchar
+  processed_by bigint
+  processed_at timestamp
+  transaction_reference varchar
+  admin_note text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table permissions {
+  id bigint [pk]
+  name varchar
+  guard_name varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table platform_transactions {
+  id bigint [pk]
+  type varchar
+  amount decimal
+  balance_after decimal
+  description varchar
+  order_id bigint
+  seller_id bigint
+  payout_request_id bigint
+  admin_id bigint
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table platform_wallet {
+  id bigint [pk]
+  balance decimal
+  total_revenue decimal
+  total_commission decimal
+  total_paid_out decimal
+  total_payment_fees decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table products {
+  id bigint [pk]
+  user_id bigint
+  seller_id bigint
+  category_id bigint
+  name varchar
+  slug varchar
+  description text
+  short_description text
+  price decimal
+  compare_price decimal
+  sale_price decimal
+  on_sale int
+  stock_quantity int
+  page_views bigint
+  sku varchar
+  image varchar
+  gallery text
+  images text
+  specifications text
+  is_featured int
+  is_active int
+  meta_title varchar
+  meta_description varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table refunds {
+  id bigint [pk]
+  reference varchar
+  order_id bigint
+  return_request_id bigint
+  amount decimal
+  payment_method varchar
+  refund_type varchar
+  status varchar
+  gateway_refund_id varchar
+  failure_reason text
+  processed_by bigint
+  processed_at timestamp
+  notes text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table reports {
+  id bigint [pk]
+  title varchar
+  description text
+  user_id bigint
+  status varchar
+  images text
+  is_read int
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table return_request_attachments {
+  id bigint [pk]
+  return_request_id bigint
+  path varchar
+  original_name varchar
+  type varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table return_request_items {
+  id bigint [pk]
+  return_request_id bigint
+  order_item_id bigint
+  quantity int
+  unit_refund decimal
+  line_refund decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table return_requests {
+  id bigint [pk]
+  reference varchar
+  order_id bigint
+  vendor_order_id bigint
+  user_id bigint
+  seller_id bigint
+  reason_code varchar
+  reason_description text
+  refund_method varchar
+  refund_amount decimal
+  return_items_required int
+  status varchar
+  seller_response text
+  seller_responded_at timestamp
+  admin_id bigint
+  admin_notes text
+  resolved_at timestamp
+  return_tracking_number varchar
+  return_carrier varchar
+  refund_transaction_id varchar
+  refund_processed_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table reviews {
+  id bigint [pk]
+  user_id bigint
+  product_id bigint
+  rating int
+  comment text
+  is_approved int
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table role_has_permissions {
+  permission_id bigint
+  role_id bigint
+}
+
+Table roles {
+  id bigint [pk]
+  name varchar
+  guard_name varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table seller_followers {
+  id bigint [pk]
+  seller_id bigint
+  user_id bigint
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table sellers {
+  id bigint [pk]
+  user_id bigint
+  store_name varchar
+  slug varchar
+  description text
+  business_document varchar
+  status varchar
+  admin_comment varchar
+  store_logo varchar
+  store_banner varchar
+  contact_email varchar
+  address varchar
+  phone varchar
+  website varchar
+  facebook varchar
+  instagram varchar
+  tiktok varchar
+  ships_worldwide int
+  returns_days int
+  shipping_summary varchar
+  response_time varchar
+  verified_at timestamp
+  commission_rate decimal
+  promo_until timestamp
+  created_at timestamp
+  updated_at timestamp
+  followers_count bigint
+}
+
+Table settings {
+  id bigint [pk]
+  key varchar
+  value text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table store_reviews {
+  id bigint [pk]
+  seller_id bigint
+  user_id bigint
+  comment text
+  rating int
+  on_sale int
+  is_approved int
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table user_reports {
+  id bigint [pk]
+  title varchar
+  description text
+  user_id bigint
+  status varchar
+  is_read int
+  images text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table users {
+  id bigint [pk]
+  name varchar
+  email varchar
+  phone varchar
+  role varchar
+  status varchar
+  email_verified_at timestamp
+  password varchar
+  remember_token varchar
+  profile_image varchar
+  preferred_currency varchar
+  preferred_language varchar
+  timezone varchar
+  timezone_offset int
+  last_active_at timestamp
+  shipping_address text
+  billing_address text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table vendor_orders {
+  id bigint [pk]
+  order_id bigint
+  seller_id bigint
+  subtotal decimal
+  discount_allocated decimal
+  commission_rate decimal
+  commission_source varchar
+  commission_amount decimal
+  payment_fee decimal
+  seller_earnings decimal
+  status varchar
+  payout_status varchar
+  stripe_account_id varchar
+  stripe_transfer_id varchar
+  paid_out_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table wallets {
+  id bigint [pk]
+  seller_id bigint
+  balance decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table wishlists {
+  id bigint [pk]
+  user_id bigint
+  product_id bigint
+  created_at timestamp
+  updated_at timestamp
+}
+
+// ── Relationships ──
+Ref: cart_items.product_id > products.id
+Ref: cart_items.user_id > users.id
+Ref: categories.parent_id > categories.id
+Ref: chat_messages.chat_id > chats.id
+Ref: chat_messages.sender_id > users.id
+Ref: chat_participants.chat_id > chats.id
+Ref: chat_participants.user_id > users.id
+Ref: customer_wallets.user_id > users.id
+Ref: images.product_id > products.id
+Ref: images.user_id > users.id
+Ref: model_has_permissions.permission_id > permissions.id
+Ref: model_has_roles.role_id > roles.id
+Ref: order_items.order_id > orders.id
+Ref: order_items.product_id > products.id
+Ref: order_items.seller_id > sellers.id
+Ref: orders.seller_id > sellers.id
+Ref: orders.user_id > users.id
+Ref: payout_requests.seller_id > sellers.id
+Ref: platform_transactions.order_id > orders.id
+Ref: products.category_id > categories.id
+Ref: products.seller_id > sellers.id
+Ref: products.user_id > users.id
+Ref: refunds.order_id > orders.id
+Ref: refunds.return_request_id > return_requests.id
+Ref: return_request_attachments.return_request_id > return_requests.id
+Ref: return_request_items.order_item_id > order_items.id
+Ref: return_request_items.return_request_id > return_requests.id
+Ref: return_requests.order_id > orders.id
+Ref: return_requests.seller_id > sellers.id
+Ref: return_requests.user_id > users.id
+Ref: return_requests.vendor_order_id > vendor_orders.id
+Ref: reviews.product_id > products.id
+Ref: reviews.user_id > users.id
+Ref: role_has_permissions.permission_id > permissions.id
+Ref: role_has_permissions.role_id > roles.id
+Ref: seller_followers.seller_id > sellers.id
+Ref: seller_followers.user_id > users.id
+Ref: sellers.user_id > users.id
+Ref: store_reviews.seller_id > sellers.id
+Ref: store_reviews.user_id > users.id
+Ref: vendor_orders.order_id > orders.id
+Ref: vendor_orders.seller_id > sellers.id
+Ref: wallets.seller_id > sellers.id
+Ref: wishlists.product_id > products.id
+Ref: wishlists.user_id > users.id

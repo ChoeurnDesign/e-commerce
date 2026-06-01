@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderItem;
 use App\Models\Review;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -20,12 +21,26 @@ class ReviewController extends Controller
             'comment'    => 'nullable|string|max:1000',
         ]);
 
+        // Only buyers who completed the order may review
+        $hasPurchased = OrderItem::where('product_id', $validated['product_id'])
+            ->whereHas('order', fn ($q) => $q->where('user_id', Auth::id())->where('status', 'completed'))
+            ->exists();
+
+        if (!$hasPurchased) {
+            return redirect()->back()->with('error', 'You can only review products you have purchased and received.');
+        }
+
+        // Prevent duplicate review
+        if (Review::where('user_id', Auth::id())->where('product_id', $validated['product_id'])->exists()) {
+            return redirect()->back()->with('error', 'You have already reviewed this product.');
+        }
+
         $review = new Review([
             'user_id'     => Auth::id(),
             'product_id'  => $validated['product_id'],
             'rating'      => $validated['rating'],
             'comment'     => $validated['comment'] ?? '',
-            'is_approved' => true, // or false if you want admin approval workflow
+            'is_approved' => true,
         ]);
 
         $review->save();

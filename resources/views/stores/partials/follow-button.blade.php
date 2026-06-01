@@ -15,7 +15,7 @@
                 type="submit"
                 aria-pressed="true"
                 title="Unfollow {{ $seller->store_name ?? $seller->name }}"
-                class="inline-flex items-center gap-2 text-amber-400 dark:text-amber-300 transition text-lg leading-none"
+                class="inline-flex items-center gap-2 text-amber-400 transition text-lg leading-none"
             >
                 Following
             </button>
@@ -27,7 +27,7 @@
                 type="submit"
                 aria-pressed="false"
                 title="Follow {{ $seller->store_name ?? $seller->name }}"
-                class="inline-flex items-center gap-2 text-sky-500 dark:text-sky-400 transition hover:text-gray-600 dark:hover:text-gray-500 text-lg leading-none"
+                class="inline-flex items-center gap-2 text-sky-500 transition hover:text-gray-600 text-lg leading-none"
             >
                 Follow
             </button>
@@ -38,7 +38,7 @@
         href="{{ route('login') }}"
         aria-pressed="false"
         title="Sign in to follow {{ $seller->store_name ?? $seller->name }}"
-        class="inline-flex items-center gap-2 text-sky-500 dark:text-sky-400 hover:text-gray-600 dark:hover:text-gray-500 transition text-lg leading-none"
+        class="inline-flex items-center gap-2 text-sky-500 hover:text-gray-600 transition text-lg leading-none"
     >
 
         Follow

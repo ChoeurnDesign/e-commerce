@@ -16,8 +16,8 @@
     $valueColor = ($valuePalette[$color]['light'] ?? 'text-gray-700') . ' ' . ($valuePalette[$color]['dark'] ?? 'dark:text-gray-200');
 @endphp
 
-<div class="bg-white dark:bg-[#23263a] shadow overflow-hidden border border-gray-300 dark:border-[#23263a] rounded-lg p-5 text-center transition-colors">
-    <div class="mb-1 text-xs font-medium tracking-wide uppercase text-gray-600 dark:text-gray-400">
+<div class="bg-white#23263a] shadow overflow-hidden border border-gray-300#23263a] rounded-lg p-5 text-center transition-colors">
+    <div class="mb-1 text-xs font-medium tracking-wide uppercase text-gray-600">
         {{ $title }}
     </div>
     <div class="text-2xl font-semibold {{ $valueColor }}">

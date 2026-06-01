@@ -1,11 +1,11 @@
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow divide-y divide-gray-100 dark:divide-gray-700">
+<div class="bg-white rounded-xl shadow divide-y divide-gray-100">
     @include('cart.partials.header', ['cartTotals' => $cartTotals])
     @foreach($cartItems as $item)
         @include('cart.partials.item', ['item' => $item])
     @endforeach
-    <div class="flex justify-end items-center px-6 py-3 bg-gray-300 dark:bg-gray-700">
+    <div class="flex justify-end items-center px-6 py-3 bg-rose-50 border-t border-rose-100">
         <button type="button" id="update-cart-btn"
-            class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full font-medium transition-all shadow-sm"
+            class="text-sm bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-full font-medium transition-all shadow-sm"
             style="min-width:0.5rem;" disabled>
             Update Cart
         </button>

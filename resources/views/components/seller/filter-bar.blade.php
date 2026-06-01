@@ -39,12 +39,12 @@
             $placeholder = $f['placeholder'] ?? 'Search...';
             $options = $f['options'] ?? [];
             $value = $valueResolver($name);
-            $inputBase = trim('border rounded px-3 py-2 text-sm bg-white dark:bg-[#23263a] border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring focus:ring-indigo-300 ' . ($f['class'] ?? '') . ' ' . $inputClass);
+            $inputBase = trim('border rounded px-3 py-2 text-sm bg-white border-gray-300 text-gray-800 focus:outline-none focus:ring focus:ring-pink-300 ' . ($f['class'] ?? '') . ' ' . $inputClass);
         @endphp
 
         <div class="flex flex-col">
             @if($label)
-                <label for="filter-{{ $name }}" class="text-xs font-medium mb-1 text-gray-600 dark:text-gray-300">
+                <label for="filter-{{ $name }}" class="text-xs font-medium mb-1 text-gray-600">
                     {{ $label }}
                 </label>
             @endif

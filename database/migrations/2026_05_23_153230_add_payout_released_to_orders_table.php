@@ -8,10 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            // This flag tracks if the money has been moved from Escrow to Seller
-            $table->boolean('payout_released')->default(false);
-        });
+        if (!Schema::hasColumn('orders', 'payout_released')) {
+            Schema::table('orders', function (Blueprint $table) {
+                $table->boolean('payout_released')->default(false);
+            });
+        }
     }
 
     public function down(): void

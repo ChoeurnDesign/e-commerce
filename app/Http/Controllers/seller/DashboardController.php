@@ -55,14 +55,35 @@ class DashboardController extends Controller
             }
         }
 
+        // Recent orders for dashboard feed
+        $recentOrders = $seller->vendorOrders()
+            ->with('order')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // Recent products
+        $recentProducts = $seller->products()
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // Pending orders count
+        $pendingOrdersCount = $seller->vendorOrders()
+            ->where('status', 'pending')
+            ->count();
+
         return view('seller.dashboard', [
-            'seller'            => $seller,
-            'productsCount'     => $data['products_count'],
-            'ordersCount'       => $data['orders_count'],
-            'averageRating'     => $data['average_rating'],
-            'totalEarnings'     => $data['total_earnings'] ?? 0, // From Service
-            'pendingPayout'     => $data['pending_payout'] ?? 0,
-            'unreadSellerChats' => (int) $unreadSellerChats,
+            'seller'             => $seller,
+            'productsCount'      => $data['products_count'],
+            'ordersCount'        => $data['orders_count'],
+            'averageRating'      => $data['average_rating'],
+            'totalEarnings'      => $data['total_earnings'] ?? 0,
+            'pendingPayout'      => $data['pending_payout'] ?? 0,
+            'unreadSellerChats'  => (int) $unreadSellerChats,
+            'recentOrders'       => $recentOrders,
+            'recentProducts'     => $recentProducts,
+            'pendingOrdersCount' => $pendingOrdersCount,
         ]);
     }
 }

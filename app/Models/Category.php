@@ -15,7 +15,7 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'description', 'image', 'image_alt', 'parent_id', 'sort_order', 'is_active',
+        'name', 'slug', 'description', 'image', 'image_alt', 'parent_id', 'sort_order', 'is_active', 'commission_rate',
     ];
 
     protected $casts = [
@@ -78,6 +78,65 @@ class Category extends Model
     public function children(): HasMany { return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order', 'asc'); }
 
     public function scopeActive(Builder $query) { return $query->where('is_active', true); }
+
+    /**
+     * For a collection of categories, fill in a display image for any category
+     * that has no uploaded image by borrowing a real product photo from that
+     * category (or one of its already-loaded children). Runs ONE bulk query.
+     *
+     * This is a runtime-only fallback — it does NOT persist to the database,
+     * so an admin-uploaded category image always takes priority.
+     */
+    public static function attachDisplayImages($categories): void
+    {
+        $categories = collect($categories);
+        if ($categories->isEmpty()) return;
+
+        // Collect every category id (parents + any loaded children) that needs an image
+        $needIds = collect();
+        foreach ($categories as $cat) {
+            if (empty($cat->image)) $needIds->push($cat->id);
+            if ($cat->relationLoaded('children')) {
+                foreach ($cat->children as $child) {
+                    if (empty($child->image)) $needIds->push($child->id);
+                }
+            }
+        }
+        $needIds = $needIds->filter()->unique()->values();
+        if ($needIds->isEmpty()) return;
+
+        // One query: newest product image per category
+        $imageByCat = \App\Models\Product::whereIn('category_id', $needIds)
+            ->where('is_active', true)
+            ->whereNotNull('image')
+            ->where('image', '!=', '')
+            ->orderByDesc('id')
+            ->get(['id', 'category_id', 'image'])
+            ->groupBy('category_id')
+            ->map(fn ($g) => $g->first()->image);
+
+        foreach ($categories as $cat) {
+            if (empty($cat->image) && isset($imageByCat[$cat->id])) {
+                $cat->setAttribute('image', $imageByCat[$cat->id]);
+            }
+            if ($cat->relationLoaded('children')) {
+                foreach ($cat->children as $child) {
+                    if (empty($child->image) && isset($imageByCat[$child->id])) {
+                        $child->setAttribute('image', $imageByCat[$child->id]);
+                    }
+                }
+                // Parent still empty? borrow from a child that now has one
+                if (empty($cat->image)) {
+                    foreach ($cat->children as $child) {
+                        if (!empty($child->image)) {
+                            $cat->setAttribute('image', $child->image);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public function allProducts()
     {

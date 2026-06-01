@@ -56,7 +56,7 @@ class Product extends Model
             if (file_exists(public_path($this->image))) return asset($this->image);
             if (Storage::disk('public')->exists($this->image)) return Storage::disk('public')->url($this->image);
         }
-        return asset('images/product-placeholder.png');
+        return 'https://placehold.co/400x400/e2e8f0/94a3b8?text=No+Image';
     }
 
     public function getGalleryUrlsAttribute()

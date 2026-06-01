@@ -1,174 +1,214 @@
 <x-app-layout>
-    <div class="py-8 bg-gray-300 dark:bg-gray-900 min-h-screen"> {{-- Added dark mode background and min-h-screen --}}
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-8">
-                <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-6">
-                    <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Order Confirmed!</h1> {{-- Added dark:text-gray-100 --}}
-                <p class="text-lg text-gray-600 dark:text-gray-400">Thank you for your order. We'll send you a confirmation email shortly.</p> {{-- Added dark:text-gray-400 --}}
+<div class="min-h-screen py-10">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+        {{-- ══ SUCCESS HERO ══ --}}
+        <div class="bg-gradient-to-br from-pink-600 via-pink-500 to-rose-400 rounded-2xl shadow-lg px-8 py-10 text-center text-white">
+            {{-- Checkmark --}}
+            <div class="mx-auto mb-5 flex items-center justify-center w-16 h-16 rounded-full bg-white/20 ring-4 ring-white/30">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-tight mb-2">Order Confirmed!</h1>
+            <p class="text-pink-100 text-sm mb-5">A confirmation email has been sent to <span class="font-semibold text-white">{{ $order->customer_email }}</span></p>
+
+            {{-- Order number pill --}}
+            <div class="inline-flex items-center gap-2 bg-white/15 border border-white/25 rounded-full px-5 py-2">
+                <span class="text-xs text-pink-200 font-medium uppercase tracking-wider">Order</span>
+                <span class="text-sm font-bold text-white">{{ $order->order_number }}</span>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-8"> {{-- Added dark:bg-gray-800 --}}
-                <div class="px-6 py-4 bg-gray-300 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700"> {{-- Added dark:bg-gray-700, dark:border-gray-700 --}}
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Order {{ $order->order_number }}</h2> {{-- Added dark:text-gray-100 --}}
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Placed on {{ $order->created_at->format('F j, Y') }} at {{ $order->created_at->format('g:i A') }}</p> {{-- Added dark:text-gray-400 --}}
-                        </div>
-                        <div class="mt-4 sm:mt-0 flex space-x-4">
-                            {{-- Status Badges - Assuming dynamic color classes are configured for dark mode in tailwind.config.js --}}
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-800 dark:bg-{{ $order->status_color }}-700 dark:text-{{ $order->status_color }}-100">
-                                {{ ucfirst($order->status) }}
-                            </span>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-{{ $order->payment_status_color }}-100 text-{{ $order->payment_status_color }}-800 dark:bg-{{ $order->payment_status_color }}-700 dark:text-{{ $order->payment_status_color }}-100">
-                                Payment {{ ucfirst($order->payment_status) }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-6">
-                    <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Order Items</h3> {{-- Added dark:text-gray-100 --}}
-                        <div class="space-y-4">
-                            @foreach($order->orderItems as $item)
-                            <div class="flex items-center space-x-4 py-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-                                @php
-                                    $image = $item->product->image ?? '';
-                                    
-                                    if (filter_var($image, FILTER_VALIDATE_URL)) {
-                                        // Case 1: Image is a full URL (API Call)
-                                        $imgSrc = $image;
-                                    } elseif (!empty($image)) {
-                                        // Case 2: Image is a local path (Seller Upload)
-                                        // Check if the string already includes 'storage/' to avoid double-prefixing
-                                        $imgSrc = str_starts_with($image, 'storage/') ? asset($image) : asset('storage/' . $image);
-                                    } else {
-                                        // Case 3: No image found
-                                        $imgSrc = asset('images/product-placeholder.png');
-                                    }
-                                @endphp
-
-                                <img src="{{ $imgSrc }}"
-                                    alt="{{ $item->product_name }}"
-                                    class="w-16 h-16 object-cover rounded-lg border border-gray-100 dark:border-gray-700"
-                                    {{-- Final safety fallback --}}
-                                    onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.png') }}'">
-                                    
-                                <div class="flex-1">
-                                    <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $item->product_name }}</h4>
-                                    @if($item->product_sku)
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">SKU: {{ $item->product_sku }}</p>
-                                    @endif
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">Quantity: {{ $item->quantity }}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">${{ number_format($item->total, 2) }}</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">${{ number_format($item->price, 2) }} each</p>
-                                </div>
-                            </div>
-                        @endforeach
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Shipping & Billing</h3> {{-- Added dark:text-gray-100 --}}
-
-                            <div class="space-y-6">
-                                <div>
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Information</h4> {{-- Added dark:text-gray-300 --}}
-                                    <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1"> {{-- Added dark:text-gray-400 --}}
-                                        <p>{{ $order->customer_name }}</p>
-                                        <p>{{ $order->customer_email }}</p>
-                                        @if($order->customer_phone)
-                                            <p>{{ $order->customer_phone }}</p>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Shipping Address</h4> {{-- Added dark:text-gray-300 --}}
-                                    <div class="text-sm text-gray-600 dark:text-gray-400"> {{-- Added dark:text-gray-400 --}}
-                                        <p>{{ $order->shipping_address }}</p>
-                                        <p>{{ $order->shipping_city }}, {{ $order->shipping_state }} {{ $order->shipping_postal_code }}</p>
-                                        <p>{{ $order->shipping_country }}</p>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Method</h4> {{-- Added dark:text-gray-300 --}}
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ ucwords(str_replace('_', ' ', $order->payment_method)) }}</p> {{-- Added dark:text-gray-400 --}}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Order Summary</h3> {{-- Added dark:text-gray-100 --}}
-
-                            <div class="space-y-3">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600 dark:text-gray-400">Subtotal</span> {{-- Added dark:text-gray-400 --}}
-                                    <span class="font-medium text-gray-900 dark:text-gray-100">${{ number_format($order->subtotal, 2) }}</span> {{-- Added dark:text-gray-100 --}}
-                                </div>
-
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600 dark:text-gray-400">Tax</span> {{-- Added dark:text-gray-400 --}}
-                                    <span class="font-medium text-gray-900 dark:text-gray-100">${{ number_format($order->tax_amount, 2) }}</span> {{-- Added dark:text-gray-100 --}}
-                                </div>
-
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600 dark:text-gray-400">Shipping</span> {{-- Added dark:text-gray-400 --}}
-                                    <span class="font-medium text-green-600 dark:text-green-400">Free</span> {{-- Added dark:text-green-400 --}}
-                                </div>
-
-                                <div class="border-t border-gray-200 dark:border-gray-700 pt-3"> {{-- Added dark:border-gray-700 --}}
-                                    <div class="flex justify-between text-lg font-bold">
-                                        <span class="text-gray-900 dark:text-gray-100">Total</span> {{-- Added dark:text-gray-100 --}}
-                                        <span class="text-gray-900 dark:text-gray-100">${{ number_format($order->total_price, 2) }}</span> {{-- Added dark:text-gray-100 --}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if($order->notes)
-                        <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700"> {{-- Added dark:border-gray-700 --}}
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Order Notes</h3> {{-- Added dark:text-gray-100 --}}
-                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $order->notes }}</p> {{-- Added dark:text-gray-400 --}}
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-6 mb-8"> {{-- Added dark:bg-blue-900 --}}
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"> {{-- Added dark:text-blue-400 --}}
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6m-6 0l-2 13h10l-2-13m-6 0v4a2 2 0 002 2h2a2 2 0 002-2V7"></path>
-                    </svg>
-                    <div>
-                        <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100">Estimated Delivery</h3> {{-- Added dark:text-blue-100 --}}
-                        <p class="text-blue-700 dark:text-blue-300"> {{-- Added dark:text-blue-300 --}}
-                            {{ $order->created_at->addDays(7)->format('F j, Y') }} - {{ $order->created_at->addDays(10)->format('F j, Y') }}
-                        </p>
-                        <p class="text-sm text-blue-600 dark:text-blue-400 mt-1">We'll send you tracking information once your order ships.</p> {{-- Added dark:text-blue-400 --}}
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('products.index') }}"
-                   class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 text-center dark:bg-indigo-700 dark:hover:bg-indigo-600"> {{-- Added dark mode for button --}}
-                    Continue Shopping
-                </a>
-                <a href="{{ route('orders.history') }}"
-                   class="bg-gray-300 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-lg transition duration-300 text-center dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"> {{-- Added dark mode for button --}}
-                    View Order History
-                </a>
+            {{-- Status badges --}}
+            <div class="mt-4 flex items-center justify-center gap-2 flex-wrap">
+                @php
+                    $statusClasses = [
+                        'pending'    => 'bg-yellow-100 text-yellow-800',
+                        'processing' => 'bg-blue-100 text-blue-800',
+                        'confirmed'  => 'bg-green-100 text-green-800',
+                        'shipped'    => 'bg-purple-100 text-purple-800',
+                        'delivered'  => 'bg-green-100 text-green-800',
+                        'cancelled'  => 'bg-red-100 text-red-800',
+                    ];
+                    $payStatusClasses = [
+                        'paid'    => 'bg-green-100 text-green-800',
+                        'pending' => 'bg-yellow-100 text-yellow-800',
+                        'failed'  => 'bg-red-100 text-red-800',
+                    ];
+                    $orderStatusClass = $statusClasses[$order->status] ?? 'bg-gray-100 text-gray-700';
+                    $payStatusClass   = $payStatusClasses[$order->payment_status] ?? 'bg-gray-100 text-gray-700';
+                @endphp
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $orderStatusClass }}">
+                    {{ ucfirst($order->status) }}
+                </span>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $payStatusClass }}">
+                    Payment: {{ ucfirst($order->payment_status) }}
+                </span>
             </div>
         </div>
+
+        {{-- ══ MAIN CARD ══ --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-pink-100 overflow-hidden">
+
+            {{-- Order meta strip --}}
+            <div class="px-6 py-4 bg-pink-50 border-b border-pink-100 text-sm text-gray-500">
+                Placed on <span class="font-medium text-gray-800">{{ $order->created_at->format('F j, Y') }}</span>
+                at <span class="font-medium text-gray-800">{{ $order->created_at->format('g:i A') }}</span>
+            </div>
+
+            <div class="p-6 space-y-8">
+
+                {{-- ── Items Ordered ── --}}
+                <div>
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Items Ordered</h3>
+                    <div class="divide-y divide-gray-100">
+                        @foreach($order->orderItems as $item)
+                        @php
+                            $image = $item->product->image ?? '';
+                            if (filter_var($image, FILTER_VALIDATE_URL)) {
+                                $imgSrc = $image;
+                            } elseif (!empty($image)) {
+                                $imgSrc = str_starts_with($image, 'storage/') ? asset($image) : asset('storage/' . $image);
+                            } else {
+                                $imgSrc = 'https://placehold.co/400x400/fce7f3/db2777?text=No+Image';
+                            }
+                        @endphp
+                        <div class="flex items-center gap-4 py-4">
+                            <img src="{{ $imgSrc }}" alt="{{ $item->product_name }}"
+                                 class="w-14 h-14 object-cover rounded-xl border border-pink-100 shrink-0"
+                                 onerror="this.onerror=null;this.src='https://placehold.co/400x400/fce7f3/db2777?text=No+Image'">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-900 truncate">{{ $item->product_name }}</p>
+                                @if($item->product_sku)
+                                    <p class="text-xs text-gray-400 mt-0.5">SKU: {{ $item->product_sku }}</p>
+                                @endif
+                                <p class="text-xs text-gray-500 mt-0.5">Qty: {{ $item->quantity }} × ${{ number_format($item->price, 2) }}</p>
+                            </div>
+                            <p class="text-sm font-bold text-gray-900 shrink-0">${{ number_format($item->total, 2) }}</p>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- ── Delivery + Summary ── --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {{-- Delivery Details --}}
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Delivery Details</h3>
+
+                        <div class="bg-pink-50 rounded-xl p-4 space-y-3 text-sm">
+                            <div>
+                                <p class="text-[11px] font-bold text-pink-400 uppercase tracking-wider mb-1">Contact</p>
+                                <p class="font-semibold text-gray-900">{{ $order->customer_name }}</p>
+                                <p class="text-gray-500">{{ $order->customer_email }}</p>
+                                @if($order->customer_phone)
+                                    <p class="text-gray-500">{{ $order->customer_phone }}</p>
+                                @endif
+                            </div>
+
+                            <div class="border-t border-pink-100 pt-3">
+                                <p class="text-[11px] font-bold text-pink-400 uppercase tracking-wider mb-1">Shipping Address</p>
+                                <p class="text-gray-800">{{ $order->shipping_address }}</p>
+                                <p class="text-gray-500">{{ $order->shipping_city }}{{ $order->shipping_state ? ', '.$order->shipping_state : '' }} {{ $order->shipping_postal_code }}</p>
+                                <p class="text-gray-500">{{ $order->shipping_country }}</p>
+                            </div>
+
+                            <div class="border-t border-pink-100 pt-3">
+                                <p class="text-[11px] font-bold text-pink-400 uppercase tracking-wider mb-1">Payment Method</p>
+                                <p class="text-gray-800">{{ ucwords(str_replace('_', ' ', $order->payment_method)) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Order Summary --}}
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Order Summary</h3>
+
+                        <div class="bg-pink-50 rounded-xl p-4 space-y-2 text-sm">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span>${{ number_format($order->subtotal, 2) }}</span>
+                            </div>
+
+                            @if($order->discount_amount > 0)
+                            <div class="flex justify-between text-green-600 font-medium">
+                                <span>Discount{{ $order->coupon_code ? ' ('.$order->coupon_code.')' : '' }}</span>
+                                <span>-${{ number_format($order->discount_amount, 2) }}</span>
+                            </div>
+                            @endif
+
+                            @if($order->tax_amount > 0)
+                            <div class="flex justify-between text-gray-600">
+                                <span>Tax</span>
+                                <span>${{ number_format($order->tax_amount, 2) }}</span>
+                            </div>
+                            @endif
+
+                            <div class="flex justify-between text-gray-600">
+                                <span>Shipping</span>
+                                <span class="text-green-600 font-semibold">Free</span>
+                            </div>
+
+                            <div class="border-t border-pink-200 pt-3 mt-1 flex justify-between font-bold text-gray-900 text-base">
+                                <span>Total</span>
+                                <span class="text-pink-600">${{ number_format($order->total_price, 2) }}</span>
+                            </div>
+                        </div>
+
+                        @if($order->notes)
+                        <div class="bg-amber-50 border border-amber-100 rounded-xl p-4">
+                            <p class="text-[11px] font-bold text-amber-500 uppercase tracking-wider mb-1">Order Notes</p>
+                            <p class="text-sm text-gray-600 italic">{{ $order->notes }}</p>
+                        </div>
+                        @endif
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {{-- ══ ESTIMATED DELIVERY ══ --}}
+        <div class="bg-white border border-pink-100 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+            <div class="w-11 h-11 rounded-full bg-pink-100 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                </svg>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-900 text-sm">Estimated Delivery</p>
+                <p class="text-pink-600 font-medium text-sm mt-0.5">
+                    {{ $order->created_at->addDays(3)->format('F j') }} – {{ $order->created_at->addDays(7)->format('F j, Y') }}
+                </p>
+                <p class="text-xs text-gray-400 mt-0.5">We'll send you tracking information once your order ships.</p>
+            </div>
+        </div>
+
+        {{-- ══ ACTION BUTTONS ══ --}}
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-4">
+            <a href="{{ route('products.index') }}"
+               class="flex items-center justify-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold py-3 px-4 rounded-xl transition text-sm text-center shadow-sm">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                Continue Shopping
+            </a>
+            <a href="{{ route('orders.show', $order->order_number) }}"
+               class="flex items-center justify-center gap-2 bg-white hover:bg-pink-50 border border-pink-200 text-pink-700 font-semibold py-3 px-4 rounded-xl transition text-sm text-center shadow-sm">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                View Order
+            </a>
+            <a href="{{ route('orders.history') }}"
+               class="flex items-center justify-center gap-2 bg-white hover:bg-pink-50 border border-pink-200 text-pink-700 font-semibold py-3 px-4 rounded-xl transition text-sm text-center shadow-sm">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Order History
+            </a>
+        </div>
+
     </div>
+</div>
 </x-app-layout>

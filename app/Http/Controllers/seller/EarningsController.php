@@ -16,19 +16,48 @@ class EarningsController extends Controller
             return redirect()->route('home')->with('error', 'Seller profile not found.');
         }
 
-        // FIX: Calculate total balance exactly as the Blade file expects.
-        $totalBalance = VendorOrder::where('seller_id', $seller->id)
+        $sellerId = $seller->id;
+
+        // Completed earnings (available balance)
+        $totalBalance = VendorOrder::where('seller_id', $sellerId)
             ->where('status', 'completed')
             ->sum('seller_earnings');
 
-        // Fetch all transactions for the table
-        $recentTransactions = VendorOrder::where('seller_id', $seller->id)
+        // Pending earnings (not yet released)
+        $pendingEarnings = VendorOrder::where('seller_id', $sellerId)
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->sum('seller_earnings');
+
+        // Total revenue (only completed — money actually realized)
+        $totalRevenue = VendorOrder::where('seller_id', $sellerId)
+            ->where('status', 'completed')
+            ->sum('subtotal');
+
+        // Commission actually deducted (only from completed orders — pending earnings haven't had commission "paid" yet)
+        $totalCommission = VendorOrder::where('seller_id', $sellerId)
+            ->where('status', 'completed')
+            ->sum('commission_amount');
+
+        // Order counts by status
+        $completedOrders = VendorOrder::where('seller_id', $sellerId)->where('status', 'completed')->count();
+        $pendingOrders   = VendorOrder::where('seller_id', $sellerId)->where('status', 'pending')->count();
+        $totalOrders     = VendorOrder::where('seller_id', $sellerId)->whereNotIn('status', ['cancelled'])->count();
+
+        // Transactions for the table
+        $recentTransactions = VendorOrder::where('seller_id', $sellerId)
+            ->with('order')
             ->latest()
             ->paginate(10);
 
-        return view('seller.earnings.index', [
-            'totalBalance' => $totalBalance, 
-            'recentTransactions' => $recentTransactions
-        ]);
+        return view('seller.earnings.index', compact(
+            'totalBalance',
+            'pendingEarnings',
+            'totalRevenue',
+            'totalCommission',
+            'completedOrders',
+            'pendingOrders',
+            'totalOrders',
+            'recentTransactions'
+        ));
     }
 }

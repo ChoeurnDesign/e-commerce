@@ -30,7 +30,7 @@
         </form>
 
         <a href="{{ route('seller.products.index') }}"
-           class="inline-flex items-center gap-2 bg-gray-100 dark:bg-[#23263a] hover:bg-gray-300 dark:hover:bg-[#2c3250] text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-lg shadow-md transition">
+           class="inline-flex items-center gap-2 bg-white hover:bg-pink-50 text-gray-600 border border-pink-100 px-4 py-2 rounded-lg shadow-sm transition">
             <x-icon-nav name="back" class="w-4 h-4" />
             <span>Back</span>
         </a>

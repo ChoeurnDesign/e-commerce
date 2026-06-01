@@ -21,10 +21,25 @@ class CartService
 
     public function addToCart($productId, $quantity = 1)
     {
+        /* Industry standard: sellers cannot buy their own products.
+           Prevents fake-sale inflation, self-review abuse, fraudulent
+           "popular" rankings. Sellers CAN buy from other sellers. */
+        if (Auth::check() && $this->isOwnProduct(Auth::user(), $productId)) {
+            abort(403, __('You cannot purchase products from your own store.'));
+        }
+
         if (Auth::check()) {
             return $this->addToUserCart(Auth::id(), $productId, $quantity);
         }
         return $this->addToSessionCart($productId, $quantity);
+    }
+
+    /* Check if the given user is the seller of the given product. */
+    protected function isOwnProduct($user, $productId): bool
+    {
+        if (!$user || !$user->isSeller()) return false;
+        $product = Product::find($productId);
+        return $product && $product->seller_id === $user->seller->id;
     }
 
     public function updateQuantity($productId, $quantity)
@@ -66,17 +81,35 @@ class CartService
             $totalQuantity += $item['quantity'];
         }
 
+        $subtotal = round($subtotal, 2);
+
+        // Apply coupon stored in session
+        $couponSession = Session::get('checkout_coupon');
+        $discountAmount = 0;
+        $couponCode = null;
+        if ($couponSession) {
+            $couponCode = $couponSession['code'];
+            if ($couponSession['type'] === 'percentage') {
+                $discountAmount = round($subtotal * ((float) $couponSession['value'] / 100), 2);
+            } else {
+                $discountAmount = min((float) $couponSession['value'], $subtotal);
+            }
+        }
+
         $taxRate = 0.085;
-        $tax = round($subtotal * $taxRate, 2);
-        $total = round($subtotal + $tax, 2);
+        $taxableAmount = $subtotal - $discountAmount;
+        $tax = round($taxableAmount * $taxRate, 2);
+        $total = round($taxableAmount + $tax, 2);
 
         return [
-            'subtotal' => round($subtotal, 2),
-            'tax' => $tax,
-            'tax_rate' => $taxRate,
-            'total' => $total,
-            'total_items' => $totalItems,
-            'total_quantity' => $totalQuantity
+            'subtotal'        => $subtotal,
+            'discount_amount' => $discountAmount,
+            'coupon_code'     => $couponCode,
+            'tax'             => $tax,
+            'tax_rate'        => $taxRate,
+            'total'           => $total,
+            'total_items'     => $totalItems,
+            'total_quantity'  => $totalQuantity,
         ];
     }
 
@@ -91,42 +124,65 @@ class CartService
         return !empty($this->getCartItems());
     }
 
-    public function validateCart()
+    /**
+     * Validate cart against current product data.
+     * Returns an array of change notices (empty = nothing changed).
+     * Each notice: ['type' => 'removed'|'price'|'stock', 'name' => ..., ...]
+     */
+    public function validateCart(): array
     {
-        $cart = $this->getCartItems();
+        $cart        = $this->getCartItems();
         $updatedCart = [];
-        $hasChanges = false;
+        $changes     = [];
 
         foreach ($cart as $productId => $item) {
             $product = Product::find($productId);
 
             if (!$product || !$product->is_active) {
-                $hasChanges = true;
+                $changes[] = [
+                    'type' => 'removed',
+                    'name' => $item['name'],
+                    'reason' => !$product ? 'no longer available' : 'currently unavailable',
+                ];
                 continue;
             }
 
-            if ($item['price'] != $product->current_price) {
-                $item['price'] = $product->current_price;
-                $item['subtotal'] = $product->current_price * $item['quantity'];
-                $hasChanges = true;
+            if ($product->stock_quantity === 0) {
+                $changes[] = [
+                    'type'   => 'removed',
+                    'name'   => $item['name'],
+                    'reason' => 'out of stock',
+                ];
+                continue;
             }
 
-            if ($item['stock_quantity'] != $product->stock_quantity) {
-                $item['stock_quantity'] = $product->stock_quantity;
-                $hasChanges = true;
+            if ((float) $item['price'] != (float) $product->current_price) {
+                $changes[] = [
+                    'type'      => 'price',
+                    'name'      => $item['name'],
+                    'old_price' => (float) $item['price'],
+                    'new_price' => (float) $product->current_price,
+                ];
+                $item['price']   = $product->current_price;
+                $item['subtotal'] = $product->current_price * $item['quantity'];
             }
 
             if ($item['quantity'] > $product->stock_quantity) {
-                $item['quantity'] = $product->stock_quantity;
-                $item['subtotal'] = $product->current_price * $item['quantity'];
-                $hasChanges = true;
+                $changes[] = [
+                    'type'     => 'stock',
+                    'name'     => $item['name'],
+                    'old_qty'  => $item['quantity'],
+                    'new_qty'  => $product->stock_quantity,
+                ];
+                $item['quantity']      = $product->stock_quantity;
+                $item['subtotal']      = $product->current_price * $item['quantity'];
             }
 
+            $item['stock_quantity'] = $product->stock_quantity;
             $updatedCart[$productId] = $item;
         }
 
-        // Save validated cart
-        if ($hasChanges) {
+        if (!empty($changes)) {
             if (Auth::check()) {
                 $this->saveUserCartFromArray(Auth::id(), $updatedCart);
             } else {
@@ -134,7 +190,7 @@ class CartService
             }
         }
 
-        return $hasChanges;
+        return $changes;
     }
 
     // --- SESSION CART (for guests) ---

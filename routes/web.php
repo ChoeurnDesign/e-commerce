@@ -68,6 +68,7 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('categorie
 Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/products/{id}/quick-view', [ProductController::class, 'quickView'])->name('products.quickView')->where('id', '[0-9]+');
 Route::get('/shops-on-sale', [ProductController::class, 'shopsOnSale'])->name('products.shops_on_sale');
 
 /*
@@ -126,13 +127,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirmReceipt'])->name('orders.confirm');
 
+    // Returns & Refunds
+    Route::prefix('returns')->name('returns.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ReturnRequestController::class, 'index'])->name('index');
+        Route::get('/order/{order}/vendor/{vendorOrder}', [\App\Http\Controllers\ReturnRequestController::class, 'create'])->name('create');
+        Route::post('/order/{order}/vendor/{vendorOrder}', [\App\Http\Controllers\ReturnRequestController::class, 'store'])->name('store');
+        Route::get('/{returnRequest}', [\App\Http\Controllers\ReturnRequestController::class, 'show'])->name('show');
+        Route::post('/{returnRequest}/cancel', [\App\Http\Controllers\ReturnRequestController::class, 'cancel'])->name('cancel');
+    });
+
     // Checkout
     Route::prefix('checkout')->name('checkout.')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('index');
         Route::post('/', [CheckoutController::class, 'placeOrder'])->name('placeOrder');
         Route::get('/confirmation/{orderNumber}', [CheckoutController::class, 'confirmation'])->name('confirmation');
+        Route::post('/confirm-stripe', [CheckoutController::class, 'confirmStripePayment'])->name('confirmStripe');
         Route::post('/paypal-capture', [CheckoutController::class, 'paypalCapture'])->name('paypal.capture');
     });
+
+    // Coupon
+    Route::post('/coupon/apply', [CheckoutController::class, 'applyCoupon'])->name('coupon.apply');
+    Route::post('/coupon/remove', [CheckoutController::class, 'removeCoupon'])->name('coupon.remove');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -164,12 +179,30 @@ Route::prefix('admin')
     ->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('reports-dash', [ReportDashController::class, 'index'])->name('reports-dash.index');
+
+        // Sales Report + Export
+        Route::get('sales-report',             [\App\Http\Controllers\Admin\SalesReportController::class, 'index'])->name('sales-report.index');
+        Route::get('sales-report/export/csv',  [\App\Http\Controllers\Admin\SalesReportController::class, 'exportCsv'])->name('sales-report.export.csv');
+        Route::get('sales-report/export/xlsx', [\App\Http\Controllers\Admin\SalesReportController::class, 'exportExcel'])->name('sales-report.export.xlsx');
+        Route::get('sales-report/print',       [\App\Http\Controllers\Admin\SalesReportController::class, 'print'])->name('sales-report.print');
         // Products CRUD
         Route::resource('products', AdminProductController::class);
 
         // Other admin modules
         Route::resource('categories', AdminCategoryController::class);
         Route::resource('orders', AdminOrderController::class);
+
+        // Payment verification (bank transfers awaiting admin review)
+        Route::get('payments/pending', [AdminOrderController::class, 'pendingPayments'])->name('payments.pending');
+        Route::post('payments/{order}/verify', [AdminOrderController::class, 'verifyPayment'])->name('payments.verify');
+        Route::post('payments/{order}/reject',  [AdminOrderController::class, 'rejectPayment'])->name('payments.reject');
+
+        // Seller payouts / withdrawals
+        Route::get('payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
+        Route::post('payouts/{payoutRequest}/approve',   [\App\Http\Controllers\Admin\PayoutController::class, 'approve'])->name('payouts.approve');
+        Route::post('payouts/{payoutRequest}/mark-paid', [\App\Http\Controllers\Admin\PayoutController::class, 'markPaid'])->name('payouts.markPaid');
+        Route::post('payouts/{payoutRequest}/reject',    [\App\Http\Controllers\Admin\PayoutController::class, 'reject'])->name('payouts.reject');
+
         Route::resource('customers', CustomerController::class)
             ->only(['index', 'create', 'store', 'edit', 'update', 'show', 'destroy']);
         Route::resource('reports', UserReportController::class)->only(['index', 'show']);
@@ -210,7 +243,64 @@ Route::prefix('admin')
 |--------------------------------------------------------------------------
 */
 Route::get('/sell', function () {
-    return view('seller.landing');
+    /* Compact number formatter — 1234 → "1.2K", 5_000_000 → "5M" */
+    $compact = fn($n) => $n >= 1_000_000
+        ? rtrim(rtrim(number_format($n / 1_000_000, 1), '0'), '.') . 'M'
+        : ($n >= 1_000 ? rtrim(rtrim(number_format($n / 1_000, 1), '0'), '.') . 'K' : (string)$n);
+
+    $activeSellers  = \App\Models\Seller::where('status', 'approved')->count();
+    $productsListed = \App\Models\Product::where('is_active', true)->count();
+    $happyCustomers = \App\Models\User::whereHas('orders', fn($q) => $q->where('status', 'completed'))->count();
+
+    $stats = [
+        ['value' => $compact($activeSellers)  . '+', 'label' => __('Active Sellers')],
+        ['value' => $compact($productsListed) . '+', 'label' => __('Products Listed')],
+        ['value' => $compact($happyCustomers) . '+', 'label' => __('Happy Customers')],
+        ['value' => '0%', 'label' => __('Listing Fee'), 'highlight' => true],
+    ];
+
+    /* Aspirational preview — show the BEST seller's real numbers,
+       fall back to demo numbers if no seller has sales yet (marketing page). */
+    $topSellerId = \App\Models\VendorOrder::where('status', 'completed')
+        ->select('seller_id', \DB::raw('SUM(subtotal) as total'))
+        ->groupBy('seller_id')->orderByDesc('total')->value('seller_id');
+
+    $topSeller = $topSellerId
+        ? \App\Models\Seller::where('id', $topSellerId)
+            ->withCount(['products' => fn($q) => $q->where('is_active', true)])->first()
+        : null;
+
+    if ($topSeller) {
+        $sales    = \App\Models\VendorOrder::where('seller_id', $topSeller->id)->where('status', 'completed')->sum('subtotal');
+        $orders   = \App\Models\VendorOrder::where('seller_id', $topSeller->id)->count();
+        $pending  = \App\Models\VendorOrder::where('seller_id', $topSeller->id)->where('status', 'pending')->count();
+        $avgRate  = $topSeller->receivedStoreReviews()->avg('rating') ?? 0;
+        $reviews  = $topSeller->receivedStoreReviews()->count();
+
+        $dashboard = [
+            'isLive'   => true,
+            'sales'    => '$' . number_format($sales, 2),
+            'orders'   => $orders,
+            'pending'  => $pending,
+            'products' => $topSeller->products_count,
+            'rating'   => $avgRate > 0 ? number_format($avgRate, 1) : '—',
+            'reviews'  => $reviews,
+        ];
+    } else {
+        /* No seller has sales yet — show aspirational example so the
+           marketing page still sells the dream. Clearly labeled "Preview". */
+        $dashboard = [
+            'isLive'   => false,
+            'sales'    => '$2,840.00',
+            'orders'   => 48,
+            'pending'  => 5,
+            'products' => 24,
+            'rating'   => '4.8',
+            'reviews'  => 32,
+        ];
+    }
+
+    return view('seller.landing', compact('stats', 'dashboard'));
 })->name('seller.landing');
 
 Route::middleware(['auth'])->group(function () {
@@ -252,6 +342,14 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
     Route::patch('orders/{vendorOrder}/complete', [SellerOrderController::class, 'complete'])->name('orders.complete');
     Route::post('/orders/{order}/confirm', [App\Http\Controllers\OrderController::class, 'confirmReceipt'])->name('orders.confirm');
 
+    // Returns & Refunds (seller side)
+    Route::prefix('returns')->name('returns.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Seller\ReturnRequestController::class, 'index'])->name('index');
+        Route::get('/{returnRequest}', [\App\Http\Controllers\Seller\ReturnRequestController::class, 'show'])->name('show');
+        Route::post('/{returnRequest}/approve', [\App\Http\Controllers\Seller\ReturnRequestController::class, 'approve'])->name('approve');
+        Route::post('/{returnRequest}/reject', [\App\Http\Controllers\Seller\ReturnRequestController::class, 'reject'])->name('reject');
+    });
+
     // Store reviews
     Route::get('reviews', [StoreReviewController::class, 'index'])->name('reviews.index');
     Route::get('reviews/{review}', [StoreReviewController::class, 'show'])->name('reviews.show');
@@ -262,6 +360,11 @@ Route::middleware(['auth', \App\Http\Middleware\SellerMiddleware::class])->prefi
     Route::get('/chat', [SellerChatController::class, 'index'])->name('chat.index');
 
     Route::get('/earnings', [EarningsController::class, 'index'])->name('earnings');
+
+    // Payouts / Withdrawals
+    Route::get('payouts',  [\App\Http\Controllers\Seller\PayoutController::class, 'index'])->name('payouts.index');
+    Route::post('payouts', [\App\Http\Controllers\Seller\PayoutController::class, 'store'])->name('payouts.store');
+    Route::delete('payouts/{payoutRequest}', [\App\Http\Controllers\Seller\PayoutController::class, 'destroy'])->name('payouts.destroy');
 });
 
 /*

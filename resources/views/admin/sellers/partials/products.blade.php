@@ -3,42 +3,42 @@
 @endphp
 
 <div class="mb-8">
-    <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Seller Products</h3>
+    <h3 class="text-xl font-bold text-gray-800 mb-4">Seller Products</h3>
     @if($products->count())
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-[#23263a] bg-white dark:bg-[#23263a] rounded shadow">
+            <table class="min-w-full divide-y divide-gray-200 bg-white rounded shadow">
                 <thead>
-                    <tr class="bg-gray-200 dark:bg-[#232c47]">
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">#</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Created At</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">Actions</th>
+                    <tr class="bg-gray-200">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">Created At</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-[#23263a] bg-white dark:bg-[#23263a]">
+                <tbody class="divide-y divide-gray-200 bg-white">
                     @foreach($products as $product)
-                        <tr class="hover:bg-gray-100 dark:hover:bg-[#232c47]">
-                            <td class="px-6 py-4 text-gray-900 dark:text-gray-100 font-semibold">#{{ $product->id }}</td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-200">
+                        <tr class="hover:bg-gray-100">
+                            <td class="px-6 py-4 text-gray-900 font-semibold">#{{ $product->id }}</td>
+                            <td class="px-6 py-4 text-gray-700">
                                 {{ $product->name }}
                             </td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-200">
+                            <td class="px-6 py-4 text-gray-700">
                                 ${{ number_format($product->price, 2) }}
                             </td>
                             <td class="px-6 py-4">
                                 @if($product->is_active)
-                                    <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
+                                    <span class="inline-block px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
                                         Active
                                     </span>
                                 @else
-                                    <span class="inline-block px-2 py-1 rounded-full text-xs bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300">
+                                    <span class="inline-block px-2 py-1 rounded-full text-xs bg-red-100 text-red-700">
                                         Inactive
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-200">
+                            <td class="px-6 py-4 text-gray-700">
                                 {{ $product->created_at->format('Y-m-d H:i') }}
                             </td>
                             <td class="px-6 py-4 text-center">
@@ -55,6 +55,6 @@
             </table>
         </div>
     @else
-        <div class="text-gray-500 dark:text-gray-300 text-center py-8">No products found for this seller.</div>
+        <div class="text-gray-500 text-center py-8">No products found for this seller.</div>
     @endif
 </div>

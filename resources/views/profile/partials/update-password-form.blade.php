@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+        <h2 class="text-lg font-medium text-gray-900">
             {{ __('Update Password') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+        <p class="mt-1 text-sm text-gray-600">
             {{ __('Ensure your account is using a long, random password to stay secure.') }}
         </p>
     </header>
@@ -14,20 +14,20 @@
         <input type="hidden" name="_method" value="">
 
         <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" class="text-gray-700 dark:text-gray-200" />
-            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full bg-gray-300 dark:bg-[#222b44] text-gray-800 dark:text-white border-gray-300 dark:border-gray-700" autocomplete="current-password" />
+            <x-input-label for="update_password_current_password" :value="__('Current Password')" class="text-gray-700" />
+            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full bg-white text-gray-800 border-rose-100" autocomplete="current-password" />
             <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" class="text-gray-700 dark:text-gray-200" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full bg-gray-300 dark:bg-[#222b44] text-gray-800 dark:text-white border-gray-300 dark:border-gray-700" autocomplete="new-password" />
+            <x-input-label for="update_password_password" :value="__('New Password')" class="text-gray-700" />
+            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full bg-white text-gray-800 border-rose-100" autocomplete="new-password" />
             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" class="text-gray-700 dark:text-gray-200" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full bg-gray-300 dark:bg-[#222b44] text-gray-800 dark:text-white border-gray-300 dark:border-gray-700" autocomplete="new-password" />
+            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" class="text-gray-700" />
+            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full bg-white text-gray-800 border-rose-100" autocomplete="new-password" />
             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
@@ -40,7 +40,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-300"
+                    class="text-sm text-gray-600"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

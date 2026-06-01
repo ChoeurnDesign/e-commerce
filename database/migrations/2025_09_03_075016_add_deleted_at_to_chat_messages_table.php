@@ -13,9 +13,11 @@ class AddDeletedAtToChatMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::table('chat_messages', function (Blueprint $table) {
-            $table->softDeletes(); // Adds deleted_at column
-        });
+        if (!Schema::hasColumn('chat_messages', 'deleted_at')) {
+            Schema::table('chat_messages', function (Blueprint $table) {
+                $table->softDeletes();
+            });
+        }
     }
 
     /**

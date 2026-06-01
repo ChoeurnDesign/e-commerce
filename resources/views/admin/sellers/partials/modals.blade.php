@@ -12,17 +12,17 @@
         class="fixed inset-0 flex items-center justify-center z-50 bg-black/40"
         x-transition
     >
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Change Seller Status</h2>
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-lg font-bold mb-4 text-gray-900">Change Seller Status</h2>
             <form method="POST" action="{{ route('admin.sellers.updateStatus', [$seller->id, 'status']) }}">
                 @csrf
                 <input type="hidden" name="_method" value="">
-                <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label class="block mb-2 text-sm font-medium text-gray-700">
                     Add a comment (optional):
-                    <textarea name="admin_comment" rows="2" class="mt-1 block w-full rounded border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200"></textarea>
+                    <textarea name="admin_comment" rows="2" class="mt-1 block w-full rounded border-gray-300 bg-gray-100 text-gray-800"></textarea>
                 </label>
                 <div class="flex justify-end gap-2 mt-4">
-                    <button @click="open = false" type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-400 dark:hover:bg-gray-600">
+                    <button @click="open = false" type="button" class="px-4 py-2 bg-gray-50 text-gray-900 rounded hover:bg-gray-400">
                         Cancel
                     </button>
                     <button name="action" value="approved" type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Approve</button>

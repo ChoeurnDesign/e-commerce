@@ -1,109 +1,350 @@
+
+@props([
+    'banners'         => null,
+    'storefrontTitle' => '',
+    'welcomeMessage'  => '',
+    'compact'         => false,
+])
+
 @php
-    // 1) Fallback banners (must exist in storage/app/public/banners/)
     $fallbackBanners = collect([
-        (object) ['image_path' => 'banners/banner_01.jpg'],
-        (object) ['image_path' => 'banners/banner_02.png'],
+        (object)[
+            'image_path' => 'banners/banner_01.jpg',
+            'title' => null,
+            'subtitle' => null,
+            'button_text' => null,
+            'button_link' => null
+        ],
+        (object)[
+            'image_path' => 'banners/banner_02.png',
+            'title' => null,
+            'subtitle' => null,
+            'button_text' => null,
+            'button_link' => null
+        ],
     ]);
 
-    // 2) DB banners that have real files (public/storage/<image_path>)
     $validBanners = collect($banners ?? [])
-        ->filter(fn ($b) => !empty($b->image_path) && file_exists(public_path('storage/' . $b->image_path)))
+        ->filter(fn($b) =>
+            !empty($b->image_path) &&
+            file_exists(public_path('storage/' . $b->image_path))
+        )
         ->values();
 
-    // 3) Decide which to use
-    $sliderBanners = $validBanners->isNotEmpty() ? $validBanners : $fallbackBanners;
+    $sliderBanners = $validBanners->isNotEmpty()
+        ? $validBanners
+        : $fallbackBanners;
 
-    // 4) Safe count
     $slideCount = $sliderBanners->count();
+
+    $themes = [
+        [
+            'bg' => '#FFF7ED',
+            'badgeBg' => '#FED7AA',
+            'badgeText' => '#EA580C',
+            'btnBg' => '#F97316',
+        ],
+        [
+            'bg' => '#EFF6FF',
+            'badgeBg' => '#DBEAFE',
+            'badgeText' => '#2563EB',
+            'btnBg' => '#2563EB',
+        ],
+        [
+            'bg' => '#F0FDF4',
+            'badgeBg' => '#DCFCE7',
+            'badgeText' => '#16A34A',
+            'btnBg' => '#16A34A',
+        ],
+        [
+            'bg' => '#FAF5FF',
+            'badgeBg' => '#E9D5FF',
+            'badgeText' => '#7C3AED',
+            'btnBg' => '#7C3AED',
+        ],
+    ];
 @endphp
 
-<!-- Banner Slider -->
-<div
+<section
     x-data="{
-        active: 0,
-        count: {{ $slideCount }},
-        isAnimating: true,
+        cur: 0,
+        n: {{ $slideCount }},
+        paused: false,
+        tid: null,
+        MS: 6000,
+
         init() {
-            if (this.count > 1) {
-                setInterval(() => {
-                    this.active++;
-                    if (this.active > this.count) {
-                        this.isAnimating = false;
-                        this.active = 0;
-                        this.$nextTick(() => {
-                            this.isAnimating = true;
-                            this.active++;
-                        });
-                    }
-                }, 4000);
+            if (this.n > 1) {
+                this.start();
+            }
+        },
+
+        start() {
+            clearInterval(this.tid);
+
+            this.tid = setInterval(() => {
+                if (!this.paused) {
+                    this.go((this.cur + 1) % this.n);
+                }
+            }, this.MS);
+        },
+
+        go(i) {
+            this.cur = i;
+
+            if (this.n > 1) {
+                this.start();
             }
         }
     }"
-    class="relative w-full overflow-hidden h-[260px] sm:h-[380px] md:h-[560px]"
+    @mouseenter="paused = true"
+    @mouseleave="paused = false"
+    class="relative overflow-hidden rounded-2xl
+           h-[220px] sm:h-[260px] lg:h-[320px]
+           bg-white border border-gray-100"
 >
-    <!-- Sliding images -->
-    <div
-        class="flex h-full w-full"
-        :class="{ 'transition-transform duration-1000 ease-in-out': isAnimating }"
-        :style="'transform: translateX(-' + active * 100 + '%)'"
-    >
-        @foreach($sliderBanners as $banner)
-            <div
-                class="flex-none w-full h-full bg-cover bg-center"
-                style="background-image: url('{{ asset('storage/' . $banner->image_path) }}');"
-            ></div>
-        @endforeach
 
-        @if($slideCount > 1)
-            <!-- Clone first banner for seamless loop -->
-            <div
-                class="flex-none w-full h-full bg-cover bg-center"
-                style="background-image: url('{{ asset('storage/' . $sliderBanners[0]->image_path) }}');"
-            ></div>
-        @endif
-    </div>
+    {{-- SLIDES --}}
+    @foreach($sliderBanners as $i => $banner)
 
-    <!-- Fixed CTA/Text Overlay -->
-    <div class="absolute inset-0 flex items-center justify-center z-10 bg-black/35 pointer-events-none">
-        <div class="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-8 py-6 sm:py-14 md:py-24 text-center text-white pointer-events-auto">
+        @php
+            $ttl = trim($banner->title ?? '');
+            $sub = trim($banner->subtitle ?? '');
+            $btn = trim($banner->button_text ?? '');
+            $url = trim($banner->button_link ?? '');
 
-            <h1 class="text-xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4 drop-shadow-lg leading-tight">
-                {{ (isset($storefrontTitle) && trim($storefrontTitle) !== '') ? $storefrontTitle : 'Welcome to Our Store' }}
-            </h1>
+            if (!$ttl) {
+                $ttl = ($i === 0 && $storefrontTitle)
+                    ? $storefrontTitle
+                    : __('Discover Quality Products');
+            }
 
-            <p class="text-xs sm:text-base md:text-xl mb-4 sm:mb-7 max-w-2xl mx-auto opacity-95 leading-relaxed hidden sm:block">
-                {{ (isset($welcomeMessage) && trim($welcomeMessage) !== '')
+            if (!$sub) {
+                $sub = ($i === 0 && $welcomeMessage)
                     ? $welcomeMessage
-                    : __('Discover amazing products at unbeatable prices. Your one-stop shop for everything you need.') }}
-            </p>
+                    : __('Shop from trusted multi-vendor stores with secure payments and fast delivery.');
+            }
 
-            <div class="flex flex-col items-center gap-2 sm:gap-3 mt-2 sm:mt-4">
-                <div class="flex flex-row gap-2 sm:gap-4">
-                    <a href="#categories"
-                       class="inline-block bg-white text-indigo-600 hover:bg-indigo-50 font-semibold
-                              py-1.5 px-3 sm:py-2 sm:px-6 rounded-full
-                              text-xs sm:text-sm md:text-base
-                              transition duration-300 shadow-md">
-                        {{ __('Browse Categories') }}
-                    </a>
+            if (!$btn) {
+                $btn = __('Shop Now');
+            }
 
-                    <a href="#featured-products"
-                       class="inline-block border-2 border-white text-white hover:bg-white hover:text-indigo-600 font-semibold
-                              py-1.5 px-3 sm:py-2 sm:px-6 rounded-full
-                              text-xs sm:text-sm md:text-base
-                              transition duration-300">
-                        {{ __('Shop Featured') }}
-                    </a>
+            if (!$url) {
+                $url = route('products.index');
+            }
+
+            $theme = $themes[$i % count($themes)];
+
+            $imgUrl = asset('storage/' . $banner->image_path);
+        @endphp
+
+        <div
+            class="absolute inset-0 transition-all duration-700 ease-in-out"
+            :class="{{ $i }} === cur
+                ? 'opacity-100 z-10'
+                : 'opacity-0 z-0'"
+            style="background: {{ $theme['bg'] }}"
+        >
+
+            {{-- IMAGE --}}
+            <img
+                src="{{ $imgUrl }}"
+                alt="{{ $ttl }}"
+                class="absolute inset-0 w-full h-full object-cover
+                       transition-transform duration-[7000ms] ease-linear"
+                :class="{{ $i }} === cur
+                    ? 'scale-105'
+                    : 'scale-100'"
+                loading="{{ $i === 0 ? 'eager' : 'lazy' }}"
+                onerror="this.style.display='none'"
+            >
+
+            {{-- LIGHT OVERLAY --}}
+            <div
+                class="absolute inset-0"
+                style="
+                    background:
+                    linear-gradient(
+                        to right,
+                        rgba(255,255,255,0.95) 0%,
+                        rgba(255,255,255,0.88) 28%,
+                        rgba(255,255,255,0.65) 48%,
+                        rgba(255,255,255,0.20) 70%,
+                        rgba(255,255,255,0) 100%
+                    );
+                "
+            ></div>
+
+            {{-- CONTENT --}}
+            <div class="absolute inset-y-0 left-0 z-20 flex items-center">
+
+                <div class="max-w-[420px] px-6 lg:px-10">
+
+                    {{-- BADGE --}}
+                    <span
+                        class="inline-flex items-center gap-2
+                               text-[11px] font-bold uppercase tracking-wide
+                               px-3 py-1 rounded-full mb-4"
+                        style="
+                            background: {{ $theme['badgeBg'] }};
+                            color: {{ $theme['badgeText'] }};
+                        "
+                    >
+                        <span
+                            class="w-1.5 h-1.5 rounded-full animate-pulse"
+                            style="background: {{ $theme['badgeText'] }}"
+                        ></span>
+
+                        Featured Collection
+                    </span>
+
+                    {{-- TITLE --}}
+                    <h2
+                        class="text-2xl lg:text-4xl
+                               leading-tight font-extrabold
+                               text-gray-900 mb-3"
+                    >
+                        {{ $ttl }}
+                    </h2>
+
+                    {{-- SUBTITLE --}}
+                    <p
+                        class="text-sm lg:text-base
+                               text-gray-500 leading-relaxed mb-6"
+                    >
+                        {{ $sub }}
+                    </p>
+
+                    {{-- BUTTONS --}}
+                    <div class="flex items-center gap-3">
+
+                        <a
+                            href="{{ $url }}"
+                            class="inline-flex items-center gap-2
+                                   px-5 py-2.5 rounded-2xl
+                                   text-sm font-bold text-white
+                                   shadow-sm hover:shadow-md
+                                   hover:-translate-y-0.5
+                                   transition-all duration-200"
+                            style="background: {{ $theme['btnBg'] }}"
+                        >
+                            {{ $btn }}
+
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2.5"
+                                    d="M9 5l7 7-7 7"
+                                />
+                            </svg>
+                        </a>
+
+                        <a
+                            href="{{ route('categories.index') }}"
+                            class="px-5 py-2.5 rounded-2xl
+                                   border border-gray-200
+                                   bg-white/80 backdrop-blur-sm
+                                   text-sm font-medium text-gray-700
+                                   hover:bg-white
+                                   transition-all duration-200"
+                        >
+                            Explore
+                        </a>
+
+                    </div>
+
                 </div>
 
-                <a href="{{ route('products.shops_on_sale', ['on_sale' => 1]) }}"
-                   class="inline-block bg-pink-600 text-white font-semibold
-                          py-1.5 px-4 sm:py-2 sm:px-6 rounded-full
-                          text-xs sm:text-sm md:text-base
-                          transition duration-300 shadow hover:bg-pink-700">
-                    {{ __('Shop On Sale') }}
-                </a>
             </div>
+
         </div>
-    </div>
-</div>
+
+    @endforeach
+
+    {{-- DOTS --}}
+    @if($slideCount > 1)
+
+        <div
+            class="absolute bottom-4 inset-x-0 z-30
+                   flex items-center justify-center gap-2"
+        >
+
+            @foreach($sliderBanners as $i => $banner)
+
+                <button
+                    @click="go({{ $i }})"
+                    class="rounded-full transition-all duration-300"
+
+                    :class="{{ $i }} === cur
+                        ? 'w-7 h-2 bg-orange-500'
+                        : 'w-2 h-2 bg-white/70 hover:bg-white'"
+                ></button>
+
+            @endforeach
+
+        </div>
+
+        {{-- PREV --}}
+        <button
+            @click="go((cur - 1 + n) % n)"
+            class="absolute left-4 top-1/2 -translate-y-1/2 z-30
+                   w-10 h-10 rounded-full
+                   bg-white/90 backdrop-blur-sm
+                   border border-gray-200
+                   flex items-center justify-center
+                   shadow-md text-gray-700
+                   opacity-0 group-hover:opacity-100
+                   transition-all duration-200"
+        >
+            <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M15 19l-7-7 7-7"
+                />
+            </svg>
+        </button>
+
+        {{-- NEXT --}}
+        <button
+            @click="go((cur + 1) % n)"
+            class="absolute right-4 top-1/2 -translate-y-1/2 z-30
+                   w-10 h-10 rounded-full
+                   bg-white/90 backdrop-blur-sm
+                   border border-gray-200
+                   flex items-center justify-center
+                   shadow-md text-gray-700
+                   opacity-0 group-hover:opacity-100
+                   transition-all duration-200"
+        >
+            <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M9 5l7 7-7 7"
+                />
+            </svg>
+        </button>
+
+    @endif
+
+</section>
+

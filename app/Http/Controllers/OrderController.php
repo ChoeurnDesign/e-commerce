@@ -49,37 +49,35 @@ class OrderController extends Controller
             return back()->with('info', 'This order is already completed.');
         }
 
-        // Allow confirmation if the seller has confirmed or shipped the item
-        $allowedStatuses = ['shipped', 'confirmed'];
+        // Customer can confirm receipt when order is delivered, shipped, or confirmed by seller
+        $allowedStatuses = ['delivered', 'shipped', 'confirmed'];
         if (!in_array($order->status, $allowedStatuses)) {
-            return back()->with('error', 'Order cannot be confirmed at this stage.');
+            return back()->with('error', 'Order cannot be confirmed at this stage. Current status: ' . ucfirst($order->status));
         }
 
         try {
             DB::beginTransaction();
 
-            // 1. Update the main Customer Order status to completed
-            $order->update(['status' => 'completed']);
-
-            // 2. Update the Vendor Orders status to completed
-            VendorOrder::where('order_id', $order->id)->update([
-                'status' => 'completed'
-            ]);
-
-            // 3. Credit seller wallets only for COD orders (card/PayPal wallets are credited at checkout)
-            if ($order->payment_status !== 'paid' && !$order->payout_released) {
-                foreach ($order->vendorOrders as $vendorOrder) {
-                    $wallet = Wallet::firstOrCreate(
-                        ['seller_id' => $vendorOrder->seller_id],
-                        ['balance' => 0]
-                    );
-                    $wallet->increment('balance', $vendorOrder->seller_earnings);
-                }
-                $order->update(['payout_released' => true]);
+            // 1. If COD and payment still pending → mark as paid + credit platform
+            if ($order->payment_method === 'cash_on_delivery' && $order->payment_status !== 'paid') {
+                $order->update(['payment_status' => 'paid']);
+                \App\Models\PlatformWallet::getInstance()
+                    ->receiveOrderPayment($order, (float) $order->total_price);
             }
 
+            // 2. Update order + vendor orders to completed
+            $order->update(['status' => 'completed']);
+
+            VendorOrder::where('order_id', $order->id)
+                ->whereNotIn('status', ['completed', 'cancelled'])
+                ->update(['status' => 'completed']);
+
+            // 3. Distribute earnings via platform wallet
+            //    (credits seller wallets, debits platform, records transactions)
+            $order->distributeVendorEarnings();
+
             DB::commit();
-            return back()->with('success', 'Order confirmed! Thank you.');
+            return back()->with('success', 'Order confirmed! Thank you for shopping with us.');
 
         } catch (\Exception $e) {
             DB::rollBack();

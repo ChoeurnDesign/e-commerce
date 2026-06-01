@@ -7,82 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
-/**
- * @property int $id
- * @property int $user_id
- * @property string $store_name
- * @property string $slug
- * @property string|null $description
- * @property string|null $business_document
- * @property string $status
- * @property string|null $admin_comment
- * @property string|null $store_logo
- * @property string|null $store_banner
- * @property string|null $contact_email
- * @property string|null $address
- * @property string|null $phone
- * @property string|null $website
- * @property string|null $facebook
- * @property string|null $instagram
- * @property string|null $tiktok
- * @property bool $ships_worldwide
- * @property int|null $returns_days
- * @property string|null $shipping_summary
- * @property string|null $response_time
- * @property \Illuminate\Support\Carbon|null $verified_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read int|null $followers_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Category> $categories
- * @property-read int|null $categories_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $followers
- * @property-read string|null $business_document_url
- * @property-read string $store_banner_url
- * @property-read string $store_logo_url
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
- * @property-read int|null $orders_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
- * @property-read int|null $products_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreReview> $receivedStoreReviews
- * @property-read int|null $received_store_reviews_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreReview> $storeReviews
- * @property-read int|null $store_reviews_count
- * @property-read \App\Models\User $user
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\VendorOrder> $vendorOrders
- * @property-read int|null $vendor_orders_count
- * @property-read \App\Models\Wallet|null $wallet
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller approved()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller pending()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereAdminComment($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereBusinessDocument($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereContactEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereFacebook($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereFollowersCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereInstagram($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller wherePhone($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereResponseTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereReturnsDays($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereShippingSummary($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereShipsWorldwide($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereStoreBanner($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereStoreLogo($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereStoreName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereTiktok($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Seller whereWebsite($value)
- * @mixin \Eloquent
- */
 class Seller extends Model
 {
     use HasFactory;
@@ -92,7 +16,7 @@ class Seller extends Model
         'status', 'admin_comment', 'store_logo', 'store_banner', 'contact_email',
         'address', 'phone', 'website', 'facebook', 'instagram', 'tiktok',
         'ships_worldwide', 'returns_days', 'shipping_summary', 'response_time', 'verified_at',
-        'commission_rate', 'stripe_account_id',
+        'commission_rate', 'promo_until', 'stripe_account_id',
     ];
 
     protected $appends = ['store_logo_url', 'store_banner_url', 'business_document_url'];

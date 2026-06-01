@@ -36,7 +36,7 @@
     @if($id) id="{{ $id }}" @endif
     src="{{ $src }}"
     alt="{{ $alt ?? $name }}"
-    class="{{ $class ?: 'h-10 w-10 rounded-lg object-cover border border-gray-100 dark:border-[#23263a]' }}"
+    class="{{ $class ?: 'h-10 w-10 rounded-lg object-cover border border-pink-100' }}"
     loading="lazy"
     onerror="this.onerror=null; this.src='{{ $placeholder }}';"
 />

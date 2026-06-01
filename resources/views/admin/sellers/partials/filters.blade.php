@@ -4,12 +4,12 @@
         name="search"
         value="{{ request('search') }}"
         placeholder="Search seller, email, or store…"
-        class="px-4 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#23263a] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        class="px-4 py-2 rounded border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
     />
 
     <select
         name="status"
-        class="px-8 py-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#23263a] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        class="px-8 py-2 rounded border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
     >
         <option value="">All Statuses</option>
         <option value="pending" @selected(request('status') === 'pending')>Pending</option>
@@ -26,7 +26,7 @@
 
     @if(request('search') || request('status'))
         <a href="{{ route('admin.sellers.index') }}"
-           class="px-5 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-gray-700 dark:text-gray-200 font-semibold transition">
+           class="px-5 py-2 bg-gray-200 hover:bg-gray-50 rounded text-gray-700 font-semibold transition">
             Reset
         </a>
     @endif

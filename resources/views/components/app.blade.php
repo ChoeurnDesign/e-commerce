@@ -4,7 +4,7 @@
     @include('layouts.head')
     @include('layouts.styles')
 </head>
-<body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+<body class="bg-white text-gray-900">
     <div class="min-h-screen">
         @include('layouts.navigation')
         @include('layouts.flash-messages')

@@ -1,9 +1,9 @@
-
+﻿
 <!-- Header -->
 <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
     <div class="flex items-center">
         <span class="mr-2">
-            <x-icon-dashboard name="products" class="w-7 h-7 text-indigo-600 dark:text-yellow-400"/>
+            <x-icon-dashboard name="products" class="w-7 h-7 text-pink-600 dark:text-yellow-400"/>
         </span>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Products</h1>
     </div>
@@ -15,7 +15,7 @@
             </a>
         @endisset
         @isset($createRoute)
-            <a href="{{ $createRoute }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+            <a href="{{ $createRoute }}" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
                 <x-icon-nav name="add"/>
                 Add Product
             </a>
@@ -132,4 +132,5 @@
         {{ $products->links() }}
     </div>
 </div>
+
 

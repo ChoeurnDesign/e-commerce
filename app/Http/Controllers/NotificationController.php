@@ -13,8 +13,16 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $notifications = $user->notifications()->latest()->paginate(20);
-        $unreadCount = $user->unreadNotifications()->count();
+
+        // Exclude chat_message type — those belong in the chat section
+        $notifications = $user->notifications()
+            ->whereRaw("COALESCE(JSON_UNQUOTE(JSON_EXTRACT(data, '$.type')), '') != 'chat_message'")
+            ->latest()
+            ->paginate(20);
+
+        $unreadCount = $user->unreadNotifications()
+            ->whereRaw("COALESCE(JSON_UNQUOTE(JSON_EXTRACT(data, '$.type')), '') != 'chat_message'")
+            ->count();
 
         return view('notifications.index', compact('notifications', 'unreadCount'));
     }

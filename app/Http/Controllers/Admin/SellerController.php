@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SellerApproved;
+use App\Mail\SellerRejected;
 use App\Models\Seller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class SellerController extends Controller
@@ -106,14 +109,58 @@ class SellerController extends Controller
         if (!in_array($status, ['approved', 'rejected'], true)) {
             return back()->with('error', 'Invalid status.');
         }
+
+        if ($status === 'rejected') {
+            $request->validate([
+                'admin_comment' => 'required|string|max:1000',
+            ], [
+                'admin_comment.required' => 'Please provide a reason for rejection.',
+            ]);
+        }
+
+        $previousStatus = $seller->status;
         $seller->status = $status;
+
         if ($request->filled('admin_comment')) {
             $seller->admin_comment = $request->admin_comment;
         }
-        $seller->save();
 
+        $seller->save();
+        $seller->load('user');
+
+        if ($status === 'approved' && $previousStatus !== 'approved') {
+            // Grant seller role on first approval
+            if ($seller->user) {
+                $seller->user->role = 'seller';
+                $seller->user->save();
+            }
+
+            try {
+                Mail::to($seller->user->email)->send(new SellerApproved($seller));
+            } catch (\Exception $e) {
+                // Email failure should not block the flow
+            }
+        }
+
+        if ($status === 'rejected' && $previousStatus !== 'rejected') {
+            // Revert role if they were previously approved
+            if ($seller->user && $seller->user->role === 'seller') {
+                $seller->user->role = 'user';
+                $seller->user->save();
+            }
+
+            try {
+                Mail::to($seller->user->email)->send(
+                    new SellerRejected($seller, $request->input('admin_comment', ''))
+                );
+            } catch (\Exception $e) {
+                // Email failure should not block the flow
+            }
+        }
+
+        $label = $status === 'approved' ? 'approved' : 'rejected';
         return redirect()
             ->route('admin.sellers.show', ['seller' => $seller->id])
-            ->with('success', "Seller {$status}.");
+            ->with('success', "Seller {$label} successfully.");
     }
 }

@@ -23,3 +23,4 @@
     <span aria-hidden="true" class="chat-unread-visible">{{ $initial > 99 ? '99+' : $initial }}</span>
 </span>
 </a>
+

@@ -55,7 +55,7 @@
         {{-- Show real logo if exists, otherwise generate initials --}}
         <img src="{{ $logoPath ? asset($logoPath) : $uiAvatar }}"
              alt="{{ $storeName }}"
-             class="{{ $logoClass }} rounded-full border-4 border-white dark:border-gray-800 shadow-xl bg-white dark:bg-slate-800 object-cover"
+             class="{{ $logoClass }} rounded-full border-4 border-white shadow-xl bg-white object-cover"
              onerror="this.onerror=null; this.src='{{ $uiAvatar }}';" />
     </div>
 </div>

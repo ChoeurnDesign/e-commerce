@@ -1,31 +1,32 @@
 @props([
     'label' => '',
     'value' => '—',
-    'color' => 'indigo',   // allowed: indigo, green, yellow, red, blue, gray
-    'icon'  => null,       // optional raw SVG or HTML
+    'color' => 'pink',
+    'icon'  => null,
     'size'  => 'lg',       // lg | sm
 ])
 
 @php
     // Whitelist color stems to prevent invalid class injection
     $palette = [
-        'indigo' => 'text-indigo-600 dark:text-indigo-400',
-        'green'  => 'text-green-600 dark:text-green-400',
-        'yellow' => 'text-yellow-600 dark:text-yellow-300',
-        'red'    => 'text-red-600 dark:text-red-400',
-        'blue'   => 'text-blue-600 dark:text-blue-400',
-        'gray'   => 'text-gray-700 dark:text-gray-300',
+        'pink'   => 'text-pink-600',
+        'indigo' => 'text-indigo-600',
+        'green'  => 'text-green-600',
+        'yellow' => 'text-yellow-600',
+        'red'    => 'text-red-600',
+        'blue'   => 'text-blue-600',
+        'gray'   => 'text-gray-700',
     ];
-    $colorClass = $palette[$color] ?? $palette['indigo'];
+    $colorClass = $palette[$color] ?? $palette['pink'];
 
     $valueSize = $size === 'sm' ? 'text-2xl' : 'text-3xl';
     $labelSize = $size === 'sm' ? 'text-xs' : 'text-sm';
 @endphp
 
-<div {{ $attributes->merge(['class' => 'bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center w-full']) }}>
+<div {{ $attributes->merge(['class' => 'bg-white rounded-lg shadow p-6 flex flex-col items-center w-full border border-pink-100']) }}>
     <div class="flex items-center gap-3">
         @if($icon)
-            <span class="p-2 rounded-md bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300">
+            <span class="p-2 rounded-md bg-gray-50 text-gray-600">
                 {!! $icon !!}
             </span>
         @endif
@@ -33,7 +34,7 @@
             <div class="font-bold leading-none mb-2 {{ $valueSize }} {{ $colorClass }}">
                 {{ $value }}
             </div>
-            <div class="font-medium {{ $labelSize }} text-gray-700 dark:text-gray-200 tracking-wide uppercase">
+            <div class="font-medium {{ $labelSize }} text-gray-700 tracking-wide uppercase">
                 {{ $label }}
             </div>
         </div>

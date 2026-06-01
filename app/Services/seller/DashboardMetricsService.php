@@ -45,7 +45,9 @@ class DashboardMetricsService
         $includeRatings  = $options['include_ratings'] ?? false;
 
         $productsCount = $includeProducts ? (int)$seller->products()->count() : null;
-        $ordersCount   = $includeOrders ? (int)$seller->orders()->count() : null;
+        // Use vendorOrders (one row per seller per order) instead of orders (main order's seller_id)
+        // because multi-vendor orders have multiple sellers and orders.seller_id is mostly null.
+        $ordersCount   = $includeOrders ? (int)$seller->vendorOrders()->whereNotIn('status', ['cancelled'])->count() : null;
 
         $averageRating = null;
         if ($includeRatings && method_exists($seller, 'products')) {

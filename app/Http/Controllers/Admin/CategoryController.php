@@ -31,6 +31,7 @@ class CategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
             'image' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:2048',
+            'commission_rate' => 'nullable|numeric|min:0|max:100',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -57,6 +58,7 @@ class CategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
             'image' => 'nullable|file|mimes:png,jpg,jpeg,webp|max:2048',
+            'commission_rate' => 'nullable|numeric|min:0|max:100',
         ]);
 
         if ($request->has('remove_image')) {

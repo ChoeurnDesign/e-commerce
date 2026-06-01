@@ -6,9 +6,9 @@
 <div class="space-y-6 min-h-screen">
     <div class="mb-6 flex items-center">
         <span class="mr-2">
-            <x-icon-dashboard name="reviews" class="w-7 h-7 text-indigo-600 dark:text-yellow-400"/>
+            <x-icon-dashboard name="reviews" class="w-7 h-7 text-indigo-600"/>
         </span>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Reviews</h1>
+        <h1 class="text-2xl font-bold text-gray-900">Reviews</h1>
     </div>
 
     {{-- Simple Search --}}
@@ -19,34 +19,34 @@
         :autofocus="true"
     />
 
-    <div class="bg-white dark:bg-[#23263a] shadow overflow-hidden border border-gray-300 dark:border-[#23263a]">
+    <div class="bg-white shadow-sm overflow-hidden border border-gray-100 rounded-2xl">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-[#23263a]">
+            <table class="min-w-full divide-y divide-gray-200">
                 <thead>
-                    <tr class="bg-gray-300 dark:bg-[#232c47]">
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">#</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Reviewer</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Rating</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Comment</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
+                    <tr class="bg-gray-50">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reviewer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rating</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Comment</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-[#23263a] divide-y divide-gray-200 dark:divide-[#23263a]">
+                <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($reviews as $review)
-                        <tr class="hover:bg-gray-300 dark:hover:bg-[#262c47] transition">
-                            <td class="px-6 py-4 text-center text-gray-900 dark:text-gray-100">
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 text-center text-gray-900">
                                 {{ ($reviews->currentPage() - 1) * $reviews->perPage() + $loop->iteration }}
                             </td>
                             <td class="px-6 py-4">
-                                <span class="text-indigo-700 dark:text-indigo-300">
+                                <span class="text-indigo-700">
                                     {{ $review->product->name ?? '-' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-gray-700 dark:text-gray-200">
+                            <td class="px-6 py-4 text-gray-700">
                                 {{ $review->user->name ?? 'Guest' }}
                                 @if($review->user && $review->user->email)
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $review->user->email }}</div>
+                                    <div class="text-xs text-gray-500">{{ $review->user->email }}</div>
                                 @endif
                             </td>
                             <td class="px-6 py-4">
@@ -58,12 +58,12 @@
                                             <x-icon-nav name="star-empty" class="w-4 h-4 inline-block text-gray-300" />
                                         @endif
                                     @endfor
-                                    <span class="ml-2 text-gray-800 dark:text-gray-200 font-medium">
+                                    <span class="ml-2 text-gray-800 font-medium">
                                         {{ $review->rating }} / 5
                                     </span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-gray-800 dark:text-gray-100">
+                            <td class="px-6 py-4 text-gray-800">
                                 <span class="whitespace-pre-line">{{ $review->comment }}</span>
                             </td>
                             <td class="px-6 py-4 text-center">
@@ -75,7 +75,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-gray-500 dark:text-gray-300 text-lg">
+                            <td colspan="6" class="py-12 text-center text-gray-500 text-lg">
                                 No reviews found.
                             </td>
                         </tr>
@@ -83,7 +83,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-6 py-4 border-t border-gray-200 dark:border-[#23263a] bg-white dark:bg-[#23263a]">
+        <div class="px-6 py-4 border-t border-gray-200 bg-white">
             {{ $reviews->links() }}
         </div>
     </div>

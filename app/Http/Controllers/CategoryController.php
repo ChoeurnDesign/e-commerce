@@ -13,15 +13,35 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        // Fetch parent categories with active children
-        $parentCategories = Category::whereNull('parent_id') // Fetch only parent categories
-            ->active() // Scope for active categories
+        // Fetch parent categories with active children, plus product counts
+        $parentCategories = Category::whereNull('parent_id')
+            ->active()
+            ->withCount(['products as products_count' => function ($q) {
+                $q->where('is_active', true);
+            }])
             ->with(['children' => function ($query) {
-                $query->active()->orderBy('sort_order')->orderBy('name');
+                $query->active()->orderBy('sort_order')->orderBy('name')
+                    ->withCount(['products as products_count' => function ($q) {
+                        $q->where('is_active', true);
+                    }]);
             }])
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
+
+        // Borrow real product photos for categories without an uploaded image
+        Category::attachDisplayImages($parentCategories);
+
+        // Roll up children product counts into the parent total
+        foreach ($parentCategories as $cat) {
+            $childTotal = $cat->children->sum('products_count');
+            $cat->total_products_count = (int) $cat->products_count + (int) $childTotal;
+        }
+
+        // Show categories that actually have products first
+        $parentCategories = $parentCategories
+            ->sortByDesc('total_products_count')
+            ->values();
 
         return view('categories.index', compact('parentCategories'));
     }
@@ -33,6 +53,23 @@ class CategoryController extends Controller
     {
         // Fetch category by slug and ensure it's active
         $category = Category::where('slug', $slug)->active()->firstOrFail();
+
+        // If the category has no uploaded image, borrow a representative product
+        // photo (from this category or one of its children) so the hero shows a
+        // real image instead of a colored-initial placeholder.
+        if (empty($category->image)) {
+            $childIds = $category->children()->pluck('id')->push($category->id);
+            $borrowedImage = Product::whereIn('category_id', $childIds)
+                ->where('is_active', true)
+                ->whereNotNull('image')
+                ->where('image', '!=', '')
+                ->latest('id')
+                ->value('image');
+
+            if ($borrowedImage) {
+                $category->setAttribute('image', $borrowedImage);
+            }
+        }
 
         // Build product query for this category and its subcategories
         $query = Product::query()

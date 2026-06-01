@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Seller;
+use App\Models\User;
+use App\Mail\SellerApplicationReceived;
+use App\Notifications\NewSellerApplicationNotification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class SellerController extends Controller
@@ -149,40 +153,71 @@ class SellerController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
-            'store_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'business_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'store_logo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'store_banner' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
-        ]);
-
         $user = Auth::user();
 
-        $documentPath = $request->hasFile('business_document') 
+        // Prevent duplicate or re-application
+        $existing = Seller::where('user_id', $user->id)->first();
+        if ($existing) {
+            $messages = [
+                'pending'  => 'Your application is already under review. We will email you with the result.',
+                'approved' => 'Your store is already approved. Visit your seller dashboard.',
+                'rejected' => 'Your previous application was rejected. Please contact support to reapply.',
+            ];
+            return redirect()->route('seller.register.form')
+                ->with('info', $messages[$existing->status] ?? 'You already have a seller account.');
+        }
+
+        $request->validate([
+            'store_name'        => 'required|string|max:255|unique:sellers,store_name',
+            'description'       => 'nullable|string|max:1000',
+            'contact_email'     => 'nullable|email|max:255',
+            'business_document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+            'store_logo'        => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'store_banner'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        $documentPath = $request->hasFile('business_document')
             ? $request->file('business_document')->store('business_docs', 'public') : null;
-            
+
         $logoPath = $request->hasFile('store_logo')
             ? $request->file('store_logo')->store('store_logos', 'public') : null;
 
         $bannerPath = $request->hasFile('store_banner')
             ? $request->file('store_banner')->store('store_banners', 'public') : null;
 
-        Seller::create([
-            'user_id' => $user->id,
-            'store_name' => $request->store_name,
-            'description' => $request->description,
+        $seller = Seller::create([
+            'user_id'           => $user->id,
+            'store_name'        => $request->store_name,
+            'description'       => $request->description,
+            'contact_email'     => $request->contact_email ?? $user->email,
             'business_document' => $documentPath,
-            'store_logo' => $logoPath,
-            'store_banner' => $bannerPath,
-            'status' => 'pending'
+            'store_logo'        => $logoPath,
+            'store_banner'      => $bannerPath,
+            'status'            => 'pending',
         ]);
 
-        $user->role = 'seller';
-        $user->save();
+        // Do NOT set role='seller' yet — only set it when admin approves
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Your seller application has been submitted and is under review.');
+        $seller->load('user');
+
+        // Send confirmation email to the applicant
+        try {
+            Mail::to($user->email)->send(new SellerApplicationReceived($seller));
+        } catch (\Exception $e) {
+            // Email failure should not block the flow
+        }
+
+        // Notify all admin users via database notification
+        try {
+            $seller->load('user');
+            User::where('role', 'admin')->get()
+                ->each(fn($admin) => $admin->notify(new NewSellerApplicationNotification($seller)));
+        } catch (\Exception $e) {
+            // Notification failure should not block the flow
+        }
+
+        return redirect()->route('seller.register.form')
+            ->with('success', 'Your application has been submitted! Check your email for confirmation. We will review it within 1–3 business days.');
     }
 
     /**

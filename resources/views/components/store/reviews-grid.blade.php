@@ -14,14 +14,14 @@
                 @elseif ($avg > $i - 1)
                     <span class="text-yellow-400 text-2xl">&#9733;</span>
                 @else
-                    <span class="text-gray-300 dark:text-gray-700 text-2xl">&#9733;</span>
+                    <span class="text-gray-300 text-2xl">&#9733;</span>
                 @endif
             @endfor
-            <span class="ml-2 text-md text-gray-500 dark:text-gray-400">
+            <span class="ml-2 text-md text-gray-500">
                 ({{ $avg }}) / {{ $count }} review{{ $count > 1 ? 's' : '' }}
             </span>
         @else
-            <span class="text-gray-400 dark:text-gray-600">No ratings yet</span>
+            <span class="text-gray-400">No ratings yet</span>
         @endif
     </div>
     
@@ -29,7 +29,7 @@
     <div class="w-full mt-10">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($reviews as $review)
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col items-start text-left hover:shadow-lg transition-all">
+                <div class="bg-white rounded-xl shadow p-6 flex flex-col items-start text-left hover:shadow-lg transition-all">
                     <div class="flex items-center justify-between w-full mb-3">
                         <div class="flex items-center">
                             @php
@@ -39,10 +39,10 @@
 
                             @if($reviewUser && $reviewUser->profile_image && file_exists(public_path('storage/' . $reviewUser->profile_image)))
                                 <img src="{{ asset('storage/' . $reviewUser->profile_image) }}" alt="Avatar"
-                                    class="w-14 h-14 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700" />
+                                    class="w-14 h-14 rounded-full object-cover border-2 border-gray-200" />
                             @else
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($reviewUserName) }}" alt="Avatar"
-                                    class="w-14 h-14 rounded-full object-cover border-2 border-gray-200 dark:border-gray-700" />
+                                    class="w-14 h-14 rounded-full object-cover border-2 border-gray-200" />
                             @endif
                         </div>
 
@@ -68,7 +68,7 @@
                     </div>
 
                     {{-- Review content --}}
-                    <div id="review-content-{{ $review->id }}" class="text-gray-700 dark:text-gray-300 mb-4 min-h-[48px] w-full">
+                    <div id="review-content-{{ $review->id }}" class="text-gray-700 mb-4 min-h-[48px] w-full">
                         {{ $review->comment }}
                     </div>
 
@@ -78,16 +78,16 @@
                             @csrf
                             @method('PUT')
                             <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rating</label>
-                                <select name="rating" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 dark:bg-gray-700 dark:text-white">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                                <select name="rating" class="w-full border border-gray-300 rounded-md px-3 py-2">
                                     @for($i = 1; $i <= 5; $i++)
                                         <option value="{{ $i }}" {{ $review->rating == $i ? 'selected' : '' }}>{{ $i }} Star{{ $i > 1 ? 's' : '' }}</option>
                                     @endfor
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Comment</label>
-                                <textarea name="comment" rows="3" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 dark:bg-gray-700 dark:text-white" required>{{ $review->comment }}</textarea>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Comment</label>
+                                <textarea name="comment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2" required>{{ $review->comment }}</textarea>
                             </div>
                             <div class="flex space-x-2">
                                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
@@ -102,13 +102,13 @@
 
                     <div class="flex-col items-center">
                         <div class="">
-                            <div class="font-semibold text-gray-900 dark:text-gray-100">
+                            <div class="font-semibold text-gray-900">
                                 {{ $review->user->name ?? 'Anonymous' }}
                             </div>
                         </div>
                         <span class="font-semibold text-lg text-yellow-500">{{ number_format($review->rating, 1) }}</span>
                         @for ($i = 1; $i <= 5; $i++)
-                            <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-700' }} text-xl">&#9733;</span>
+                            <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }} text-xl">&#9733;</span>
                         @endfor
                     </div>
                 </div>

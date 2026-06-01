@@ -2,144 +2,152 @@
     $user = auth()->user();
     $seller = $user?->seller;
     $status = $seller?->status;
-    $storeName = $seller?->store_name; 
-    
-    // Avatar logic: prefer user profile image, fallback to store logo, then initial
-    $userAvatar = $user?->profile_image ? asset('storage/' . ltrim($user->profile_image,'/')) : null;
-    $storeLogo = $seller?->store_logo_url;
-    $displayAvatar = $userAvatar ?? $storeLogo;
-    $initial = strtoupper(mb_substr($user?->name ?? 'U', 0, 1));
-    
-    // Logic for store name initials (e.g., "MyPhone Shop" -> "MPS")
-    $storeInitials = 'S'; 
-    if ($storeName) {
-        $words = explode(' ', $storeName);
-        $initialsArray = array_map(function($word) {
-            return mb_substr($word, 0, 1);
-        }, $words);
-        $storeInitials = strtoupper(implode('', $initialsArray));
-    }
+    $storeName = $seller?->store_name;
 
-    $hasStorefront = $seller
-        && $seller->slug
-        && $status === 'approved'
-        && Route::has('store.show');
+    $displayAvatar = null;
+    if ($user?->profile_image && file_exists(public_path('storage/' . $user->profile_image))) {
+        $displayAvatar = asset('storage/' . ltrim($user->profile_image, '/'));
+    } elseif ($seller?->store_logo) {
+        $displayAvatar = $seller->store_logo_url;
+    }
+    $initial = strtoupper(mb_substr($user?->name ?? 'U', 0, 1));
 @endphp
 
+<header class="bg-white/80 backdrop-blur-xl border-b border-gray-200/60 flex items-center justify-between px-6 h-16 w-full z-20 relative sticky top-0">
 
-{{-- UPDATED: Added bg-white and text-gray-900 for light mode, dark: variants for dark mode --}}
-<header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between px-6 h-16 w-full z-20 relative transition-colors duration-200">
-
-    {{-- Left: Mobile toggle + welcome --}}
-    <div class="flex items-center gap-3">
+    {{-- Left: Mobile toggle + Breadcrumb --}}
+    <div class="flex items-center gap-4">
         <button @click="sidebarOpen = !sidebarOpen"
-                class="md:hidden p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none"
+                class="md:hidden p-2 rounded-xl hover:bg-gray-100 transition focus:outline-none"
                 aria-label="Toggle navigation">
-            <svg class="w-6 h-6 text-gray-600 dark:text-gray-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16"/>
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
         </button>
 
-        <div class="flex items-center gap-3">
-            {{-- UPDATED: Text color is now dynamic --}}
-            <span class="text-lg font-medium text-gray-800 dark:text-gray-100">
-                Welcome, 
-                @if($seller?->store_name)
-                    {{ $seller->store_name }}
-                @else
-                    {{ $user->name }}
-                @endif
-                
-                @if($seller && $status !== 'approved')
-                    <span class="ml-2 text-xs px-2 py-0.5 rounded
-                        @class([
-                            'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400' => $status==='pending',
-                            'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'     => $status==='rejected',
-                            'bg-gray-100 text-gray-600 dark:bg-gray-500/20 dark:text-gray-300'   => !in_array($status,['pending','rejected','approved']),
-                        ])">
-                        {{ ucfirst($status) }}
-                    </span>
-                @endif
-            </span>
+        <div class="hidden sm:flex items-center gap-2 text-sm">
+            <span class="text-gray-400">Welcome,</span>
+            <span class="font-semibold text-gray-800">{{ $storeName ?? $user->name }}</span>
+            @if($seller && $status !== 'approved')
+                @php
+                    $statusBadge = match($status) {
+                        'pending'  => 'bg-amber-50 text-amber-600 border-amber-200',
+                        'rejected' => 'bg-red-50 text-red-600 border-red-200',
+                        default    => 'bg-gray-50 text-gray-500 border-gray-200',
+                    };
+                @endphp
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border {{ $statusBadge }}">
+                    {{ ucfirst($status) }}
+                </span>
+            @endif
         </div>
     </div>
 
-    {{-- Right: Dark mode & seller-only dropdown --}}
-    <div class="flex items-center gap-4">
+    {{-- Right: Actions --}}
+    <div class="flex items-center gap-1.5">
+
+        {{-- Chat --}}
         <x-chat.chat-icon :route="route('seller.chat.index')" label="Seller Chat" :badge="$unreadSellerChats ?? 0" />
-        
-        {{-- UPDATED: Theme Toggle Button styling --}}
-        <button type="button"
-                class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                onclick="window.toggleTheme()">
-             <x-dark-mode-toggle class="p-0" />
-        </button>
 
-        <div x-data="{ open:false }" class="relative">
-            <button @click="open=!open"
-                    @keydown.escape.window="open=false"
-                    class="flex items-center gap-2 focus:outline-none group">
+        {{-- Divider --}}
+        <div class="hidden sm:block w-px h-6 bg-gray-200 mx-1.5"></div>
 
-                <div class="relative w-10 h-10">
-                    @if($displayAvatar)
-                        <img src="{{ $displayAvatar }}"
-                             alt="Seller Avatar"
-                             class="w-10 h-10 rounded-full border-2 border-indigo-400 object-cover shadow-sm"
-                             onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
-                        <div class="w-10 h-10 rounded-full bg-indigo-600 text-white hidden flex items-center justify-center font-semibold border-2 border-indigo-400">
-                            {{ $initial }}
-                        </div>
-                    @else
-                        <span class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold border-2 border-indigo-400">
-                            {{ $initial }}
-                        </span>
-                    @endif
+        {{-- Profile dropdown --}}
+        <div x-data="{ open: false }" class="relative">
+            <button @click="open = !open"
+                    @keydown.escape.window="open = false"
+                    class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-gray-100 transition-all focus:outline-none group">
+
+                @if($displayAvatar)
+                    <img src="{{ $displayAvatar }}"
+                         alt="Avatar"
+                         class="w-8 h-8 rounded-lg object-cover ring-1 ring-gray-200"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <span style="display:none;" class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 text-white items-center justify-center font-bold text-xs ring-1 ring-gray-200">
+                        {{ $initial }}
+                    </span>
+                @else
+                    <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 text-white flex items-center justify-center font-bold text-xs ring-1 ring-gray-200">
+                        {{ $initial }}
+                    </span>
+                @endif
+
+                <div class="hidden xl:block text-left">
+                    <p class="text-xs font-semibold text-gray-800 leading-none">{{ $storeName ?? $user->name }}</p>
+                    <p class="text-[10px] text-gray-400 leading-none mt-0.5">{{ $user->email }}</p>
                 </div>
 
-                <svg class="w-4 h-4 text-gray-500 dark:text-gray-200 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M19 9l-7 7-7-7"/>
+                <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600 transition-transform duration-200"
+                     :class="{ 'rotate-180': open }"
+                     fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
                 </svg>
             </button>
 
-            {{-- UPDATED: Dropdown colors for light mode --}}
+            {{-- Dropdown --}}
             <div x-cloak
                  x-show="open"
-                 x-transition:enter="transition ease-out duration-100"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-100"
                  x-transition:leave-start="opacity-100 scale-100"
                  x-transition:leave-end="opacity-0 scale-95"
-                 @click.outside="open=false"
-                 class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900 rounded-lg shadow-xl py-2 z-50 border border-gray-200 dark:border-gray-700">
+                 @click.outside="open = false"
+                 class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl z-50 border border-gray-100 overflow-hidden">
 
-                <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-                    Seller Account<br>
-                    <span class="text-gray-800 dark:text-gray-200 font-medium">{{ $user->email }}</span>
+                {{-- User card --}}
+                <div class="px-4 pt-4 pb-3 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        @if($displayAvatar)
+                            <img src="{{ $displayAvatar }}" alt="Avatar"
+                                 class="w-10 h-10 rounded-xl object-cover ring-1 ring-gray-200 shrink-0"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                            <span style="display:none;" class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white items-center justify-center font-bold ring-1 ring-gray-200 shrink-0">
+                                {{ $initial }}
+                            </span>
+                        @else
+                            <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white flex items-center justify-center font-bold ring-1 ring-gray-200 shrink-0">
+                                {{ $initial }}
+                            </span>
+                        @endif
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-gray-900 truncate">{{ $storeName ?? $user->name }}</p>
+                            <p class="text-[11px] text-gray-400 truncate">{{ $user->email }}</p>
+                        </div>
+                    </div>
                 </div>
 
+                {{-- Links --}}
                 <div class="py-1">
-                    {{-- Note: Ensure your x-dropdown-link components handle dark mode internally or add classes here --}}
-                    @if(Route::has('seller.dashboard'))
-                        <x-dropdown-link :href="route('seller.dashboard')" class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <x-icon-dashboard name="dashboard" class="w-5 h-5" />
-                            Dashboard
-                        </x-dropdown-link>
-                    @endif
-                    
-                    {{-- ... apply similar text color classes to other links ... --}}
+                    @foreach([
+                        ['route' => 'seller.dashboard',      'label' => 'Dashboard',      'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+                        ['route' => 'seller.settings.edit',  'label' => 'Store Settings', 'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z'],
+                        ['route' => 'home',                  'label' => 'Visit Store',    'icon' => 'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'],
+                    ] as $link)
+                    <a href="{{ route($link['route']) }}"
+                       class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="{{ $link['icon'] }}"/>
+                        </svg>
+                        {{ $link['label'] }}
+                    </a>
+                    @endforeach
                 </div>
 
-                <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
-
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit"
-                            class="w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-800/40 flex items-center gap-2">
-                        <x-icon-dashboard name="signout" class="w-5 h-5" />
-                        Logout
-                    </button>
-                </form>
+                {{-- Logout --}}
+                <div class="border-t border-gray-100 py-1">
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            Logout
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

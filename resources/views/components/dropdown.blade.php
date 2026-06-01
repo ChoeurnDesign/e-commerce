@@ -28,7 +28,7 @@
         x-transition:leave-end="opacity-0 scale-95"
         class="absolute z-[150] mt-2 {{ $widthClass }} rounded-md shadow-lg {{ $alignmentClasses }}"
         style="display: none;">
-        <div class="rounded-md ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 {{ $contentClasses }}">
+        <div class="rounded-md ring-1 ring-black ring-opacity-5 bg-white border border-gray-200 {{ $contentClasses }}">
             {{ $content }}
         </div>
     </div>

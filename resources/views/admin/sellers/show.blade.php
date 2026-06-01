@@ -4,11 +4,11 @@
 @section('content')
 <div class="space-y-6 min-h-screen">
     <div class="flex items-center mb-6">
-        <x-icon-dashboard name="users" class="w-7 h-7 text-indigo-600 dark:text-yellow-400"/>
-        <h1 class="ml-2 text-2xl font-bold text-gray-900 dark:text-gray-100">Seller Detail</h1>
+        <x-icon-dashboard name="users" class="w-7 h-7 text-indigo-600"/>
+        <h1 class="ml-2 text-2xl font-bold text-gray-900">Seller Detail</h1>
     </div>
 
-    <div class="bg-white dark:bg-[#23263a] p-6 rounded shadow">
+    <div class="bg-white p-6 rounded shadow">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><b>Name:</b> {{ $seller->user?->name ?? '-' }}</div>
             <div><b>Email:</b> {{ $seller->user?->email ?? '-' }}</div>

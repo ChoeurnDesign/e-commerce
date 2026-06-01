@@ -1,10 +1,10 @@
-<x-app-layout>
-    <div class="py-8 bg-gray-300 dark:bg-gray-900 min-h-screen">
+﻿<x-app-layout>
+    <div class="py-8 min-h-screen">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Edit Your Review</h2>
+            <h2 class="text-2xl font-bold mb-6 text-gray-900">Edit Your Review</h2>
 
             @if ($errors->any())
-                <div class="mb-4 text-red-600 dark:text-red-400">
+                <div class="mb-4 text-red-600">
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -13,12 +13,12 @@
                 </div>
             @endif
 
-            <form action="{{ route('reviews.update', $review->id) }}" method="POST" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <form action="{{ route('reviews.update', $review->id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-md">
                 @csrf
                 <input type="hidden" name="_method" value="">
 
                 <div class="mb-4">
-                    <x-input-label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" value="Rating" />
+                    <x-input-label class="block text-sm font-medium text-gray-700 mb-1" value="Rating" />
                     <div
                         x-data="{ rating: {{ old('rating', $review->rating) }} }"
                         class="flex space-x-2"
@@ -33,7 +33,7 @@
                                     x-model="rating"
                                 >
                                 <svg
-                                    :class="rating >= {{ $i }} ? 'text-yellow-400 dark:text-yellow-300' : 'text-gray-300 dark:text-gray-600'"
+                                    :class="rating >= {{ $i }} ? 'text-yellow-400' : 'text-gray-300'"
                                     class="w-8 h-8 transition-colors duration-150"
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
@@ -44,31 +44,32 @@
                         @endfor
                     </div>
                     @error('rating')
-                        <div class="text-red-500 dark:text-red-400 text-sm mt-1">{{ $message }}</div>
+                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="mb-4">
-                    <x-input-label for="comment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <x-input-label for="comment" class="block text-sm font-medium text-gray-700 mb-1">
                         Your Review
                     </x-input-label>
                     <textarea
                         id="comment"
                         name="comment"
                         rows="4"
-                        class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-pink-400 focus:border-pink-500"
                     >{{ old('comment', $review->comment) }}</textarea>
                     @error('comment')
-                        <div class="text-red-500 dark:text-red-400 text-sm mt-1">{{ $message }}</div>
+                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md font-medium dark:bg-indigo-700 dark:hover:bg-indigo-600">
+                <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-md font-medium">
                     Update Review
                 </button>
-                <a href="{{ route('products.show', $review->product->slug) }}" class="ml-4 text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400">Back to Product</a>
+                <a href="{{ route('products.show', $review->product->slug) }}" class="ml-4 text-gray-600 hover:text-pink-600">Back to Product</a>
             </form>
         </div>
     </div>
 </x-app-layout>
+
 

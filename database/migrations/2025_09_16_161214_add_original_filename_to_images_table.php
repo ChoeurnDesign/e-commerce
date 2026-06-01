@@ -8,9 +8,11 @@ class AddOriginalFilenameToImagesTable extends Migration
 {
     public function up()
     {
-        Schema::table('images', function (Blueprint $table) {
-            $table->string('original_filename')->nullable()->after('path');
-        });
+        if (!Schema::hasColumn('images', 'original_filename')) {
+            Schema::table('images', function (Blueprint $table) {
+                $table->string('original_filename')->nullable()->after('path');
+            });
+        }
     }
 
     public function down()

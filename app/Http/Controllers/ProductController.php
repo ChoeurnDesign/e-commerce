@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -94,27 +96,37 @@ class ProductController extends Controller
                   ->whereColumn('sale_price', '<', 'price');
         }
 
+        /* Sort options.  Each sort also alternates by seller_id so multi-seller
+           listings of the same product don't visually cluster — instead they
+           spread across the page like a real marketplace. */
         switch ($filters['sort']) {
             case 'price_low':
-                $query->orderBy('price', 'asc');
+                $query->orderBy('price', 'asc')->orderBy('seller_id', 'asc')->orderBy('id', 'asc');
                 break;
             case 'price_high':
-                $query->orderBy('price', 'desc');
+                $query->orderBy('price', 'desc')->orderBy('seller_id', 'asc')->orderBy('id', 'asc');
                 break;
             case 'name':
-                $query->orderBy('name', 'asc');
+                $query->orderBy('name', 'asc')->orderBy('seller_id', 'asc');
                 break;
             case 'rating':
                 $query->orderByDesc('average_rating')
-                      ->orderByDesc('reviews_count');
+                      ->orderByDesc('reviews_count')
+                      ->orderBy('seller_id', 'asc');
                 break;
             case 'featured':
                 $query->orderBy('is_featured', 'desc')
-                      ->orderByDesc('created_at');
+                      ->orderByDesc('created_at')
+                      ->orderBy('seller_id', 'asc');
                 break;
             case 'latest':
             default:
-                $query->orderByDesc('created_at');
+                /* Use seller_id as tiebreaker so same-name multi-seller items
+                   don't cluster when their created_at timestamps are nearly
+                   identical (common after seeding). */
+                $query->orderByDesc('created_at')
+                      ->orderBy('seller_id', 'asc')
+                      ->orderBy('id', 'asc');
         }
 
         $products = $query->paginate($perPage)->appends($request->query());
@@ -130,11 +142,11 @@ class ProductController extends Controller
     public function shopsOnSale(Request $request)
     {
         $validated = $request->validate([
-            'sort'     => 'nullable|in:price_low,price_high,rating,latest',
+            'sort'     => 'nullable|in:price_low,price_high,rating,latest,discount',
             'per_page' => 'nullable|integer|min:1|max:' . $this->maxPerPage,
         ]);
 
-        $sort    = $validated['sort'] ?? 'price_low';
+        $sort    = $validated['sort'] ?? 'discount';
         $perPage = (int)($validated['per_page'] ?? $this->defaultPerPage);
         if ($perPage > $this->maxPerPage) $perPage = $this->maxPerPage;
 
@@ -158,8 +170,11 @@ class ProductController extends Controller
                 $query->orderByDesc('created_at');
                 break;
             case 'price_low':
-            default:
                 $query->orderBy('sale_price', 'asc');
+                break;
+            case 'discount':
+            default:
+                $query->orderByRaw('(price - sale_price) / price DESC');
         }
 
         $saleProducts = $query->paginate($perPage)->appends($request->query());
@@ -185,6 +200,41 @@ class ProductController extends Controller
             ->get();
 
         return response()->json($products);
+    }
+
+    public function quickView(int $id): JsonResponse
+    {
+        $product = Product::with(['category', 'seller'])
+            ->withCount('approvedReviews')
+            ->withAvg('approvedReviews as average_rating', 'rating')
+            ->active()
+            ->findOrFail($id);
+
+        $inWishlist = Auth::check() && Auth::user()->hasInWishlist($product->id);
+
+        return response()->json([
+            'id'              => $product->id,
+            'name'            => $product->name,
+            'slug'            => $product->slug,
+            'url'             => route('products.show', $product->slug),
+            'image_url'       => $product->image_url,
+            'category'        => $product->category?->name,
+            'seller_name'     => $product->seller?->store_name,
+            'seller_url'      => $product->seller ? route('stores.show', $product->seller->slug) : null,
+            'price'           => $product->price,
+            'sale_price'      => $product->sale_price,
+            'current_price'   => $product->current_price,
+            'on_sale'         => (bool) ($product->on_sale && $product->sale_price),
+            'stock_quantity'  => $product->stock_quantity,
+            'in_stock'        => $product->stock_quantity > 0,
+            'short_description' => $product->short_description
+                ? Str::limit(strip_tags($product->short_description), 180)
+                : Str::limit(strip_tags($product->description ?? ''), 180),
+            'average_rating'  => round((float) ($product->average_rating ?? 0), 1),
+            'reviews_count'   => $product->approved_reviews_count ?? 0,
+            'is_featured'     => (bool) $product->is_featured,
+            'in_wishlist'     => $inWishlist,
+        ]);
     }
 
     public function show(string $slug)

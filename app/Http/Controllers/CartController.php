@@ -49,13 +49,13 @@ class CartController extends Controller
 
     public function index()
     {
-        $hasChanges = $this->cartService->validateCart();
+        $changes = $this->cartService->validateCart();
 
-        if ($hasChanges) {
-            session()->flash('warning', 'Some items in your cart have been updated due to price or stock changes.');
+        if (!empty($changes)) {
+            session()->flash('cart_changes', $changes);
         }
 
-        $cartItems = $this->cartService->getCartItems();
+        $cartItems  = $this->cartService->getCartItems();
         $cartTotals = $this->cartService->getCartTotals();
 
         return view('cart.index', compact('cartItems', 'cartTotals'));

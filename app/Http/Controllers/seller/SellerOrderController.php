@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\VendorOrder;
 use Illuminate\Support\Facades\Auth;
@@ -69,15 +70,17 @@ class SellerOrderController extends Controller
             return back()->with('error', 'This order is already confirmed or completed.');
         }
 
-        // 1. Update Vendor Order (Seller side)
-        $vendorOrder->update([
-            'status' => 'confirmed'
-        ]);
+        // 1. Update this vendor order
+        $vendorOrder->update(['status' => 'confirmed']);
 
-        // 2. Update Parent Order (Customer side)
-        // This removes the "Processing" label the customer sees
-        $parentOrder = $vendorOrder->order;
-        if ($parentOrder && $parentOrder->status === 'processing') {
+        // 2. Only update parent order when ALL vendor orders for this order are confirmed
+        $parentOrder     = $vendorOrder->order;
+        $totalVendors    = VendorOrder::where('order_id', $vendorOrder->order_id)->count();
+        $confirmedVendors = VendorOrder::where('order_id', $vendorOrder->order_id)
+            ->where('status', 'confirmed')
+            ->count();
+
+        if ($parentOrder && $confirmedVendors >= $totalVendors) {
             $parentOrder->update(['status' => 'confirmed']);
         }
 

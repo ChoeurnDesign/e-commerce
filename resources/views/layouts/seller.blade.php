@@ -1,15 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-      x-data="{ dark: localStorage.getItem('theme') === 'dark' }"
-      :class="{ 'dark': dark }"
-      x-init="$watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'))">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @include('layouts.head')
     @include('layouts.styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <title>@yield('title', 'Seller Area')</title>
 </head>
-<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-sans antialiased transition-colors">
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
 
     {{-- ✅ Fixed top banner flash --}}
     @include('layouts.flash-messages')
@@ -32,7 +29,9 @@
         <div class="flex-1 flex flex-col overflow-hidden min-w-0">
             @include('seller.partials.header')
 
-            <main class="flex-1 overflow-y-auto p-6 bg-gray-100 dark:bg-gray-900 transition-colors text-gray-900 dark:text-gray-100">
+            <main class="flex-1 overflow-y-auto p-6 bg-gray-50 text-gray-900">
+                {{-- Global inline validation-error banner (session toasts are in layouts/flash-messages.blade.php) --}}
+                @include('seller.partials.flash')
                 @yield('content')
             </main>
         </div>

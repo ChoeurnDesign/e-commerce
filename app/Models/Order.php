@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB; // Required for transactions
+use Illuminate\Support\Facades\DB;
+use App\Models\PlatformWallet;
+use App\Models\Seller;
+use App\Models\Wallet;
 
 class Order extends Model
 {
@@ -37,18 +40,27 @@ class Order extends Model
         'billing_postal_code',
         'billing_country',
         'notes',
+        'coupon_code',
+        'discount_amount',
         'shipped_at',
         'delivered_at',
-        'payout_released' // Added for security
+        'payout_released',
+        'payment_proof',
+        'payment_reference',
+        'payment_verified_by',
+        'payment_verified_at',
+        'payment_verification_note',
+        'payment_fee_amount',
     ];
 
     protected $casts = [
-        'subtotal'     => 'decimal:2',
-        'tax_amount'   => 'decimal:2',
-        'total_price'  => 'decimal:2',
-        'shipped_at'   => 'datetime',
-        'delivered_at' => 'datetime',
-        'payout_released' => 'boolean', // Added for security
+        'subtotal'        => 'decimal:2',
+        'tax_amount'      => 'decimal:2',
+        'total_price'     => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'shipped_at'      => 'datetime',
+        'delivered_at'    => 'datetime',
+        'payout_released' => 'boolean',
     ];
 
     protected static function boot()
@@ -75,46 +87,162 @@ class Order extends Model
 
     /* ---------------- Logic ---------------- */
 
-    public function distributeVendorEarnings()
+    /**
+     * Credit seller wallets with their earnings from this order.
+     *
+     * IMPORTANT: Vendor orders are created at checkout time by createVendorOrdersFromItems().
+     * This method ONLY handles the wallet credit step — it does NOT create/overwrite vendor orders.
+     * It runs when an order transitions to "completed" (customer confirms receipt, auto-confirm cron, or admin).
+     *
+     * The payout_released flag is idempotent — ensures we never double-pay.
+     */
+    public function distributeVendorEarnings(): void
     {
-        // 1. SAFETY GUARD: If funds are already released, stop immediately!
+        // Safety guard: if funds are already released, stop immediately
         if ($this->payout_released) {
-            return; 
+            return;
         }
 
-        // 2. TRANSACTION: Ensures all or nothing is processed
         DB::transaction(function () {
-            $itemsBySeller = $this->orderItems->groupBy('seller_id');
+            // SELF-HEAL: For COD orders, ensure platform received the payment BEFORE
+            // we pay out the seller. Otherwise platform balance goes negative.
+            if ($this->payment_method === 'cash_on_delivery' && $this->payment_status !== 'paid') {
+                $this->update(['payment_status' => 'paid']);
+                PlatformWallet::getInstance()
+                    ->receiveOrderPayment($this, (float) $this->total_price);
+                $this->refresh();
+            }
 
-            foreach ($itemsBySeller as $sellerId => $items) {
-                $subtotal = $items->sum('total'); 
-                $commissionRate = 10.00; 
-                $commissionAmount = ($subtotal * $commissionRate) / 100;
-                $sellerEarnings = $subtotal - $commissionAmount;
+            // Load vendor orders for this order (created at checkout)
+            $vendorOrders = $this->vendorOrders()->get();
 
-                $this->vendorOrders()->updateOrCreate(
-                    ['seller_id' => $sellerId],
-                    [
+            if ($vendorOrders->isEmpty()) {
+                // Fallback: create vendor orders if they don't exist yet (e.g. legacy orders)
+                $itemsBySeller = $this->orderItems->groupBy('seller_id');
+
+                foreach ($itemsBySeller as $sellerId => $items) {
+                    $subtotal         = round($items->sum('total'), 2);
+                    $seller           = Seller::find($sellerId);
+                    $commissionRate   = $seller->commission_rate ?? 10.00;
+                    $commissionAmount = round($subtotal * ($commissionRate / 100), 2);
+                    $sellerEarnings   = round($subtotal - $commissionAmount, 2);
+
+                    $vo = $this->vendorOrders()->create([
+                        'seller_id'         => $sellerId,
                         'subtotal'          => $subtotal,
                         'commission_rate'   => $commissionRate,
                         'commission_amount' => $commissionAmount,
                         'seller_earnings'   => $sellerEarnings,
-                        'status'            => 'pending',
+                        'status'            => 'completed',
                         'payout_status'     => 'pending',
-                        'stripe_account_id' => $items->first()->product->seller->stripe_account_id ?? null,
-                    ]
-                );
+                    ]);
 
-                $seller = \App\Models\Seller::find($sellerId);
-                if ($seller && $seller->user) {
-                    \App\Models\Wallet::firstOrCreate(['seller_id' => $seller->user->id])
-                        ->increment('balance', $sellerEarnings);
+                    $vendorOrders->push($vo);
                 }
             }
 
-            // 3. Update the flag to TRUE so it can never run again for this order
+            // Credit each seller's wallet + debit from platform
+            $platformWallet = PlatformWallet::getInstance();
+
+            foreach ($vendorOrders as $vendorOrder) {
+                if ($vendorOrder->seller_earnings <= 0) continue;
+
+                $seller = Seller::find($vendorOrder->seller_id);
+                if ($seller && $seller->user) {
+                    // Credit seller wallet (seller_id FK references sellers.id)
+                    Wallet::firstOrCreate(
+                        ['seller_id' => $seller->id],
+                        ['balance' => 0]
+                    )->increment('balance', $vendorOrder->seller_earnings);
+
+                    // Debit platform wallet (platform keeps commission)
+                    $platformWallet->payoutToSeller(
+                        $vendorOrder,
+                        (float) $vendorOrder->seller_earnings,
+                        (float) $vendorOrder->commission_amount
+                    );
+                }
+            }
+
+            // Flag so we never double-pay
             $this->update(['payout_released' => true]);
         });
+    }
+
+    /**
+     * Restore stock quantities when an order is cancelled.
+     * Each order item's quantity is added back to the product's stock.
+     */
+    public function restoreStock(): void
+    {
+        foreach ($this->orderItems as $item) {
+            if ($item->product) {
+                $item->product->increment('stock_quantity', $item->quantity);
+            }
+        }
+    }
+
+    /**
+     * Reverse seller wallet credits when a previously-paid order is cancelled.
+     * Only runs if earnings were already distributed (payout_released = true).
+     * Deducts seller_earnings from each seller's wallet and marks vendor orders cancelled.
+     */
+    public function reverseEarnings(): void
+    {
+        if (!$this->payout_released) {
+            return; // Nothing to reverse — earnings were never distributed
+        }
+
+        DB::transaction(function () {
+            $platformWallet = PlatformWallet::getInstance();
+
+            foreach ($this->vendorOrders as $vendorOrder) {
+                // Deduct from seller wallet
+                $wallet = Wallet::where('seller_id', $vendorOrder->seller_id)->first();
+                if ($wallet && $wallet->balance >= $vendorOrder->seller_earnings) {
+                    $wallet->decrement('balance', $vendorOrder->seller_earnings);
+                } elseif ($wallet) {
+                    $wallet->update(['balance' => 0]);
+                }
+
+                // Return money to platform balance (seller payout reversed)
+                $platformWallet->increment('balance', $vendorOrder->seller_earnings);
+                $platformWallet->decrement('total_paid_out', $vendorOrder->seller_earnings);
+                $platformWallet->decrement('total_commission', $vendorOrder->commission_amount);
+
+                // Mark vendor order as cancelled
+                $vendorOrder->update(['status' => 'cancelled']);
+            }
+
+            // Reset the payout flag
+            $this->update(['payout_released' => false]);
+        });
+    }
+
+    /**
+     * Valid order status transitions.
+     * Returns the allowed "next" statuses from the current status.
+     */
+    public static function allowedTransitions(string $currentStatus): array
+    {
+        return match ($currentStatus) {
+            'pending'    => ['processing', 'confirmed', 'cancelled'],
+            'processing' => ['confirmed', 'shipped', 'cancelled'],
+            'confirmed'  => ['shipped', 'cancelled'],
+            'shipped'    => ['delivered', 'cancelled'],
+            'delivered'  => ['completed', 'cancelled'],
+            'completed'  => [],          // Final state — no transitions allowed
+            'cancelled'  => [],          // Final state
+            default      => [],
+        };
+    }
+
+    /**
+     * Check if a transition to the given status is valid.
+     */
+    public function canTransitionTo(string $newStatus): bool
+    {
+        return in_array($newStatus, static::allowedTransitions($this->status), true);
     }
 
     /* ---------------- Helpers & Scopes ---------------- */
@@ -130,6 +258,17 @@ class Order extends Model
             'cancelled'  => 'red',
             'refunded'   => 'gray',
             default      => 'gray',
+        };
+    }
+
+    public function getPaymentStatusColorAttribute(): string
+    {
+        return match($this->payment_status) {
+            'paid'     => 'green',
+            'pending'  => 'yellow',
+            'failed'   => 'red',
+            'refunded' => 'gray',
+            default    => 'gray',
         };
     }
 
